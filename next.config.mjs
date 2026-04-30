@@ -1,0 +1,117 @@
+import bundleAnalyzer from '@next/bundle-analyzer';
+
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+});
+
+const isDev = process.env.NODE_ENV === 'development';
+
+// Build CSP as an array then join so it's easy to read and diff.
+const CSP = [
+  "default-src 'self'",
+  // 'unsafe-inline' required for Next.js inline scripts + JSON-LD script tags.
+  // 'unsafe-eval' required in dev only — Next.js react-refresh HMR runtime uses Function().
+  // 'wasm-unsafe-eval' required for Draco/MeshoptDecoder WASM (Three.js / GLB loading).
+  // blob: required for DRACOLoader — it creates a Worker from a blob: URL, and browsers
+  // that don't fully honour worker-src independently fall back to checking script-src.
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} 'wasm-unsafe-eval' blob: https://cdn.cal.com`,
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob: https://images.unsplash.com https://retrotekt.vercel.app https://retrotekt.com",
+  "font-src 'self'",
+  // blob: required — Three.js ImageLoader uses fetch() to load blob-URL textures (WebP/GLB).
+  "connect-src 'self' blob:",
+  "frame-src https://cal.com https://calendly.com",
+  // blob: needed for Three.js / Draco worker blobs.
+  "worker-src 'self' blob:",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "upgrade-insecure-requests",
+].join("; ");
+
+const SECURITY_HEADERS = [
+  { key: "Content-Security-Policy", value: CSP },
+  // Prevent this page from being framed by external sites (clickjacking).
+  { key: "X-Frame-Options", value: "SAMEORIGIN" },
+  { key: "X-Content-Type-Options", value: "nosniff" },
+  { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+  // Disable browser features not needed on a marketing site.
+  {
+    key: "Permissions-Policy",
+    value: "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
+  },
+  { key: "X-DNS-Prefetch-Control", value: "on" },
+  // 2-year HSTS with preload — only enable once HTTPS is confirmed stable.
+  {
+    key: "Strict-Transport-Security",
+    value: "max-age=63072000; includeSubDomains; preload",
+  },
+];
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  compress: true,
+
+  async headers() {
+    return [
+      // Immutable assets — 1-year cache, no revalidation needed.
+      {
+        source: '/models/:path*',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+          { key: 'Content-Encoding', value: 'identity' },
+        ],
+      },
+      {
+        source: '/draco/:path*',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+        ],
+      },
+      {
+        source: '/_next/static/:path*',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+        ],
+      },
+      // All pages: security headers + no-cache for HTML.
+      {
+        source: '/(.*)',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=0, must-revalidate' },
+          ...SECURITY_HEADERS,
+        ],
+      },
+    ];
+  },
+
+  async redirects() {
+    return [
+      { source: '/pricing', destination: '/contact', permanent: true },
+      { source: '/about', destination: '/consulting', permanent: true },
+    ];
+  },
+
+  images: {
+    formats: ['image/avif', 'image/webp'],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+    minimumCacheTTL: 86400,
+    remotePatterns: [
+      { protocol: 'https', hostname: 'images.unsplash.com' },
+    ],
+  },
+
+  experimental: {
+    optimizePackageImports: ['three'],
+  },
+
+  webpack: (config) => {
+    config.module.rules.push({
+      test: /\.(glb|gltf)$/,
+      type: 'asset/resource',
+    });
+    return config;
+  },
+};
+
+export default withBundleAnalyzer(nextConfig);

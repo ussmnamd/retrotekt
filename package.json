@@ -1,0 +1,33 @@
+{
+  "name": "retrotekt-web-2",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "build:ghosts": "tsx scripts/build-ghosts.ts"
+  },
+  "dependencies": {
+    "gsap": "^3.15.0",
+    "next": "14.2.35",
+    "react": "^18",
+    "react-dom": "^18",
+    "three": "^0.184.0"
+  },
+  "devDependencies": {
+    "@next/bundle-analyzer": "^16.2.4",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "@types/three": "^0.184.0",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.35",
+    "postcss": "^8",
+    "sharp": "^0.33.0",
+    "tailwindcss": "^3.4.1",
+    "tsx": "^4.0.0",
+    "typescript": "^5"
+  }
+}

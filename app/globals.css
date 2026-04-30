@@ -1,0 +1,609 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+::selection {
+  background-color: var(--color-accent);
+  color: var(--color-ink);
+}
+
+::-moz-selection {
+  background-color: var(--color-accent);
+  color: var(--color-ink);
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    transform: scale(0.95);
+    opacity: 0.6;
+  }
+
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+}
+
+/* ── Architectural drawing animations ─────────────────────────────────────── */
+@keyframes arch-draw {
+  from { stroke-dashoffset: 1; }
+  to   { stroke-dashoffset: 0; }
+}
+
+@keyframes arch-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes arch-progress {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+/* placeholder dots trick via clip */
+@keyframes placeholder-dots {
+  0%   { clip-path: inset(0 66% 0 0); }
+  33%  { clip-path: inset(0 33% 0 0); }
+  66%  { clip-path: inset(0 0% 0 0); }
+  100% { clip-path: inset(0 66% 0 0); }
+}
+
+:root {
+  /* Legacy tokens — kept for backwards compat with existing Tailwind classes */
+  --background: #F7F0E3;
+  --foreground: #2C1F14;
+  /* ── New design token system ──────────────────────────────────────────── */
+
+  /* Backgrounds */
+  --color-bg: #F7F0E3;
+  --color-surface: #EDE3CE;
+  --color-surface-2: #E2D5BC;
+
+  /* Brand hierarchy */
+  --color-accent: #C4A882;
+  /* sandy accent — lines, icon strokes, badges */
+  --color-mid: #8C6E4B;
+  /* section labels, UI metadata — 4.7:1 on bg (AA) */
+  --color-deep: #4A3322;
+  /* body text, secondary headings — 8.9:1 (AAA) */
+  --color-ink: #2C1F14;
+  /* primary headlines, dark CTAs — 14.2:1 (AAA) */
+
+  /* Dark sections */
+  --color-dark-bg: #2C1F14;
+  --color-dark-surface: #3D2A1A;
+  --color-dark-accent: #C4A882;
+  --color-dark-text: #F7F0E3;
+
+  /* Borders */
+  --color-border: #D4C5A9;
+  --color-border-strong: #B59E7D;
+
+  /* Focus rings */
+  --color-focus: #8C6E4B;
+
+  /* Type scale */
+  --text-xs: 0.6875rem;
+  /* 11px */
+  --text-sm: 0.8125rem;
+  /* 13px */
+  --text-base: 1rem;
+  /* 16px */
+  --text-lg: 1.125rem;
+  /* 18px */
+  --text-xl: 1.375rem;
+  /* 22px */
+  --text-2xl: 1.75rem;
+  /* 28px */
+  --text-3xl: 2.5rem;
+  /* 40px */
+  --text-display: clamp(4rem, 9vw, 8rem);
+
+  /* Frame */
+  --frame-strip: 24px;
+
+  /* Section spacing */
+  --section-padding-y: clamp(5rem, 10vw, 9rem);
+  --section-padding-x: clamp(1.5rem, 6vw, 7rem);
+
+  /* Button tokens */
+  --btn-radius: 2px;
+  --btn-height: 48px;
+  --btn-height-sm: 38px;
+  --btn-font-size: 0.8125rem;
+  --btn-tracking: 0.1em;
+  --btn-duration: 0.28s;
+  --btn-ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  color: var(--color-ink);
+  background: var(--color-dark-bg);
+  font-family: var(--font-inter), sans-serif;
+  overflow-x: hidden;
+}
+
+.frame-strip-left,
+.frame-strip-right {
+  width: var(--frame-strip);
+  background: var(--color-dark-bg);
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  :root {
+    --frame-strip: 12px;
+  }
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-inter), sans-serif;
+}
+
+/* ── Focus states (WCAG 2.1 AA) ───────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ── Scroll reveal ─────────────────────────────────────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Both class names supported: .revealed (JS-added) and .visible (alias) */
+.reveal.revealed,
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-delay-1 {
+  transition-delay: 80ms;
+}
+
+.reveal-delay-2 {
+  transition-delay: 160ms;
+}
+
+/* ── Hero scroll indicator ─────────────────────────────────────────────────── */
+@keyframes scroll-drop {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+
+  20% {
+    opacity: 1;
+  }
+
+  80% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(200%);
+    opacity: 0;
+  }
+}
+
+.animate-scroll-drop {
+  animation: scroll-drop 2s ease-in-out infinite;
+}
+
+/* ── Card hover — premium lift ────────────────────────────────────────────── */
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 2px;
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.32s ease,
+    box-shadow 0.32s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  border-color: var(--color-border-strong);
+  box-shadow: 0 16px 40px rgba(44, 31, 20, 0.08);
+}
+
+/* ── Legacy button animations — gradient sweep ───────────────────────────── */
+.btn-dark {
+  background-image: linear-gradient(to right, #C4A882 50%, #2C1F14 50%);
+  background-size: 201% 100%;
+  background-position: 100% 0;
+  transition: background-position 0.42s cubic-bezier(0.76, 0, 0.24, 1),
+    color 0.35s ease,
+    transform 0.2s ease;
+}
+
+.btn-dark:hover {
+  background-position: 0 0;
+  color: #2C1F14;
+  transform: translateY(-1px);
+}
+
+.btn-dark:active {
+  transform: translateY(0);
+}
+
+.btn-gold {
+  background-image: linear-gradient(to right, #2C1F14 50%, #C4A882 50%);
+  background-size: 201% 100%;
+  background-position: 100% 0;
+  transition: background-position 0.42s cubic-bezier(0.76, 0, 0.24, 1),
+    color 0.35s ease,
+    transform 0.2s ease;
+}
+
+.btn-gold:hover {
+  background-position: 0 0;
+  color: #F7F0E3;
+  transform: translateY(-1px);
+}
+
+.btn-gold:active {
+  transform: translateY(0);
+}
+
+.btn-outline {
+  background-image: linear-gradient(to right, #2C1F14 50%, transparent 50%);
+  background-size: 201% 100%;
+  background-position: 100% 0;
+  transition: background-position 0.42s cubic-bezier(0.76, 0, 0.24, 1),
+    color 0.35s ease,
+    border-color 0.35s ease,
+    transform 0.2s ease;
+}
+
+.btn-outline:hover {
+  background-position: 0 0;
+  color: #F7F0E3;
+  border-color: #2C1F14;
+  transform: translateY(-1px);
+}
+
+.btn-outline:active {
+  transform: translateY(0);
+}
+
+.btn-outline-light {
+  background-image: linear-gradient(to right, #C4A882 50%, transparent 50%);
+  background-size: 201% 100%;
+  background-position: 100% 0;
+  transition: background-position 0.42s cubic-bezier(0.76, 0, 0.24, 1),
+    color 0.35s ease,
+    transform 0.2s ease;
+}
+
+.btn-outline-light:hover {
+  background-position: 0 0;
+  color: #2C1F14;
+  transform: translateY(-1px);
+}
+
+.btn-outline-light:active {
+  transform: translateY(0);
+}
+
+/* ── New button system ────────────────────────────────────────────────────── */
+
+/* Variant 1 — Primary Dark */
+.btn-primary {
+  background: var(--color-ink);
+  color: var(--color-bg);
+  border: 1px solid var(--color-ink);
+  border-radius: var(--btn-radius);
+  height: var(--btn-height);
+  padding: 0 2rem;
+  font-size: var(--btn-font-size);
+  font-weight: 500;
+  letter-spacing: var(--btn-tracking);
+  text-transform: uppercase;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: background var(--btn-duration) var(--btn-ease),
+    color var(--btn-duration) var(--btn-ease),
+    transform var(--btn-duration) var(--btn-ease);
+}
+
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 40%, rgba(196, 168, 130, 0.18) 50%, transparent 60%);
+  transform: translateX(-100%);
+  transition: transform 0.55s var(--btn-ease);
+  pointer-events: none;
+}
+
+.btn-primary:hover {
+  background: #1A1009;
+  transform: translateY(-2px);
+}
+
+.btn-primary:hover::after {
+  transform: translateX(100%);
+}
+
+.btn-primary:active {
+  transform: translateY(0px) scale(0.99);
+  transition-duration: 0.08s;
+}
+
+/* Variant 2 — Ghost */
+.btn-ghost {
+  background: transparent;
+  color: var(--color-ink);
+  border: 1px solid var(--color-ink);
+  border-radius: var(--btn-radius);
+  height: var(--btn-height);
+  padding: 0 2rem;
+  font-size: var(--btn-font-size);
+  font-weight: 400;
+  letter-spacing: var(--btn-tracking);
+  text-transform: uppercase;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: color var(--btn-duration) var(--btn-ease),
+    transform var(--btn-duration) var(--btn-ease);
+}
+
+.btn-ghost::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--color-ink);
+  transform: translateY(100%);
+  transition: transform var(--btn-duration) var(--btn-ease);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.btn-ghost>span {
+  position: relative;
+  z-index: 1;
+}
+
+.btn-ghost:hover {
+  color: var(--color-bg);
+  transform: translateY(-2px);
+}
+
+.btn-ghost:hover::before {
+  transform: translateY(0);
+}
+
+.btn-ghost:active {
+  transform: scale(0.99);
+}
+
+/* Variant 3 — Sand (for dark bg sections) */
+.btn-sand {
+  background: var(--color-accent);
+  color: var(--color-ink);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--btn-radius);
+  height: var(--btn-height);
+  padding: 0 2rem;
+  font-size: var(--btn-font-size);
+  font-weight: 500;
+  letter-spacing: var(--btn-tracking);
+  text-transform: uppercase;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: background var(--btn-duration) var(--btn-ease),
+    transform var(--btn-duration) var(--btn-ease),
+    box-shadow var(--btn-duration) var(--btn-ease);
+}
+
+.btn-sand:hover {
+  background: #D4BA97;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(196, 168, 130, 0.28);
+}
+
+.btn-sand:active {
+  transform: scale(0.99);
+  box-shadow: none;
+}
+
+/* Variant 4 — Text arrow */
+.btn-text {
+  background: none;
+  border: none;
+  color: var(--color-mid);
+  font-size: var(--btn-font-size);
+  font-weight: 400;
+  letter-spacing: var(--btn-tracking);
+  text-transform: uppercase;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  text-decoration: none;
+  transition: color var(--btn-duration) var(--btn-ease),
+    gap var(--btn-duration) var(--btn-ease);
+}
+
+.btn-text:hover {
+  color: var(--color-ink);
+  gap: 12px;
+}
+
+/* ── Nav link underline animation ─────────────────────────────────────────── */
+.nav-link {
+  position: relative;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--color-ink);
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+/* ── Custom scrollbar ──────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-surface);
+  border-radius: 2px;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@layer components {
+  .section-label {
+    @apply text-[11px] tracking-[0.14em] uppercase text-[#8C6E4B];
+  }
+
+  .heading-display {
+    @apply text-[clamp(2.5rem, 6vw, 5rem)] font-bold leading-[0.95] tracking-[-0.02em] text-[#2C1F14];
+  }
+
+  .heading-section {
+    @apply text-[clamp(2rem, 4vw, 3rem)] font-semibold leading-[1.1] tracking-[-0.01em] text-[#2C1F14];
+  }
+
+  .body-text {
+    @apply text-base leading-[1.75] text-[#4A3322] max-w-[60ch];
+  }
+
+  .stat-number {
+    @apply text-5xl font-light text-[#2C1F14] tabular-nums;
+  }
+
+  .stat-label {
+    @apply text-[11px] tracking-[0.1em] uppercase text-[#8C6E4B] mt-1;
+  }
+}
+
+/* ── Live Projects Ticker ───────────────────────────────────────────────────── */
+@keyframes ticker-scroll {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes ticker-dot-pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.25;
+  }
+}
+
+@keyframes ticker-label-glow {
+
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.22;
+    transform: scale(1.15);
+  }
+}
+
+.ticker-track {
+  animation: ticker-scroll 60s linear infinite;
+  will-change: transform;
+}
+
+.ticker-root:hover .ticker-track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .ticker-track,
+  .ticker-label-glow {
+    animation-play-state: paused !important;
+  }
+}
+
+.showcase-img-ghost {
+  /* Desaturated warm bleach — matches the cream mist overlay */
+  filter: brightness(1.55) saturate(0.12) contrast(0.82) sepia(0.18);
+  /* Ghost sits directly above the colour image in the same figure */
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  z-index: 1;
+  pointer-events: none;
+  transform-origin: center center;
+  /* Hidden at rest — GSAP sets visibility:visible only during the swap */
+  visibility: hidden;
+}
+
+/* When the mist overlay is visible, ensure it reads above slides */
+#showcase-mist {
+  z-index: 10;
+}
