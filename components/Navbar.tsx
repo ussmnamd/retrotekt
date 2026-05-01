@@ -98,7 +98,7 @@ export default function Navbar() {
           onMouseLeave={() => isScrolled && setIsMenuOpen(false)}
         >
           {/* Full Links - Visible when NOT scrolled */}
-          <ul className={`absolute right-0 flex items-center gap-6 md:gap-10 font-body font-medium text-[10px] md:text-[11px] tracking-[0.25em] uppercase transition-all duration-700 ease-[cubic-bezier(0.76,0,0.24,1)] ${
+          <ul className={`absolute right-0 flex items-center gap-6 md:gap-10 font-body font-bold text-[10px] md:text-[11px] tracking-[0.25em] uppercase transition-all duration-700 ease-[cubic-bezier(0.76,0,0.24,1)] ${
             !isScrolled ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-4 pointer-events-none"
           }`}>
             {NAV_LINKS.map(([label, href]) => {
@@ -112,8 +112,8 @@ export default function Navbar() {
                       isActive
                         ? "text-secondary"
                         : isDarkBg 
-                          ? "text-background/60 hover:text-background" 
-                          : "text-primary/50 hover:text-primary"
+                          ? "text-background/85 hover:text-background" 
+                          : "text-primary/80 hover:text-primary"
                     }`}
                   >
                     <div className={`h-px transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] ${
@@ -147,45 +147,46 @@ export default function Navbar() {
             <span>Menu</span>
           </button>
 
-          {/* Premium Dropdown Menu Wrapper (Bridges hover gap) */}
+          {/* Dropdown Menu Wrapper (Bridges hover gap) */}
           <div 
-            className={`absolute top-full right-0 pt-4 transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] ${
-              isMenuOpen ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-4 pointer-events-none"
+            className={`absolute top-full right-0 pt-3 transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] ${
+              isMenuOpen ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-3 pointer-events-none"
             }`}
           >
-            <div className="w-[220px] bg-[#3D2A1A] border border-[#C4A882]/40 px-5 py-5 shadow-[0_32px_64px_rgba(0,0,0,0.55)] relative overflow-hidden rounded-xl">
-              {/* Grain texture — same as ServiceCard hovered state */}
-              <svg className="pointer-events-none absolute inset-0 h-full w-full opacity-[0.35] mix-blend-overlay z-0" aria-hidden="true">
-                <filter id="nav-noise">
-                  <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" stitchTiles="stitch" />
-                </filter>
-                <rect width="100%" height="100%" filter="url(#nav-noise)" />
-              </svg>
-              {/* Warm sand radial glow — matches ServiceCard mouse-follow gradient */}
-              <div className="absolute inset-0 z-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 180% 140% at 100% 0%, rgba(196,168,130,0.22) 0%, transparent 65%)' }} />
-              {/* Bottom-right corner accent — mirrors ServiceCard border mask */}
-              <div className="absolute bottom-0 right-0 w-2/3 h-px bg-gradient-to-l from-[#C4A882]/60 to-transparent z-0" />
-              <div className="absolute bottom-0 right-0 w-px h-2/3 bg-gradient-to-t from-[#C4A882]/60 to-transparent z-0" />
-              {/* Accent top border */}
-              <div className="absolute top-0 left-0 w-full h-[1.5px] bg-gradient-to-r from-[#C4A882]/70 via-[#C4A882]/30 to-transparent z-10" />
+            <div className={`w-[200px] px-5 py-5 relative overflow-hidden rounded-xl border transition-colors duration-500 ${
+              isDarkBg 
+                ? "bg-[#F7F0E3] border-[#2C1F14]/15" 
+                : "bg-[#2C1F14] border-[#F7F0E3]/15"
+            }`}>
+              {/* Accent top border line */}
+              <div className={`absolute top-0 left-0 w-full h-[1.5px] transition-colors duration-500 ${
+                isDarkBg 
+                  ? "bg-gradient-to-r from-[#2C1F14]/60 via-[#2C1F14]/20 to-transparent"
+                  : "bg-gradient-to-r from-[#C4A882]/70 via-[#C4A882]/25 to-transparent"
+              }`} />
 
-              <ul className="flex flex-col gap-4 font-body font-medium text-[10px] tracking-[0.25em] uppercase relative z-10">
+              <ul className="flex flex-col gap-4 font-body font-bold text-[10px] tracking-[0.25em] uppercase relative z-10">
                 {NAV_LINKS.map(([label, href]) => {
                   const isActive = pathname === href || pathname.startsWith(href + "/");
                   return (
                     <li key={label}>
-                      {/* Reserve 48px right so the line can extend without reflowing */}
                       <Link
                         href={href}
                         onClick={() => setIsMenuOpen(false)}
-                        className={`group flex items-center gap-3 pr-12 transition-colors duration-400 ${
-                          isActive ? "text-secondary" : "text-background/55 hover:text-background"
+                        className={`group flex items-center gap-3 pr-10 transition-colors duration-300 ${
+                          isActive 
+                            ? "text-secondary" 
+                            : isDarkBg 
+                              ? "text-[#2C1F14]/70 hover:text-[#2C1F14]"
+                              : "text-[#F7F0E3]/70 hover:text-[#F7F0E3]"
                         }`}
                       >
                         <div className={`flex-shrink-0 h-px transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] ${
                           isActive 
                             ? "w-6 bg-secondary" 
-                            : "w-2 bg-background/25 group-hover:w-6 group-hover:bg-background"
+                            : isDarkBg
+                              ? "w-2 bg-[#2C1F14]/25 group-hover:w-6 group-hover:bg-[#2C1F14]"
+                              : "w-2 bg-[#F7F0E3]/25 group-hover:w-6 group-hover:bg-[#F7F0E3]"
                         }`} />
                         <span>{label}</span>
                       </Link>

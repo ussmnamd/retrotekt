@@ -37,36 +37,23 @@ export function LiveProjectsTicker() {
           display: "flex",
           alignItems: "center",
           gap: 12,
-          paddingLeft: 18,
-          paddingRight: 18,
+          paddingLeft: 24,
+          paddingRight: 20,
           zIndex: 2,
           position: "relative",
         }}
       >
-        {/* Soft radial glow behind label */}
-        <span
-          className="ticker-label-glow"
-          aria-hidden="true"
-          style={{
-            position: "absolute",
-            inset: "-12px -8px",
-            borderRadius: "50%",
-            background: "radial-gradient(ellipse at center, #C4A882 0%, transparent 70%)",
-            animation: "ticker-label-glow 3.2s ease-in-out infinite",
-            pointerEvents: "none",
-          }}
-        />
-        {/* Pulsing dot */}
+        {/* Constant shine dot */}
         <span
           aria-hidden="true"
           style={{
             position: "relative",
-            width: 5,
-            height: 5,
+            width: 6,
+            height: 6,
             borderRadius: "50%",
             background: "#C4A882",
             flexShrink: 0,
-            animation: "ticker-dot-pulse 2.4s ease-in-out infinite",
+            boxShadow: "0 0 6px 2px rgba(196, 168, 130, 0.7), 0 0 12px 4px rgba(196, 168, 130, 0.3)",
           }}
         />
         <span
@@ -97,7 +84,7 @@ export function LiveProjectsTicker() {
       </div>
 
       {/* Scrolling track */}
-      <div style={{ flex: 1, overflow: "hidden", position: "relative" }}>
+      <div style={{ flex: 1, overflow: "hidden", position: "relative", marginRight: 24 }}>
         {/* Left fade — fades items into the dark brown */}
         <div
           aria-hidden="true"

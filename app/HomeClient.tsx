@@ -262,22 +262,43 @@ export default function HomeClient() {
             pin.addEventListener("mousemove", handleMouseMove as EventListener);
             pin.addEventListener("mouseleave", handleMouseLeave);
 
-            // ── Refresh once after color images decode (positions can shift) ──
-            let loadCount = 0;
-            const colorImgs = Array.from(document.querySelectorAll<HTMLImageElement>(".showcase-img"));
-            if (colorImgs.length > 0) {
-              const onDecode = () => {
-                if (++loadCount >= colorImgs.length) ScrollTrigger.refresh();
-              };
-              colorImgs.forEach(img => {
-                if (img.complete) onDecode();
-                else img.addEventListener("load", onDecode);
-              });
-            }
+            // ── Arrow / tick navigation ───────────────────────────────────────
+            // Reads live scroll position to determine the active slide (0|1|2),
+            // then scrolls to the exact snap point (pinTop + n × 1.1 × vh).
+            const getActiveSlide = (): number => {
+              const pinTop = pin.getBoundingClientRect().top + window.scrollY;
+              const vh = window.innerHeight;
+              const scrolled = window.scrollY - pinTop;
+              if (scrolled < vh * 0.55) return 0;
+              if (scrolled < vh * 1.65) return 1;
+              return 2;
+            };
+            const goToSlide = (n: number) => {
+              const pinTop = pin.getBoundingClientRect().top + window.scrollY;
+              const vh = window.innerHeight;
+              window.scrollTo({ top: pinTop + n * vh * 1.1, behavior: "smooth" });
+            };
+
+            const prevBtn  = document.getElementById("showcase-prev");
+            const nextBtn  = document.getElementById("showcase-next");
+            const tickBtns = Array.from(
+              document.querySelectorAll<HTMLButtonElement>(".showcase-tick-btn")
+            );
+
+            const handlePrev  = () => { const c = getActiveSlide(); if (c > 0) goToSlide(c - 1); };
+            const handleNext  = () => { const c = getActiveSlide(); if (c < 2) goToSlide(c + 1); };
+            const handleTicks = tickBtns.map((btn, i) => () => goToSlide(i));
+
+            prevBtn?.addEventListener("click", handlePrev);
+            nextBtn?.addEventListener("click", handleNext);
+            tickBtns.forEach((btn, i) => btn.addEventListener("click", handleTicks[i]));
 
             cleanups.push(() => {
               pin.removeEventListener("mousemove", handleMouseMove as EventListener);
               pin.removeEventListener("mouseleave", handleMouseLeave);
+              prevBtn?.removeEventListener("click", handlePrev);
+              nextBtn?.removeEventListener("click", handleNext);
+              tickBtns.forEach((btn, i) => btn.removeEventListener("click", handleTicks[i]));
             });
           } // end showcase-pin
 

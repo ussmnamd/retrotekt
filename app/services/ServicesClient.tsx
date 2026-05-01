@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 /* ── Decorative: Architectural Blueprint Grid (hero bg) ──────────────────── */
 function HeroGrid() {
@@ -187,9 +187,22 @@ const edgePoints = [
 
 export default function ServicesClient() {
   const pageRef = useRef<HTMLDivElement>(null);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
+  // Cursor tracking for dynamic flashlight glow
   useEffect(() => {
-    const elements = pageRef.current?.querySelectorAll(".reveal");
+    const handleMouseMove = (e: MouseEvent) => {
+      // Use client coordinates + scroll for absolute positioning if needed
+      // but clientX/Y is fine if the glow is fixed, or we can use pageX/pageY
+      setMousePos({ x: e.pageX, y: e.pageY });
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
+
+  // Standard scroll reveal observer
+  useEffect(() => {
+    const elements = pageRef.current?.querySelectorAll(".reveal, .reveal-clip");
     if (!elements) return;
     const obs = new IntersectionObserver(
       (entries) => {
@@ -207,7 +220,22 @@ export default function ServicesClient() {
   }, []);
 
   return (
-    <main ref={pageRef} className="bg-primary overflow-hidden">
+    <main ref={pageRef} className="bg-primary overflow-hidden relative">
+      {/* ── GLOBAL AESTHETICS: GRAIN & CURSOR GLOW ── */}
+      <div 
+        className="pointer-events-none absolute inset-0 z-0 mix-blend-screen opacity-60 transition-opacity duration-300"
+        style={{
+          background: `radial-gradient(900px circle at ${mousePos.x}px ${mousePos.y}px, rgba(196,168,130,0.08), transparent 40%)`
+        }}
+        aria-hidden="true"
+      />
+      <svg className="pointer-events-none absolute inset-0 h-full w-full opacity-[0.22] mix-blend-overlay z-0" aria-hidden="true">
+        <filter id="hero-noise">
+          <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="3" stitchTiles="stitch" />
+        </filter>
+        <rect width="100%" height="100%" filter="url(#hero-noise)" />
+      </svg>
+
 
       {/* ═══════════════════════════════════════════════════════════════
           SECTION 1 — HERO
@@ -229,31 +257,29 @@ export default function ServicesClient() {
             <span className="font-body text-[12px] tracking-[0.14em] uppercase text-background/20">Retrotekt Studio</span>
           </div>
 
-          {/* Main headline */}
+          {/* Main headline — masked line-by-line reveal */}
           <h1
-            className="reveal font-heading font-bold text-background leading-[0.93] tracking-[-0.03em] mb-10"
-            style={{ fontSize: "clamp(3rem, 8vw, 7.5rem)" }}
+            className="font-heading font-bold text-background leading-[0.93] tracking-[-0.03em] mb-10 relative z-10"
+            style={{ fontSize: "clamp(1rem, 7vw, 4rem)" }}
           >
-            We Don&apos;t Just<br />
-            <span className="text-secondary">Render Spaces.</span><br />
-            We Help You<br />
-            Win Projects.
+            <span className="block overflow-hidden"><span className="block reveal">We Don&apos;t Just</span></span>
+            <span className="block overflow-hidden"><span className="block reveal reveal-delay-1 text-secondary">Render Spaces.</span></span>
+            <span className="block overflow-hidden"><span className="block reveal reveal-delay-2">We Help You</span></span>
+            <span className="block overflow-hidden"><span className="block reveal reveal-delay-3">Win Projects.</span></span>
           </h1>
 
           {/* Subheadline */}
-          <p className="reveal reveal-delay-1 font-body text-[16px] text-background/45 leading-[1.75] max-w-[520px] mb-14">
+          <p className="reveal reveal-delay-3 font-body text-[16px] text-background/55 leading-[1.75] max-w-[520px] mb-14 relative z-10" style={{ transitionDelay: '0.5s' }}>
             Boutique 3D Visualization &amp; Design Solutions for Elite Builders,
             Developers, and Designers — award-winning, agency-grade visuals
             built for the speed of modern construction.
           </p>
 
           {/* CTA row */}
-          <div className="reveal reveal-delay-2 flex flex-wrap items-center gap-5 mb-20">
-            <Link
-              href="/contact"
-              className="btn-sand font-body text-[13px] tracking-[0.14em] uppercase"
-            >
-              Request Your Custom Project Blueprint
+          <div className="reveal reveal-delay-3 flex flex-wrap items-center gap-5 mb-20 relative z-10" style={{ transitionDelay: '0.6s' }}>
+            <Link href="/contact" className="group flex items-center gap-4">
+              <div className="w-8 h-[1.5px] bg-secondary/60 group-hover:w-24 group-hover:bg-secondary transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"></div>
+              <span className="font-body font-medium text-[11px] tracking-[0.3em] uppercase text-secondary group-hover:text-secondary transition-colors duration-300">Request Your Custom Project Blueprint</span>
             </Link>
             <div className="flex flex-col gap-1">
               <span className="font-body text-[12px] tracking-[0.1em] uppercase text-background/25">
@@ -441,8 +467,9 @@ export default function ServicesClient() {
                     <div className="font-body text-[11px] tracking-[0.14em] uppercase text-secondary/40 mb-0.5">Starting from</div>
                     <div className="font-heading text-secondary font-light text-[1.6rem]">$200 <span className="text-[0.9rem] text-background/30">/ render</span></div>
                   </div>
-                  <Link href="/portfolio#renders" className="btn-text font-body text-[12px] tracking-[0.12em] uppercase ml-auto">
-                    Get a quote →
+                  <Link href="/portfolio#renders" className="group flex items-center gap-4 ml-auto">
+                    <div className="w-6 h-[1.5px] bg-secondary/60 group-hover:w-16 group-hover:bg-secondary transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"></div>
+                    <span className="font-body font-medium text-[10px] tracking-[0.25em] uppercase text-secondary transition-colors duration-300">Get a quote</span>
                   </Link>
                 </div>
               </div>
@@ -574,8 +601,9 @@ export default function ServicesClient() {
                     <div className="font-body text-[11px] tracking-[0.14em] uppercase text-secondary/40 mb-0.5">Starting from</div>
                     <div className="font-heading text-secondary font-light text-[1.6rem]">$800</div>
                   </div>
-                  <Link href="/portfolio/chocolate-fish-modesto#films" className="btn-text font-body text-[12px] tracking-[0.12em] uppercase ml-auto">
-                    Get a quote →
+                  <Link href="/portfolio/chocolate-fish-modesto#films" className="group flex items-center gap-4 ml-auto">
+                    <div className="w-6 h-[1.5px] bg-secondary/60 group-hover:w-16 group-hover:bg-secondary transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"></div>
+                    <span className="font-body font-medium text-[10px] tracking-[0.25em] uppercase text-secondary transition-colors duration-300">Get a quote</span>
                   </Link>
                 </div>
               </div>
@@ -703,8 +731,9 @@ export default function ServicesClient() {
                     <div className="font-body text-[11px] tracking-[0.14em] uppercase text-secondary/40 mb-0.5">Starting from</div>
                     <div className="font-heading text-secondary font-light text-[1.6rem]">$200 <span className="text-[0.9rem] text-background/30">/ view</span></div>
                   </div>
-                  <Link href="/contact" className="btn-text font-body text-[12px] tracking-[0.12em] uppercase ml-auto">
-                    Get a quote →
+                  <Link href="/contact" className="group flex items-center gap-4 ml-auto">
+                    <div className="w-6 h-[1.5px] bg-secondary/60 group-hover:w-16 group-hover:bg-secondary transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"></div>
+                    <span className="font-body font-medium text-[10px] tracking-[0.25em] uppercase text-secondary transition-colors duration-300">Get a quote</span>
                   </Link>
                 </div>
               </div>
@@ -831,8 +860,9 @@ export default function ServicesClient() {
                     <div className="font-body text-[11px] tracking-[0.14em] uppercase text-secondary/40 mb-0.5">Starting from</div>
                     <div className="font-heading text-secondary font-light text-[1.6rem]">$300 <span className="text-[0.9rem] text-background/30">/ room</span></div>
                   </div>
-                  <Link href="/contact" className="btn-text font-body text-[12px] tracking-[0.12em] uppercase ml-auto">
-                    Get a quote →
+                  <Link href="/contact" className="group flex items-center gap-4 ml-auto">
+                    <div className="w-6 h-[1.5px] bg-secondary/60 group-hover:w-16 group-hover:bg-secondary transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"></div>
+                    <span className="font-body font-medium text-[10px] tracking-[0.25em] uppercase text-secondary transition-colors duration-300">Get a quote</span>
                   </Link>
                 </div>
               </div>
@@ -960,8 +990,9 @@ export default function ServicesClient() {
                     <div className="font-body text-[11px] tracking-[0.14em] uppercase text-secondary/40 mb-0.5">Starting from</div>
                     <div className="font-heading text-secondary font-light text-[1.6rem]">$150 <span className="text-[0.9rem] text-background/30">/ floor</span></div>
                   </div>
-                  <Link href="/contact" className="btn-text font-body text-[12px] tracking-[0.12em] uppercase ml-auto">
-                    Get a quote →
+                  <Link href="/contact" className="group flex items-center gap-4 ml-auto">
+                    <div className="w-6 h-[1.5px] bg-secondary/60 group-hover:w-16 group-hover:bg-secondary transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"></div>
+                    <span className="font-body font-medium text-[10px] tracking-[0.25em] uppercase text-secondary transition-colors duration-300">Get a quote</span>
                   </Link>
                 </div>
               </div>
@@ -1079,8 +1110,9 @@ export default function ServicesClient() {
                     <div className="font-body text-[11px] tracking-[0.14em] uppercase text-secondary/40 mb-0.5">Pricing</div>
                     <div className="font-heading text-secondary font-light text-[1.6rem]">Custom <span className="text-[0.9rem] text-background/30">/ scope</span></div>
                   </div>
-                  <Link href="/contact" className="btn-text font-body text-[12px] tracking-[0.12em] uppercase ml-auto">
-                    Get a quote →
+                  <Link href="/contact" className="group flex items-center gap-4 ml-auto">
+                    <div className="w-6 h-[1.5px] bg-secondary/60 group-hover:w-16 group-hover:bg-secondary transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"></div>
+                    <span className="font-body font-medium text-[10px] tracking-[0.25em] uppercase text-secondary transition-colors duration-300">Get a quote</span>
                   </Link>
                 </div>
               </div>
@@ -1501,18 +1533,14 @@ export default function ServicesClient() {
                 upfront payment.
               </p>
               <div className="reveal reveal-delay-2 flex flex-col sm:flex-row gap-4">
-                <Link
-                  href="/contact"
-                  className="btn-primary font-body text-[13px] tracking-[0.12em] uppercase"
-                >
-                  <span>Get a Custom Quote in 24 Hours</span>
+                <Link href="/contact" className="group flex items-center gap-4">
+                  <div className="w-8 h-[1.5px] bg-primary/60 group-hover:w-24 group-hover:bg-primary transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"></div>
+                  <span className="font-body font-medium text-[11px] tracking-[0.3em] uppercase text-primary transition-colors duration-300">Get a Custom Quote in 24 Hours</span>
                 </Link>
               </div>
-              <Link
-                href="/contact"
-                className="reveal reveal-delay-2 btn-text font-body text-[13px] tracking-[0.1em] uppercase self-start"
-              >
-                Start Your Project Intake Form →
+              <Link href="/contact" className="reveal reveal-delay-2 group flex items-center gap-4 self-start mt-4">
+                <div className="w-8 h-[1.5px] bg-primary/60 group-hover:w-16 group-hover:bg-primary transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"></div>
+                <span className="font-body font-medium text-[10px] tracking-[0.25em] uppercase text-primary transition-colors duration-300">Start Your Project Intake Form</span>
               </Link>
             </div>
           </div>

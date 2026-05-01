@@ -570,31 +570,6 @@ h4 {
   }
 }
 
-@keyframes ticker-dot-pulse {
-
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.25;
-  }
-}
-
-@keyframes ticker-label-glow {
-
-  0%,
-  100% {
-    opacity: 0.15;
-    transform: scale(1);
-  }
-
-  50% {
-    opacity: 0.22;
-    transform: scale(1.15);
-  }
-}
 
 .ticker-track {
   animation: ticker-scroll 60s linear infinite;
@@ -607,8 +582,7 @@ h4 {
 
 @media (prefers-reduced-motion: reduce) {
 
-  .ticker-track,
-  .ticker-label-glow {
+  .ticker-track {
     animation-play-state: paused !important;
   }
 

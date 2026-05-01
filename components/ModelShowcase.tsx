@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { showcase } from "@/lib/showcase-data";
 
 export default function ModelShowcase() {
@@ -139,77 +140,142 @@ export default function ModelShowcase() {
           ))}
         </div>
 
-        {/* Static Wide Rectangular Glassmorphic Background */}
+        {/* Info bar — compact, premium */}
         <div
-          className="absolute bottom-6 md:bottom-8 left-0 right-0 mx-auto w-[92vw] max-w-5xl rounded-none md:rounded-[4px] bg-[#3D2A1A]/95 backdrop-blur-md border-t border-b md:border border-[#C4A882]/20 z-30 overflow-hidden"
-          style={{ boxShadow: '0 20px 40px rgba(44,31,20,0.15)' }}
+          className="absolute bottom-6 md:bottom-8 left-0 right-0 mx-auto w-[92vw] max-w-5xl md:rounded-[3px] overflow-hidden z-30"
+          style={{
+            background: 'rgba(61, 42, 26, 0.97)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
+            boxShadow: '0 0 0 1px rgba(196,168,130,0.18), 0 24px 48px rgba(0,0,0,0.35)',
+          }}
         >
-          {/* Grainy Noise Overlay */}
-          <svg className="pointer-events-none absolute inset-0 h-full w-full opacity-[0.25] mix-blend-overlay z-0">
+          {/* Glowing gold top edge */}
+          <div
+            aria-hidden="true"
+            className="absolute top-0 left-0 right-0 h-px"
+            style={{
+              background: 'linear-gradient(90deg, transparent 0%, #C4A882 30%, #E8C97A 55%, #C4A882 70%, transparent 100%)',
+              opacity: 0.7,
+            }}
+          />
+
+          {/* Grain overlay */}
+          <svg className="pointer-events-none absolute inset-0 h-full w-full opacity-[0.18] mix-blend-overlay z-0" aria-hidden="true">
             <filter id="noise-showcase-base">
-              <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch" />
+              <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="3" stitchTiles="stitch" />
             </filter>
             <rect width="100%" height="100%" filter="url(#noise-showcase-base)" />
           </svg>
 
           <div className="relative w-full h-full">
-            {/* Invisible structural layer to set the native height based on content */}
-            <div className="opacity-0 pointer-events-none p-4 md:px-8 md:py-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-8 w-full">
-              <div className="flex-shrink-0 min-w-[200px]">
-                <div className="flex items-center gap-3 mb-1"><span className="font-body text-[9px] tracking-[0.3em] uppercase">_</span></div>
-                <h3 className="font-heading text-[clamp(1.3rem,2vw,1.8rem)] leading-[1.1]">_</h3>
+            {/* Invisible structural spacer — compact sizing */}
+            <div className="opacity-0 pointer-events-none px-5 py-3 md:px-7 md:py-3.5 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 md:gap-10 w-full">
+              <div className="flex-shrink-0">
+                <span className="font-body text-[8px] tracking-[0.3em] uppercase block">_</span>
+                <h3 className="font-heading text-[clamp(1rem,1.6vw,1.35rem)] leading-[1.15]">Chocolate Fish — Modesto</h3>
+                <span className="font-body text-[8px] tracking-[0.22em] uppercase block">_</span>
               </div>
-              <div className="hidden md:block w-px h-10" />
-              <p className="font-body text-[12px] md:text-[13px] leading-relaxed max-w-xl">
-                {showcase[0].blurb}
-              </p>
+              <div className="hidden md:block w-px h-8" />
+              <div className="flex items-center gap-7 md:gap-10">
+                <span className="font-body text-[10px] tracking-[0.2em] uppercase">Renders</span>
+                <span className="font-body text-[10px] tracking-[0.2em] uppercase">Walkthroughs</span>
+                <span className="font-body text-[10px] tracking-[0.2em] uppercase">Construction</span>
+              </div>
             </div>
 
-            {/* Animated Text Layers driven by GSAP */}
+            {/* Animated caption layers — driven by GSAP */}
             {showcase.map((s, i) => (
               <div
                 key={`cap-${i}`}
-                className="showcase-cap absolute inset-0 w-full h-full p-4 md:px-8 md:py-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-8 z-10"
+                className="showcase-cap absolute inset-0 w-full h-full px-5 py-3 md:px-7 md:py-3.5 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 md:gap-10 z-10"
                 style={{ opacity: i === 0 ? 1 : 0 }}
               >
-                <div className="flex-shrink-0 min-w-[200px]">
-                  <div className="flex items-center gap-3 mb-1">
-                    <span className="font-body text-[9px] tracking-[0.3em] uppercase text-[#C4A882]/80">
-                      {s.role}
-                    </span>
-                  </div>
-                  <h3 className="font-heading text-[clamp(1.3rem,2vw,1.8rem)] text-[#F7F0E3] leading-[1.1]">
-                    {s.title}
-                  </h3>
+                {/* Left — project identity */}
+                <div className="flex-shrink-0">
+                  <span className="font-body text-[8px] tracking-[0.3em] uppercase text-[#C4A882]/70 block mb-0.5">
+                    {s.role}
+                  </span>
+                  <Link href={s.href} className="group inline-flex items-baseline gap-2.5">
+                    <h3 className="font-heading text-[clamp(1rem,1.6vw,1.35rem)] text-[#F7F0E3] leading-[1.15] group-hover:text-[#C4A882] transition-colors duration-300">
+                      {s.title}
+                    </h3>
+                    <span className="text-[#C4A882]/40 text-xs translate-x-0 group-hover:translate-x-1 transition-transform duration-300 leading-none">→</span>
+                  </Link>
+                  <span className="font-body text-[8px] tracking-[0.22em] uppercase text-[#C4A882]/40 block mt-0.5">
+                    {s.location}
+                  </span>
                 </div>
-                
-                <div className="hidden md:block w-px h-10 bg-[#C4A882]/20" />
-                
-                <p className="font-body text-[12px] md:text-[13px] text-[#F7F0E3]/70 leading-relaxed max-w-xl">
-                  {s.blurb}
-                </p>
+
+                {/* Divider */}
+                <div className="hidden md:block w-px h-8 bg-[#C4A882]/15 flex-shrink-0" />
+
+                {/* Right — section links */}
+                <nav className="flex items-center gap-7 md:gap-10" aria-label={`${s.title} sections`}>
+                  {s.links.map((lnk) => (
+                    <Link
+                      key={lnk.label}
+                      href={lnk.href}
+                      className="group relative flex flex-col items-start gap-[3px]"
+                    >
+                      <span className="font-body text-[10px] tracking-[0.22em] uppercase text-[#F7F0E3]/60 group-hover:text-[#F7F0E3] transition-colors duration-300">
+                        {lnk.label}
+                      </span>
+                      <span
+                        aria-hidden="true"
+                        className="block h-px bg-[#C4A882] w-0 group-hover:w-full transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"
+                      />
+                    </Link>
+                  ))}
+                </nav>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Minimal slider ticks moved above the rectangular card */}
-        <div className="absolute bottom-[140px] md:bottom-[110px] left-0 right-0 mx-auto w-fit flex items-center gap-6 z-40 bg-[#F7F0E3]/70 backdrop-blur-md px-6 py-3 rounded-full border border-primary/5 shadow-sm">
-          {showcase.map((_, i) => (
-            <div key={i} className="flex items-center justify-center relative cursor-pointer group">
-              <div
-                id={`showcase-tick-${i}`}
-                style={{
-                  width: i === 0 ? "36px" : "10px",
-                  height: "2px",
-                  background: "#2C1F14",
-                  opacity: i === 0 ? 0.65 : 0.18,
-                  borderRadius: "2px",
-                }}
-                className="transition-opacity duration-300 group-hover:opacity-100"
-              />
-            </div>
-          ))}
+        {/* Slider tick pill with flanking nav arrows */}
+        <div className="absolute bottom-[120px] md:bottom-[94px] left-0 right-0 mx-auto w-fit flex items-center gap-3 z-40 bg-[#F7F0E3]/85 backdrop-blur-sm px-4 py-2 rounded-full border border-primary/10 shadow-sm">
+
+          {/* ‹ Prev */}
+          <button
+            id="showcase-prev"
+            aria-label="Previous project"
+            className="flex items-center justify-center w-5 h-5 rounded-full text-primary/60 hover:text-primary hover:bg-primary/8 transition-colors duration-200 text-[13px] font-medium leading-none select-none"
+          >
+            ‹
+          </button>
+
+          {/* Tick marks */}
+          <div className="flex items-center gap-[14px]">
+            {showcase.map((_, i) => (
+              <button
+                key={i}
+                aria-label={`Go to project ${i + 1}`}
+                className="showcase-tick-btn flex items-center justify-center relative py-2 cursor-pointer group"
+              >
+                <div
+                  id={`showcase-tick-${i}`}
+                  style={{
+                    width: i === 0 ? "36px" : "10px",
+                    height: "2px",
+                    background: "#2C1F14",
+                    opacity: i === 0 ? 0.65 : 0.18,
+                    borderRadius: "2px",
+                  }}
+                  className="transition-all duration-300 group-hover:opacity-50"
+                />
+              </button>
+            ))}
+          </div>
+
+          {/* › Next */}
+          <button
+            id="showcase-next"
+            aria-label="Next project"
+            className="flex items-center justify-center w-5 h-5 rounded-full text-primary/60 hover:text-primary hover:bg-primary/8 transition-colors duration-200 text-[13px] font-medium leading-none select-none"
+          >
+            ›
+          </button>
         </div>
 
       </div>
