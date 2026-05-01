@@ -40,3 +40,6 @@ next-env.d.ts
 CLAUDE.md
 temp_home_client.txt
 .vscode/
+
+# raw portfolio source media (optimized output lives in /public/portfolio)
+/portfolio/

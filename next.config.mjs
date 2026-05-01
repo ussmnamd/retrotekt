@@ -16,7 +16,7 @@ const CSP = [
   // that don't fully honour worker-src independently fall back to checking script-src.
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} 'wasm-unsafe-eval' blob: https://cdn.cal.com`,
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https://images.unsplash.com https://retrotekt.vercel.app https://retrotekt.com",
+  "img-src 'self' data: blob: https://retrotekt.vercel.app https://retrotekt.com",
   "font-src 'self'",
   // blob: required — Three.js ImageLoader uses fetch() to load blob-URL textures (WebP/GLB).
   "connect-src 'self' blob:",
@@ -74,6 +74,16 @@ const nextConfig = {
           { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
         ],
       },
+      // Home route: preload Draco WASM decoder so Three.js finds it pre-fetched.
+      {
+        source: '/',
+        headers: [
+          {
+            key: 'Link',
+            value: '</draco/draco_decoder.wasm>; rel=preload; as=fetch; crossorigin=anonymous',
+          },
+        ],
+      },
       // All pages: security headers + no-cache for HTML.
       {
         source: '/(.*)',
@@ -96,13 +106,18 @@ const nextConfig = {
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],
     minimumCacheTTL: 86400,
-    remotePatterns: [
-      { protocol: 'https', hostname: 'images.unsplash.com' },
-    ],
+    remotePatterns: [],
   },
 
   experimental: {
-    optimizePackageImports: ['three'],
+    optimizePackageImports: [
+      'three',
+      'three/examples/jsm/loaders/GLTFLoader',
+      'three/examples/jsm/loaders/DRACOLoader',
+      'three/examples/jsm/libs/meshopt_decoder.module',
+      'three/examples/jsm/environments/RoomEnvironment',
+      'gsap',
+    ],
   },
 
   webpack: (config) => {

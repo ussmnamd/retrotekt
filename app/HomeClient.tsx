@@ -3,12 +3,28 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
+
+// ── Lazy-mount helper — mounts children only when within rootMargin of viewport ──
+function useInView(rootMargin = '200px') {
+  const ref = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || inView) return;
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setInView(true); }, { rootMargin });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [inView, rootMargin]);
+  return { ref, inView };
+}
 import { Hero3DPlaceholder } from "@/components/Hero3DPlaceholder";
 import { ServiceCard } from "@/components/ServiceCard";
 import { ProcessCard } from "@/components/ProcessCard";
 import PageLoader from "@/components/PageLoader";
 import DebugPanel from "@/components/DebugPanel";
-import ModelShowcase from "@/components/ModelShowcase";
+import { portfolioAssets } from "@/app/portfolio/assets";
+
+const ModelShowcase = dynamic(() => import("@/components/ModelShowcase"), { ssr: false });
 
 const Hero3D = dynamic(() => import("@/components/Hero3D"), {
   ssr: false,
@@ -20,305 +36,410 @@ export default function HomeClient() {
   const [hoveredService, setHoveredService] = useState<number | null>(null);
   const [processActivePhase, setProcessActivePhase] = useState(-1);
   const processRef = useRef<HTMLElement>(null);
+  const ctxRef = useRef<gsap.Context | null>(null);
+  const { ref: featuredVideoWrapRef, inView: featuredVideoInView } = useInView('200px');
 
-  /* ── Sequential process card reveal ── */
-  useEffect(() => {
-    const el = processRef.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          [0, 1, 2, 3].forEach(i =>
-            setTimeout(() => setProcessActivePhase(i), i * 700)
-          );
-          obs.disconnect();
-        }
-      },
-      { threshold: 0.12 }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
-
-
-  /* ── Fire hero entrance GSAP after loader exits ── */
+  /* ── Single unified GSAP context, created after the page loader exits ── */
   const onLoaderComplete = useCallback(() => {
     (async () => {
-      const gsap = (await import("gsap")).default;
+      const gsapMod = (await import("gsap")).default;
       const { ScrollTrigger } = await import("gsap/ScrollTrigger");
-      gsap.registerPlugin(ScrollTrigger);
+      gsapMod.registerPlugin(ScrollTrigger);
 
-      const lockupBack = document.querySelectorAll("[data-hero-back]");
-      const lockupFront = document.querySelectorAll("[data-hero-front]");
-      const navbar = document.querySelector("nav");
-      const si = document.querySelector("#scroll-indicator");
+      ctxRef.current = gsapMod.context(() => {
+        const mm = gsapMod.matchMedia();
 
-      // Navbar
-      if (navbar) {
-        gsap.fromTo(navbar,
-          { y: -64, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.8, ease: "expo.out" }
-        );
-      }
+        // ── Full-motion variant ──────────────────────────────────────────────
+        mm.add("(prefers-reduced-motion: no-preference)", () => {
+          const cleanups: Array<() => void> = [];
 
-      // Hero lockup stagger
-      const staggerConfig = { y: 0, opacity: 1, duration: 1.0, ease: "expo.out", stagger: 0.1, delay: 0.2 };
-
-      if (lockupBack.length) gsap.fromTo(lockupBack, { y: 36, opacity: 0 }, staggerConfig);
-      if (lockupFront.length) gsap.fromTo(lockupFront, { y: 36, opacity: 0 }, staggerConfig);
-
-      // Scroll indicator
-      if (si) {
-        gsap.fromTo(si,
-          { opacity: 0, y: 12 },
-          { opacity: 0.35, y: 0, duration: 0.8, ease: "power2.out", delay: 0.8 }
-        );
-      }
-
-      // Service cards
-      const sg = document.querySelector("#service-grid");
-      if (sg) {
-        gsap.from(sg.querySelectorAll(".scard"), {
-          opacity: 0, y: 52, duration: 0.85, ease: "expo.out", stagger: 0.1,
-          scrollTrigger: { trigger: sg, start: "top 82%", toggleActions: "play none none none" },
-        });
-      }
-
-      // Generic scroll reveals
-      document.querySelectorAll("[data-anim]").forEach((el) => {
-        const a = (el as HTMLElement).dataset.anim;
-        if (!a || a === "cta") return;
-        if (a === "heading") {
-          gsap.from(el, {
-            clipPath: "inset(100% 0% 0% 0%)", y: 20, opacity: 0,
-            duration: 0.85, ease: "expo.out",
-            scrollTrigger: { trigger: el, start: "top 88%", toggleActions: "play none none none" },
+          // ── 1. Navbar entrance (no scroll) ─────────────────────────────────
+          gsapMod.from("nav", {
+            y: -64, opacity: 0, duration: 0.8, ease: "expo.out",
           });
-        } else if (a === "label") {
-          gsap.from(el, {
-            opacity: 0, x: -14, duration: 0.65, ease: "power3.out",
-            scrollTrigger: { trigger: el, start: "top 90%", toggleActions: "play none none none" },
-          });
-        } else if (a === "fade") {
-          gsap.from(el, {
-            opacity: 0, y: 18, duration: 0.75, ease: "power2.out",
-            scrollTrigger: { trigger: el, start: "top 90%", toggleActions: "play none none none" },
-          });
-        } else if (a === "line") {
-          gsap.from(el, {
-            scaleX: 0, transformOrigin: "left center", duration: 0.8, ease: "expo.out",
-            scrollTrigger: { trigger: el, start: "top 92%", toggleActions: "play none none none" },
-          });
-        }
-      });
 
+          // ── 2. Hero: no entrance animation — elements appear as-is when ───
+          //    the loader lifts. Only the scroll indicator does a quiet fade-in.
+          gsapMod.fromTo(
+            "#scroll-indicator",
+            { opacity: 0 },
+            { opacity: 0.35, duration: 0.6, ease: "power2.out" }
+          );
 
-      // Process steps — staggered build from phase 1 → 4
-      const proc = document.querySelector("#process-grid");
-      if (proc) {
-        gsap.from(proc.querySelectorAll(".pstep"), {
-          opacity: 0, y: 48, duration: 0.9, ease: "expo.out", stagger: 0.15,
-          scrollTrigger: { trigger: proc, start: "top 82%", toggleActions: "play none none none" },
-        });
-      }
-
-      // Portfolio grid
-      const port = document.querySelector("#portfolio-grid");
-      if (port) {
-        gsap.from(port.querySelectorAll(".pitem"), {
-          opacity: 0, y: 28, scale: 0.97, duration: 0.7, ease: "power2.out",
-          stagger: { each: 0.07, from: "random" },
-          scrollTrigger: { trigger: port, start: "top 84%", toggleActions: "play none none none" },
-        });
-      }
-
-      // Final CTA
-      const cta = document.querySelector("#final-cta");
-      if (cta) {
-        gsap.from(cta.querySelectorAll("[data-anim='cta']"), {
-          opacity: 0, y: 36, duration: 0.9, ease: "expo.out", stagger: 0.1,
-          scrollTrigger: { trigger: cta, start: "top 84%", toggleActions: "play none none none" },
-        });
-      }
-
-      // ── New Services section entrance ────────────────────────────────────────
-      const servicesSection = document.getElementById("services-section");
-      if (servicesSection) {
-        const sHeading = servicesSection.querySelector(".heading-wrapper");
-        const sLink = servicesSection.querySelector("a[href='/services']");
-
-        if (sHeading) {
-          gsap.from(sHeading, {
-            opacity: 0, y: 30, duration: 1.0, ease: "expo.out",
-            scrollTrigger: { trigger: servicesSection, start: "top 80%" }
-          });
-        }
-        if (sLink) {
-          gsap.from(sLink, {
-            opacity: 0, y: 20, duration: 0.8, delay: 0.4, ease: "power2.out",
-            scrollTrigger: { trigger: servicesSection, start: "top 75%" }
-          });
-        }
-      }
-
-
-      // ── MODEL SHOWCASE — pinned reel with plate-spin transitions ──────────
-      const pin = document.querySelector(".showcase-pin");
-      if (pin) {
-        const mm = gsap.matchMedia();
-
-        mm.add("(min-width: 768px) and (prefers-reduced-motion: no-preference)", () => {
-          const imgs   = gsap.utils.toArray<HTMLElement>(".showcase-img");
-          const ghosts = gsap.utils.toArray<HTMLElement>(".showcase-img-ghost");
-          const mist   = document.getElementById("showcase-mist") as HTMLElement | null;
-          const caps   = gsap.utils.toArray<HTMLElement>(".showcase-cap");
-          const ticks  = [0, 1, 2].map(i => document.getElementById(`showcase-tick-${i}`));
-
-          // Initialize first slide as visible
-          gsap.set(imgs, { opacity: 0 });
-          gsap.set(ghosts, { opacity: 0, scale: 1, visibility: "hidden" });
-          gsap.set(caps, { opacity: 0 });
-          if (mist) gsap.set(mist, { opacity: 0 });
-          
-          gsap.set(imgs[0], { opacity: 1 });
-          gsap.set(caps[0], { opacity: 1 });
-
-          // Ticks: set first active
-          ticks.forEach((tk, i) => tk && gsap.set(tk, { width: i === 0 ? "36px" : "10px", opacity: i === 0 ? 0.65 : 0.18 }));
-
-          let current = 0;
-          let busy = false;
-
-          // ── 3D Hover Effect ───────────────────────────────────────────────────
-          const handleMouseMove = (e: MouseEvent) => {
-            if (busy) return; // Don't interfere during spin transitions
-            const rect = pin.getBoundingClientRect();
-            const x = (e.clientX - rect.left) / rect.width - 0.5; // -0.5 to 0.5
-            const y = (e.clientY - rect.top) / rect.height - 0.5;
-            
-            // Add perspective to the parent to make the 3D rotation visible
-            gsap.set(".showcase-slide", { perspective: 1200 });
-
-            gsap.to([imgs, ghosts], {
-              rotationY: x * 20, // max 10 deg left/right
-              rotationX: -y * 20, // max 10 deg up/down
-              duration: 0.6,
-              ease: "power2.out"
+          // ── 3. Hero scroll indicator fade only — text stays put and ───────
+          //    scrolls naturally with the section (no scrubbed opacity). ──────
+          const heroSection = document.querySelector<HTMLElement>(
+            "section.relative.w-full.h-screen"
+          );
+          if (heroSection) {
+            gsapMod.to("#scroll-indicator", {
+              opacity: 0,
+              ease: "none",
+              scrollTrigger: {
+                trigger: heroSection,
+                start: "top top",
+                end: "bottom top",
+                scrub: 1,
+              },
             });
-          };
+          }
 
-          const handleMouseLeave = () => {
-            gsap.to([imgs, ghosts], {
-              rotationY: 0,
-              rotationX: 0,
-              duration: 0.8,
-              ease: "power3.out"
-            });
-          };
+          // ── 4. Services section ────────────────────────────────────────────
+          const servicesSection = document.getElementById("services-section");
+          if (servicesSection) {
+            const sHeading = servicesSection.querySelector(".heading-wrapper");
+            const sCards = servicesSection.querySelectorAll("#service-grid .scard");
+            const sLink = servicesSection.querySelector("a[href='/services']");
 
-          pin.addEventListener("mousemove", handleMouseMove as EventListener);
-          pin.addEventListener("mouseleave", handleMouseLeave);
+            if (sHeading) {
+              gsapMod.from(sHeading, {
+                clipPath: "inset(100% 0 0 0)", y: 24, opacity: 0,
+                duration: 1.0, ease: "expo.out",
+                scrollTrigger: {
+                  trigger: servicesSection,
+                  start: "top 80%",
+                  toggleActions: "play none none none",
+                  refreshPriority: 8,
+                },
+              });
+            }
+            if (sCards.length) {
+              gsapMod.from(sCards, {
+                y: 52, opacity: 0, duration: 0.85, ease: "expo.out", stagger: 0.1,
+                scrollTrigger: {
+                  trigger: servicesSection,
+                  start: "top 80%",
+                  toggleActions: "play none none none",
+                },
+              });
+            }
+            if (sLink) {
+              gsapMod.from(sLink, {
+                y: 16, opacity: 0, duration: 0.8, ease: "power2.out", delay: 0.5,
+                scrollTrigger: {
+                  trigger: servicesSection,
+                  start: "top 80%",
+                  toggleActions: "play none none none",
+                },
+              });
+            }
+          }
 
-          const spinOut = (tl: gsap.core.Timeline, idx: number, at = 0) => {
-            // Ghost starts aligned with the colour model and follows its exact trajectory
-            gsap.set(ghosts[idx], {
-              visibility: "visible",
-              opacity: 0.78,
-              xPercent: 0, yPercent: 0, rotation: 0, scale: 1,
-            });
-            tl.to(imgs[idx], {
-              xPercent: 120, yPercent: 40, rotation: -14, scale: 0.62, opacity: 0,
-              duration: 0.85, ease: "power2.in",
-            }, at)
-            .to(caps[idx], { opacity: 0, x: 30, duration: 0.4, ease: "power2.in" }, at)
-            // Ghost rides along with the model, fading out as it exits
-            .to(ghosts[idx], {
-              xPercent: 120, yPercent: 40, rotation: -14, scale: 0.62, opacity: 0,
-              duration: 0.85, ease: "power2.in",
-              onComplete: () => gsap.set(ghosts[idx], {
-                visibility: "hidden",
-                xPercent: 0, yPercent: 0, rotation: 0, scale: 1, opacity: 0,
-              }),
-            }, at);
-            if (mist) tl.to(mist, { opacity: 0.6, duration: 0.4, ease: "power2.out" }, at);
-          };
+          // ── 5. Model Showcase pin ──────────────────────────────────────────
+          const pin = document.querySelector<HTMLElement>(".showcase-pin");
+          if (pin) {
+            const imgs   = gsapMod.utils.toArray<HTMLElement>(".showcase-img");
+            const ghosts = gsapMod.utils.toArray<HTMLElement>(".showcase-img-ghost");
+            const mist   = document.getElementById("showcase-mist");
+            const caps   = gsapMod.utils.toArray<HTMLElement>(".showcase-cap");
+            const ticks  = [0, 1, 2].map(i => document.getElementById(`showcase-tick-${i}`));
 
-          const spinIn = (tl: gsap.core.Timeline, idx: number, at = 0) => {
-            gsap.set(imgs[idx], { xPercent: -120, yPercent: -40, rotation: 14, scale: 0.62, opacity: 0 });
-            gsap.set(caps[idx], { opacity: 0, x: -30 });
-            tl.to(imgs[idx], {
-              xPercent: 0, yPercent: 0, rotation: 0, scale: 1, opacity: 1,
-              duration: 1.0, ease: "power3.out",
-            }, at)
-            .to(caps[idx], { opacity: 1, x: 0, duration: 0.6, ease: "power2.out" }, at + 0.25);
-            // Clear mist as the new model arrives
-            if (mist) tl.to(mist, { opacity: 0, duration: 0.4, ease: "power2.in" }, at);
-          };
+            // ── Initial state at progress 0 ───────────────────────────────────
+            // Slide 0 fully visible; slides 1 & 2 in their pre-entry "off-screen" state
+            gsapMod.set(".showcase-slide", { perspective: 1200 });
 
-          const swap = (next: number) => {
-            if (next === current || busy) return;
-            busy = true;
-            const tl = gsap.timeline({
-              onComplete: () => { busy = false; },
+            gsapMod.set(imgs[0], { xPercent: 0, yPercent: 0, rotation: 0, scale: 1, opacity: 1 });
+            gsapMod.set(caps[0], { x: 0, opacity: 1 });
+
+            if (imgs[1]) gsapMod.set(imgs[1], { xPercent: -120, yPercent: -40, rotation: 14, scale: 0.62, opacity: 0 });
+            if (caps[1]) gsapMod.set(caps[1], { x: -30, opacity: 0 });
+            if (imgs[2]) gsapMod.set(imgs[2], { xPercent: -120, yPercent: -40, rotation: 14, scale: 0.62, opacity: 0 });
+            if (caps[2]) gsapMod.set(caps[2], { x: -30, opacity: 0 });
+
+            // Ghosts hidden by default — only used as trailing motion blur during transitions
+            gsapMod.set(ghosts, { opacity: 0, visibility: "hidden" });
+
+            if (mist) gsapMod.set(mist, { opacity: 0 });
+
+            // Ticks
+            ticks.forEach((tk, i) => tk && gsapMod.set(tk, {
+              width: i === 0 ? "36px" : "10px",
+              opacity: i === 0 ? 0.65 : 0.18,
+            }));
+
+            // ── Master scrub timeline ─────────────────────────────────────────
+            // Total timeline length = 2 (one unit per transition).
+            // Scroll progress 0–0.5 plays positions 0–1 (transition 0→1).
+            // Scroll progress 0.5–1.0 plays positions 1–2 (transition 1→2).
+            const masterTl = gsapMod.timeline({
+              defaults: { ease: "power2.inOut" },
+              scrollTrigger: {
+                trigger: ".showcase-pin",
+                start: "top top",
+                end: "+=220%",
+                pin: true,
+                anticipatePin: 1,
+                invalidateOnRefresh: true,
+                refreshPriority: 6,
+                scrub: 1,
+                snap: {
+                  snapTo: [0, 0.5, 1],
+                  duration: { min: 0.3, max: 0.7 },
+                  ease: "power3.inOut",
+                  delay: 0.05,
+                },
+              },
             });
 
-            if (current >= 0) spinOut(tl, current, 0);
-            if (next >= 0)    spinIn(tl, next, current >= 0 ? 0.45 : 0.1);
+            // ── Helper: build one transition (out current → in next) on master tl ──
+            const addTransition = (outIdx: number, inIdx: number, startAt: number) => {
+              // Spin out current
+              masterTl.to(imgs[outIdx], {
+                xPercent: 120, yPercent: 40, rotation: -14, scale: 0.62, opacity: 0,
+                ease: "power2.in", duration: 0.55,
+              }, startAt);
+              masterTl.to(caps[outIdx], {
+                x: 30, opacity: 0, ease: "power2.in", duration: 0.4,
+              }, startAt);
 
-            ticks.forEach((tk, i) => tk && tl.to(tk, {
-              width: i === next ? "36px" : "10px",
-              opacity: i === next ? 0.65 : 0.18,
-              duration: 0.4, ease: "power2.inOut",
-            }, 0.3));
+              // Ghost trail — appears mid-out, fades during in
+              if (ghosts[outIdx]) {
+                masterTl.to(ghosts[outIdx], {
+                  visibility: "visible", opacity: 0.55, duration: 0.05,
+                }, startAt + 0.05);
+                masterTl.to(ghosts[outIdx], {
+                  xPercent: 120, yPercent: 40, rotation: -14, scale: 0.62,
+                  ease: "power2.in", duration: 0.55,
+                }, startAt + 0.05);
+                masterTl.to(ghosts[outIdx], {
+                  opacity: 0, duration: 0.3, ease: "power2.in",
+                  onComplete: () => gsapMod.set(ghosts[outIdx], {
+                    visibility: "hidden", xPercent: 0, yPercent: 0, rotation: 0, scale: 1,
+                  }),
+                }, startAt + 0.45);
+              }
 
-            current = next;
-          };
+              // Mist peaks mid-transition
+              if (mist) {
+                masterTl.to(mist, { opacity: 0.6, duration: 0.3, ease: "power2.out" }, startAt);
+                masterTl.to(mist, { opacity: 0, duration: 0.4, ease: "power2.in" }, startAt + 0.5);
+              }
 
-          // 3 snap points: model-01, model-02, model-03
-          const totalSnaps = imgs.length;
-          const st = ScrollTrigger.create({
-            trigger: ".showcase-pin",
-            start: "top top", end: "+=300%",
-            pin: true, anticipatePin: 1,
-            snap: {
-              snapTo: (v) => Math.round(v * (totalSnaps - 1)) / (totalSnaps - 1),
-              duration: { min: 0.15, max: 0.35 }, ease: "power1.inOut",
+              // Spin in next (slightly overlapping the out)
+              masterTl.to(imgs[inIdx], {
+                xPercent: 0, yPercent: 0, rotation: 0, scale: 1, opacity: 1,
+                ease: "power3.out", duration: 0.6,
+              }, startAt + 0.4);
+              masterTl.to(caps[inIdx], {
+                x: 0, opacity: 1, ease: "power2.out", duration: 0.45,
+              }, startAt + 0.5);
+
+              // Ticks: deactivate outIdx, activate inIdx, midway
+              if (ticks[outIdx]) masterTl.to(ticks[outIdx], {
+                width: "10px", opacity: 0.18, duration: 0.35, ease: "power2.inOut",
+              }, startAt + 0.3);
+              if (ticks[inIdx]) masterTl.to(ticks[inIdx], {
+                width: "36px", opacity: 0.65, duration: 0.35, ease: "power2.inOut",
+              }, startAt + 0.3);
+            };
+
+            // Transition 1: slide 0 → slide 1, at timeline positions 0 → 1
+            if (imgs[1]) addTransition(0, 1, 0);
+            // Transition 2: slide 1 → slide 2, at timeline positions 1 → 2
+            if (imgs[2]) addTransition(1, 2, 1);
+
+            // ── 3D mouse-tilt — operates on rotationX/rotationY only ──────────
+            // Does NOT conflict with the timeline's rotation/xPercent/yPercent/scale
+            const handleMouseMove = (e: MouseEvent) => {
+              const rect = pin.getBoundingClientRect();
+              const x = (e.clientX - rect.left) / rect.width - 0.5;
+              const y = (e.clientY - rect.top) / rect.height - 0.5;
+              gsapMod.to([imgs, ghosts], {
+                rotationY: x * 14,
+                rotationX: -y * 14,
+                duration: 0.8,
+                ease: "power2.out",
+                overwrite: "auto",
+              });
+            };
+            const handleMouseLeave = () => {
+              gsapMod.to([imgs, ghosts], {
+                rotationY: 0, rotationX: 0,
+                duration: 1.0, ease: "power3.out",
+                overwrite: "auto",
+              });
+            };
+            pin.addEventListener("mousemove", handleMouseMove as EventListener);
+            pin.addEventListener("mouseleave", handleMouseLeave);
+
+            // ── Refresh once after color images decode (positions can shift) ──
+            let loadCount = 0;
+            const colorImgs = Array.from(document.querySelectorAll<HTMLImageElement>(".showcase-img"));
+            if (colorImgs.length > 0) {
+              const onDecode = () => {
+                if (++loadCount >= colorImgs.length) ScrollTrigger.refresh();
+              };
+              colorImgs.forEach(img => {
+                if (img.complete) onDecode();
+                else img.addEventListener("load", onDecode);
+              });
+            }
+
+            cleanups.push(() => {
+              pin.removeEventListener("mousemove", handleMouseMove as EventListener);
+              pin.removeEventListener("mouseleave", handleMouseLeave);
+            });
+          } // end showcase-pin
+
+          // ── 6. Process section — drives processActivePhase state ───────────
+          const procEl = processRef.current;
+          if (procEl) {
+            ScrollTrigger.create({
+              trigger: procEl,
+              start: "top 70%",
+              end: "+=400",
+              once: true,
+              refreshPriority: 4,
+              onEnter: () => {
+                // Staggered state bumps replace the old IntersectionObserver chain
+                [0, 1, 2, 3].forEach(i =>
+                  gsapMod.delayedCall(i * 0.7, () => setProcessActivePhase(i))
+                );
+              },
+            });
+          }
+
+          // ── 7. Portfolio grid ──────────────────────────────────────────────
+          gsapMod.from("#portfolio-grid .pitem", {
+            y: 28, opacity: 0, scale: 0.97, duration: 0.7, ease: "power2.out",
+            stagger: { each: 0.07, from: "random" as gsap.utils.DistributeConfig["from"] },
+            scrollTrigger: {
+              trigger: "#portfolio-grid",
+              start: "top 84%",
+              toggleActions: "play none none none",
+              refreshPriority: 2,
             },
-            onUpdate: (self) => {
-              if (busy) return;
-              const idx = Math.round(self.progress * (totalSnaps - 1)); // 0, 1, 2
-              if (idx !== current) swap(idx);
-            },
           });
 
-          // Refresh after color images decode
-          let n = 0;
-          const colorImgs = Array.from(document.querySelectorAll<HTMLImageElement>(".showcase-img"));
-          colorImgs.forEach(img => {
-            const done = () => { if (++n >= colorImgs.length) ScrollTrigger.refresh(); };
-            if (img.complete) { done(); } else { img.addEventListener("load", done); }
+          // ── 8. Final CTA — clip-path sweep reveal ─────────────────────────
+          const ctaSection = document.getElementById("final-cta");
+          if (ctaSection) {
+            const ctaH2 = ctaSection.querySelector("h2[data-anim='cta']");
+            const ctaOthers = Array.from(
+              ctaSection.querySelectorAll("[data-anim='cta']")
+            ).filter(el => el !== ctaH2);
+
+            if (ctaH2) {
+              gsapMod.from(ctaH2, {
+                clipPath: "inset(0 0 100% 0)", y: 30, opacity: 0,
+                duration: 1.0, ease: "expo.out",
+                scrollTrigger: {
+                  trigger: ctaSection,
+                  start: "top 84%",
+                  toggleActions: "play none none none",
+                  refreshPriority: 1,
+                },
+              });
+            }
+            if (ctaOthers.length) {
+              gsapMod.from(ctaOthers, {
+                y: 36, opacity: 0, duration: 0.9, ease: "expo.out", stagger: 0.1,
+                scrollTrigger: {
+                  trigger: ctaSection,
+                  start: "top 84%",
+                  toggleActions: "play none none none",
+                },
+              });
+            }
+          }
+
+          // ── 9. Generic [data-anim] reveals (portfolio heading area etc.) ───
+          // Exclude cta (handled above) and anything inside the showcase pin.
+          const showcasePinEl = document.querySelector(".showcase-pin");
+          document.querySelectorAll("[data-anim]").forEach(el => {
+            const a = (el as HTMLElement).dataset.anim;
+            if (!a || a === "cta") return;
+            // Skip elements nested inside the showcase pin
+            if (showcasePinEl && showcasePinEl.contains(el)) return;
+
+            if (a === "heading") {
+              gsapMod.from(el, {
+                clipPath: "inset(100% 0 0 0)", y: 20, opacity: 0,
+                duration: 0.85, ease: "expo.out",
+                scrollTrigger: {
+                  trigger: el, start: "top 88%",
+                  toggleActions: "play none none none",
+                },
+              });
+            } else if (a === "label") {
+              gsapMod.from(el, {
+                opacity: 0, x: -14, duration: 0.65, ease: "power3.out",
+                scrollTrigger: {
+                  trigger: el, start: "top 90%",
+                  toggleActions: "play none none none",
+                },
+              });
+            } else if (a === "fade") {
+              gsapMod.from(el, {
+                opacity: 0, y: 18, duration: 0.75, ease: "power2.out",
+                scrollTrigger: {
+                  trigger: el, start: "top 90%",
+                  toggleActions: "play none none none",
+                },
+              });
+            } else if (a === "line") {
+              gsapMod.from(el, {
+                scaleX: 0, transformOrigin: "left center",
+                duration: 0.8, ease: "expo.out",
+                scrollTrigger: {
+                  trigger: el, start: "top 92%",
+                  toggleActions: "play none none none",
+                },
+              });
+            }
           });
 
-          return () => {
-            st.kill();
-            pin.removeEventListener("mousemove", handleMouseMove as EventListener);
-            pin.removeEventListener("mouseleave", handleMouseLeave);
-          };
-        });
+        }); // end prefers-reduced-motion: no-preference
 
-        mm.add("(max-width: 767px), (prefers-reduced-motion: reduce)", () => {
-          gsap.utils.toArray<HTMLElement>(".showcase-slide").forEach((el, i) => {
-            gsap.set(el, { position: "relative", opacity: 1 });
-            if (i > 0) gsap.from(el, {
-              opacity: 0, y: 40, duration: 0.7,
-              scrollTrigger: { trigger: el, start: "top 80%" },
+        // ── Reduced-motion variant ───────────────────────────────────────────
+        mm.add("(prefers-reduced-motion: reduce)", () => {
+          const imgs = gsapMod.utils.toArray<HTMLElement>(".showcase-img");
+          const caps = gsapMod.utils.toArray<HTMLElement>(".showcase-cap");
+
+          // Settle showcase into a static visible state — no pin, no scrub
+          gsapMod.set(".showcase-img, .showcase-cap", { opacity: 0 });
+          if (imgs[0]) gsapMod.set(imgs[0], { opacity: 1 });
+          if (caps[0]) gsapMod.set(caps[0], { opacity: 1 });
+          gsapMod.set(".showcase-slide", { position: "relative", opacity: 1 });
+
+          // Slides 2 & 3: simple fade in on scroll
+          gsapMod.utils.toArray<HTMLElement>(".showcase-slide").forEach((el, i) => {
+            if (i > 0) {
+              gsapMod.from(el, {
+                opacity: 0, duration: 0.6,
+                scrollTrigger: { trigger: el, start: "top 80%" },
+              });
+            }
+          });
+
+          // Instantly reveal process section (no stagger under reduced motion)
+          ScrollTrigger.create({
+            trigger: processRef.current ?? undefined,
+            start: "top 70%",
+            once: true,
+            onEnter: () => setProcessActivePhase(3),
+          });
+
+          // Simple opacity fades for [data-anim] — no transforms
+          document.querySelectorAll("[data-anim]").forEach(el => {
+            const a = (el as HTMLElement).dataset.anim;
+            if (!a) return;
+            gsapMod.from(el, {
+              opacity: 0, duration: 0.5,
+              scrollTrigger: { trigger: el, start: "top 90%" },
             });
           });
         });
-      }
 
-})();
+      }, pageRef); // end gsap.context — scoped to pageRef
+
+      // Refresh once after dynamic content settles
+      requestAnimationFrame(() => ScrollTrigger.refresh());
+    })();
   }, []);
+
+  // Revert the entire context on unmount
+  useEffect(() => () => { ctxRef.current?.revert(); }, []);
 
   return (
     <>
@@ -334,7 +455,7 @@ export default function HomeClient() {
 
           {/* 1. BACK LAYER (Solid Text, Z-0) */}
           <div className="absolute inset-0 z-0 w-full pointer-events-none">
-            
+
             {/* QUESTION - Right Side */}
             <div className="absolute top-[45%] md:top-[50%] right-6 md:right-12 lg:right-16 flex flex-col items-start max-w-[85vw] md:max-w-sm lg:max-w-md z-0">
               <h2 data-hero-back className="font-heading text-[clamp(1.6rem,3vw,2.4rem)] leading-[1.1] text-primary tracking-[-0.01em] mb-8">
@@ -342,7 +463,7 @@ export default function HomeClient() {
                 <span className="text-secondary italic font-light mt-2 block">Why aren&apos;t you?</span>
               </h2>
             </div>
-            
+
           </div>
 
           {/* 2. 3D MODEL (Z-10) */}
@@ -362,26 +483,20 @@ export default function HomeClient() {
 
           {/* 3. FRONT LAYER (Outline Text & Interactive Button & Solid Logo, Z-30) */}
           <div className="absolute inset-0 z-30 w-full pointer-events-none" aria-hidden="true">
-            
-            {/* QUESTION & CTA - Right Side (Outlined) */}
+
+            {/* QUESTION - Right Side (Outlined) */}
             <div className="absolute top-[45%] md:top-[50%] right-6 md:right-12 lg:right-16 flex flex-col items-start max-w-[85vw] md:max-w-sm lg:max-w-md z-30">
-              <h2 data-hero-front className="font-heading text-[clamp(1.6rem,3vw,2.4rem)] leading-[1.1] tracking-[-0.01em] mb-8">
-                <span className="text-transparent [-webkit-text-stroke:0.5px_rgba(44,31,20,0.25)]">They&apos;re already showing </span><span className="text-transparent [-webkit-text-stroke:1.5px_rgba(44,31,20,0.7)]">the finished space.</span>
+              <h2 data-hero-front className="font-heading text-[clamp(1.6rem,3vw,2.4rem)] leading-[1.1] text-transparent tracking-[-0.01em] mb-8 [-webkit-text-stroke:1.5px_var(--color-ink)]">
+                They&apos;re already showing the finished space.
                 <span className="text-transparent [-webkit-text-stroke:1.5px_var(--color-accent)] italic font-light mt-2 block">Why aren&apos;t you?</span>
               </h2>
-              
-              {/* INTERACTIVE MINIMAL BUTTON */}
-              <div data-hero-front className="pointer-events-auto mt-6">
-                 <Link href="/contact" className="group flex items-center gap-4">
-                    <div className="w-8 h-[1.5px] bg-primary/60 group-hover:w-24 group-hover:bg-primary transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"></div>
-                    <span className="font-body font-medium text-[11px] tracking-[0.3em] uppercase text-primary group-hover:text-primary transition-colors duration-300">Start Project</span>
-                 </Link>
-              </div>
             </div>
 
-            {/* LOGO - Bottom Left (Solid) */}
-            <div className="absolute bottom-20 md:bottom-28 left-6 md:left-12 lg:left-16 flex flex-col items-start pointer-events-auto">
-              <div data-hero-front>
+            {/* BOTTOM BAR: LOGO (Left) & CTA (Right) */}
+            <div className="absolute bottom-20 md:bottom-28 left-0 w-full px-6 md:px-12 lg:px-16 flex justify-between items-end pointer-events-none">
+              
+              {/* LOGO - Bottom Left (Solid) */}
+              <div data-hero-front className="flex flex-col items-start pointer-events-auto">
                 <p className="font-heading font-light text-[clamp(3.5rem,8vw,7rem)] text-primary tracking-[-0.03em] leading-[0.85] mb-4">
                   retrotekt<span className="text-secondary">.</span>
                 </p>
@@ -393,8 +508,17 @@ export default function HomeClient() {
                   <span className="font-body font-medium text-[9px] tracking-[0.2em] uppercase text-secondary">The New Standard</span>
                 </div>
               </div>
+
+              {/* INTERACTIVE MINIMAL BUTTON - Bottom Right */}
+              <div data-hero-front className="pointer-events-auto flex-shrink-0 pb-[1px]">
+                 <Link href="/contact" className="group flex items-center gap-4">
+                    <div className="w-8 h-[1.5px] bg-primary/60 group-hover:w-24 group-hover:bg-primary transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"></div>
+                    <span className="font-body font-medium text-[11px] tracking-[0.3em] uppercase text-primary group-hover:text-primary transition-colors duration-300">Start Project</span>
+                 </Link>
+              </div>
+
             </div>
-            
+
           </div>
 
           {/* Scroll indicator */}
@@ -408,7 +532,7 @@ export default function HomeClient() {
 
         {/* ── SERVICES ───────────────────────────────────────────────────── */}
         <section id="services-section" className="bg-primary pt-28 pb-32 overflow-hidden relative">
-          
+
           <div className="heading-wrapper max-w-screen-2xl mx-auto px-6 md:px-12 lg:px-16 mb-20 relative flex flex-col items-center text-center">
             <div className="flex items-center gap-4 mb-5">
               <div className="h-px w-10 bg-secondary/40" />
@@ -434,10 +558,10 @@ export default function HomeClient() {
               ))}
             </div>
           </div>
-          
+
           <div className="max-w-screen-2xl mx-auto px-6 md:px-12 lg:px-16 mt-12 relative flex justify-center">
             <div className="w-full max-w-sm h-px bg-secondary/20 relative overflow-hidden">
-               <div 
+               <div
                  className="absolute top-0 left-0 h-full bg-secondary transition-all duration-700 ease-[cubic-bezier(0.76,0,0.24,1)]"
                  style={{
                    width: '25%',
@@ -566,48 +690,122 @@ export default function HomeClient() {
           </div>
         </section>
 
-        {/* ── PORTFOLIO ───────────────────────────────────────────────────── */}
-        <section className="py-28 md:py-36 px-6 md:px-16 lg:px-24">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-14">
-              <div>
-                <div className="flex items-center gap-4 mb-4">
-                  <span data-anim="label" className="section-label">Portfolio</span>
-                  <div data-anim="line" className="h-px bg-[#D4C5A9] w-20 flex-shrink-0" />
-                </div>
-                <h2 data-anim="heading" className="font-heading text-[clamp(2.2rem,5vw,3.8rem)] leading-[1.02] tracking-[-0.025em] text-primary">
-                  Work that<br />speaks for itself.
-                </h2>
-              </div>
-              <Link href="/portfolio" data-anim="fade" className="self-start sm:self-auto font-body text-[11px] tracking-[0.14em] uppercase text-primary/40 border-b border-primary/15 pb-0.5 hover:text-primary hover:border-primary/40 transition-colors duration-200 whitespace-nowrap">
-                Full Portfolio →
-              </Link>
-            </div>
-            <div id="portfolio-grid" className="grid grid-cols-2 md:grid-cols-3 gap-3">
-              {[
-                { label: "Modern Kitchen", tag: "Interior", h: "aspect-[4/5]", bg: "bg-primary/8" },
-                { label: "Exterior Facade", tag: "Exterior", h: "aspect-square", bg: "bg-secondary/15" },
-                { label: "Open Living", tag: "Interior", h: "aspect-square", bg: "bg-primary/5" },
-                { label: "Master Bath", tag: "Interior", h: "aspect-[4/5]", bg: "bg-secondary/10" },
-                { label: "Site Aerial", tag: "Aerial", h: "aspect-square", bg: "bg-primary/10" },
-                { label: "Full Home Build", tag: "Full Project", h: "aspect-square", bg: "bg-primary/6" },
-              ].map((item, i) => (
-                <Link key={i} href="/portfolio" className={`pitem ${item.h} ${item.bg} relative group overflow-hidden block`}>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center px-4">
-                      <p className="font-body text-[9px] tracking-[0.25em] uppercase text-primary/20 mb-1">{item.tag}</p>
-                      <p className="font-heading text-[13px] text-primary/30">{item.label}</p>
+        {/* ── FEATURED PROJECT ────────────────────────────────────────────── */}
+        {(() => {
+          const heroLoop = portfolioAssets.modesto.heroLoop;
+          const fallbackRender = portfolioAssets.modesto.renders[0];
+          const aspectPct = heroLoop
+            ? `${(heroLoop.height / heroLoop.width) * 100}%`
+            : `${(fallbackRender.height / fallbackRender.width) * 100}%`;
+          return (
+            <section className="py-28 md:py-36 px-6 md:px-16 lg:px-24">
+              <div className="max-w-7xl mx-auto">
+                <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-14">
+                  <div>
+                    <div className="flex items-center gap-4 mb-4">
+                      <span data-anim="label" className="section-label">Featured Project</span>
+                      <div data-anim="line" className="h-px bg-[#D4C5A9] w-20 flex-shrink-0" />
                     </div>
+                    <h2 data-anim="heading" className="font-heading text-[clamp(2.2rem,5vw,3.8rem)] leading-[1.02] tracking-[-0.025em] text-primary mb-5">
+                      Work that<br />speaks for itself.
+                    </h2>
+                    <p data-anim="fade" className="font-body text-[14px] leading-[1.8] text-primary/55 max-w-xl">
+                      Three locations. One brand. We&apos;ve visualized every Chocolate Fish Coffee
+                      Roasters location in California — from pre-construction render to
+                      opening-day photograph.
+                    </p>
                   </div>
-                  <div className="absolute inset-0 bg-primary opacity-0 group-hover:opacity-[0.06] transition-opacity duration-400" />
-                  <div className="absolute bottom-0 left-0 right-0 px-4 py-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300 bg-gradient-to-t from-primary/10 to-transparent">
-                    <p className="font-body text-[10px] tracking-[0.2em] uppercase text-primary/60">{item.tag}</p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
+                  <Link href="/portfolio" data-anim="fade" className="self-start sm:self-auto font-body text-[11px] tracking-[0.14em] uppercase text-primary/40 border-b border-primary/15 pb-0.5 hover:text-primary hover:border-primary/40 transition-colors duration-200 whitespace-nowrap">
+                    Full Portfolio →
+                  </Link>
+                </div>
+
+                {/* Walkthrough video — lazy-mounted via IntersectionObserver */}
+                <div ref={featuredVideoWrapRef}>
+                  <Link
+                    href="/portfolio/chocolate-fish-modesto"
+                    data-anim="fade"
+                    className="relative block w-full overflow-hidden mb-10 group"
+                    style={{ paddingBottom: aspectPct }}
+                    aria-label="Watch the Chocolate Fish Modesto case study"
+                  >
+                    {featuredVideoInView && heroLoop ? (
+                      <video
+                        className="absolute inset-0 w-full h-full object-cover"
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        preload="auto"
+                        poster={heroLoop.poster}
+                        width={heroLoop.width}
+                        height={heroLoop.height}
+                      >
+                        <source src={heroLoop.webm} type="video/webm" />
+                        <source src={heroLoop.mp4} type="video/mp4" />
+                      </video>
+                    ) : heroLoop ? (
+                      /* Poster fallback — no layout shift, no video bytes until near-viewport */
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={heroLoop.poster}
+                        alt="Chocolate Fish Modesto walkthrough preview"
+                        width={heroLoop.width}
+                        height={heroLoop.height}
+                        className="absolute inset-0 w-full h-full object-cover"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    ) : (
+                      <picture className="absolute inset-0 w-full h-full">
+                        <source type="image/avif" srcSet={fallbackRender.srcsetAvif} sizes="(max-width: 768px) 100vw, 90vw" />
+                        <source type="image/webp" srcSet={fallbackRender.srcsetWebp} sizes="(max-width: 768px) 100vw, 90vw" />
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={fallbackRender.jpg}
+                          srcSet={fallbackRender.srcsetJpg}
+                          sizes="(max-width: 768px) 100vw, 90vw"
+                          alt={fallbackRender.alt}
+                          width={fallbackRender.width}
+                          height={fallbackRender.height}
+                          loading="lazy"
+                          decoding="async"
+                          className="absolute inset-0 w-full h-full object-cover"
+                        />
+                      </picture>
+                    )}
+
+                    {/* Project metadata overlay */}
+                    <div className="absolute inset-0 pointer-events-none flex flex-col justify-end p-6 md:p-10 bg-gradient-to-t from-primary/55 via-primary/10 to-transparent">
+                      <p className="font-body text-[10px] tracking-[0.28em] uppercase text-background/80 mb-2">
+                        Chocolate Fish Coffee Roasters · Modesto, CA · 2025
+                      </p>
+                      <p className="font-heading text-background text-[clamp(1.4rem,2.8vw,2.4rem)] leading-tight">
+                        Built from a render.
+                      </p>
+                    </div>
+                  </Link>
+                </div>
+
+                {/* CTA pills */}
+                <div data-anim="fade" className="flex flex-wrap gap-3">
+                  <Link
+                    href="/portfolio/chocolate-fish-modesto"
+                    className="inline-flex items-center gap-2 bg-primary text-background font-body text-[11px] tracking-[0.14em] uppercase px-7 py-3.5 transition-opacity duration-200 hover:opacity-80"
+                  >
+                    See the case study →
+                  </Link>
+                  <Link
+                    href="/portfolio"
+                    className="inline-flex items-center gap-2 border border-primary/25 text-primary font-body text-[11px] tracking-[0.14em] uppercase px-7 py-3.5 transition-colors duration-200 hover:border-primary/60"
+                  >
+                    View all work
+                  </Link>
+                </div>
+              </div>
+            </section>
+          );
+        })()}
 
         {/* ── FINAL CTA ───────────────────────────────────────────────────── */}
         <section id="final-cta" className="py-28 md:py-36 px-6 md:px-16 lg:px-24 bg-primary overflow-hidden">

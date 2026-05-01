@@ -3,9 +3,9 @@ import ServicesClient from "./ServicesClient";
 
 export const metadata: Metadata = {
   title:
-    "3D Rendering Services | Still Renders, Walkthroughs, Aerials — Retrotekt",
+    "3D Visualization & Rendering Services — Retrotekt",
   description:
-    "Full suite of architectural visualization services: photorealistic still renders from $200, walkthrough animations from $800, floor plans, aerials, and 360° panoramas. Custom quotes within 24 hours.",
+    "Boutique 3D visualization for elite builders, developers, and designers. Pre-sale concepts, photorealistic renders, cinematic walkthroughs, and strategic design support. Custom quotes in 24 hours. Zero upfront payment.",
   keywords: [
     "photorealistic interior renders",
     "exterior 3D rendering",

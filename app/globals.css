@@ -44,10 +44,10 @@
 
 /* placeholder dots trick via clip */
 @keyframes placeholder-dots {
-  0%   { clip-path: inset(0 66% 0 0); }
-  33%  { clip-path: inset(0 33% 0 0); }
-  66%  { clip-path: inset(0 0% 0 0); }
-  100% { clip-path: inset(0 66% 0 0); }
+  0%   { -webkit-clip-path: inset(0 66% 0 0); clip-path: inset(0 66% 0 0); }
+  33%  { -webkit-clip-path: inset(0 33% 0 0); clip-path: inset(0 33% 0 0); }
+  66%  { -webkit-clip-path: inset(0 0% 0 0);  clip-path: inset(0 0% 0 0); }
+  100% { -webkit-clip-path: inset(0 66% 0 0); clip-path: inset(0 66% 0 0); }
 }
 
 :root {
@@ -124,6 +124,21 @@
   padding: 0;
 }
 
+/* ── Touch: eliminate 300 ms tap delay on iOS (safe on all target browsers) ── */
+a,
+button,
+[role="button"] {
+  touch-action: manipulation;
+}
+
+/* ── Safari: -webkit-backdrop-filter prefix for backdrop-blur utilities ────── */
+/* Tailwind's backdrop-blur-* compiles to backdrop-filter only; Safari < 15.4  */
+/* needs the -webkit- prefix. iOS 15+ supports both, but the prefix is harmless.*/
+[class*="backdrop-blur"],
+[class*="backdrop-filter"] {
+  -webkit-backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -188,6 +203,10 @@ h4 {
   transition-delay: 160ms;
 }
 
+.reveal-delay-3 {
+  transition-delay: 240ms;
+}
+
 /* ── Hero scroll indicator ─────────────────────────────────────────────────── */
 @keyframes scroll-drop {
   0% {
@@ -223,7 +242,8 @@ h4 {
     box-shadow 0.32s ease;
 }
 
-.card:hover {
+.card:hover,
+.card:active {
   transform: translateY(-4px);
   border-color: var(--color-border-strong);
   box-shadow: 0 16px 40px rgba(44, 31, 20, 0.08);
@@ -397,12 +417,14 @@ h4 {
   z-index: 1;
 }
 
-.btn-ghost:hover {
+.btn-ghost:hover,
+.btn-ghost:focus-visible {
   color: var(--color-bg);
   transform: translateY(-2px);
 }
 
-.btn-ghost:hover::before {
+.btn-ghost:hover::before,
+.btn-ghost:focus-visible::before {
   transform: translateY(0);
 }
 
@@ -462,7 +484,8 @@ h4 {
     gap var(--btn-duration) var(--btn-ease);
 }
 
-.btn-text:hover {
+.btn-text:hover,
+.btn-text:active {
   color: var(--color-ink);
   gap: 12px;
 }
@@ -485,7 +508,8 @@ h4 {
   transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.nav-link:hover::after {
+.nav-link:hover::after,
+.nav-link:active::after {
   width: 100%;
 }
 
@@ -586,6 +610,23 @@ h4 {
   .ticker-track,
   .ticker-label-glow {
     animation-play-state: paused !important;
+  }
+
+  /* Disable scroll-reveal transitions — make elements immediately visible */
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  /* Disable hero scroll-drop animation */
+  .animate-scroll-drop {
+    animation: none !important;
+  }
+
+  /* Disable card hover lift */
+  .card:hover {
+    transform: none;
   }
 }
 

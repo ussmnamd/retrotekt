@@ -104,6 +104,17 @@ function isWebGLAvailable(): boolean {
   }
 }
 
+// Matches phone-sized or coarse-pointer devices (phones + iPads)
+function getDeviceProfile(): "phone" | "tablet" | "desktop" {
+  if (window.matchMedia("(max-width: 768px) and (pointer: coarse)").matches) return "phone";
+  if (window.matchMedia("(max-width: 1180px) and (pointer: coarse)").matches) return "tablet";
+  return "desktop";
+}
+
+const TEXTURE_SLOTS = [
+  "map", "normalMap", "roughnessMap", "emissiveMap", "metalnessMap", "aoMap",
+] as const;
+
 export default function Hero3D() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -122,7 +133,10 @@ export default function Hero3D() {
       return;
     }
 
-    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+    const deviceProfile = getDeviceProfile();
+    const isPhone = deviceProfile === "phone";
+    const isTablet = deviceProfile === "tablet";
+    const isMobile = isPhone || isTablet; // legacy compat for non-shadow-related checks
 
     // ── Renderer ─────────────────────────────────────────────────────────────
     const renderer = new THREE.WebGLRenderer({
@@ -131,9 +145,12 @@ export default function Hero3D() {
       antialias: true,
       powerPreference: "high-performance",
     });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
+
+    // Per-device pixel ratio caps
+    const dprCap = isPhone ? 1 : isTablet ? 1.5 : Math.min(window.devicePixelRatio, 2);
+    renderer.setPixelRatio(dprCap);
     renderer.setSize(container.clientWidth, container.clientHeight);
-    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.enabled = !isPhone;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = CONFIG.toneExposure;
@@ -164,12 +181,14 @@ export default function Hero3D() {
 
     const keyLight = new THREE.DirectionalLight(0xfff8f0, 3.2);
     keyLight.position.set(5, 10, 7);
-    keyLight.castShadow = true;
-    const shadowMapSize = isMobile ? 512 : CONFIG.shadowMapSize;
-    keyLight.shadow.mapSize.set(shadowMapSize, shadowMapSize);
-    keyLight.shadow.bias = -0.0002;
-    keyLight.shadow.normalBias = 0.015;
-    keyLight.shadow.radius = 6;
+    keyLight.castShadow = !isPhone;
+    const shadowMapSize = isPhone ? 0 : (isTablet ? 512 : CONFIG.shadowMapSize);
+    if (!isPhone) {
+      keyLight.shadow.mapSize.set(shadowMapSize, shadowMapSize);
+      keyLight.shadow.bias = -0.0002;
+      keyLight.shadow.normalBias = 0.015;
+      keyLight.shadow.radius = 6;
+    }
     scene.add(keyLight);
 
     const spotLight = new THREE.SpotLight(0xb8d4ff, 1.2);
@@ -199,7 +218,6 @@ export default function Hero3D() {
       CONFIG.autoRotateSpeed = 0.04;
       CONFIG.floatAmplitude = 0.03;
       CONFIG.breathAmplitude = 0.008;
-      renderer.setPixelRatio(1);
     }
 
     // ── Model group ──────────────────────────────────────────────────────────
@@ -226,11 +244,17 @@ export default function Hero3D() {
     loader.setMeshoptDecoder(MeshoptDecoder);
 
     let model: THREE.Group | null = null;
+    let floorMesh: THREE.Mesh | null = null;
     let mixer: THREE.AnimationMixer | null = null;
     let elapsed = 0;
     let lastFrameTime = performance.now();
     let animationId = 0;
     let isPaused = false;
+    let entranceDone = false;
+    let reducedMotion = false;
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    reducedMotion = prefersReducedMotion.matches;
 
     let scrollVelocity = 0;
     let lastScrollY = window.scrollY;
@@ -363,20 +387,29 @@ export default function Hero3D() {
 
           frameCamera(modelGroup);
 
-          // ── Marble floor ────────────────────────────────────────────────────
-          const floorBox = new THREE.Box3().setFromObject(modelGroup);
-          const marbleTex = createMarbleTexture();
-          const floorMat = new THREE.MeshStandardMaterial({
-            map: marbleTex,
-            roughness: 0.12,
-            metalness: 0.06,
-            envMapIntensity: 1.2,
-          });
-          const floor = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), floorMat);
-          floor.rotation.x = -Math.PI / 2;
-          floor.position.y = floorBox.min.y;
-          floor.receiveShadow = true;
-          scene.add(floor);
+          // Defer marble texture to idle time — only needed after model loads
+          const buildFloor = () => {
+            const floorBox = new THREE.Box3().setFromObject(modelGroup);
+            const marbleTex = createMarbleTexture();
+            const floorMat = new THREE.MeshStandardMaterial({
+              map: marbleTex,
+              roughness: 0.12,
+              metalness: 0.06,
+              envMapIntensity: 1.2,
+            });
+            const floor = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), floorMat);
+            floor.rotation.x = -Math.PI / 2;
+            floor.position.y = floorBox.min.y;
+            floor.receiveShadow = true;
+            scene.add(floor);
+            floorMesh = floor;
+          };
+
+          if (typeof requestIdleCallback !== "undefined") {
+            requestIdleCallback(buildFloor, { timeout: 2000 });
+          } else {
+            setTimeout(buildFloor, 0);
+          }
 
           // ── Bulb lighting — find light meshes, glow them, place point lights ──
           const bulbKeywords = /light|bulb|lamp|glow|led|emit|neon|tube|globe|lantern|flame|candle/i;
@@ -396,7 +429,6 @@ export default function Hero3D() {
 
             if (!isBulb) return;
 
-            // Make the mesh itself glow warm white
             const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
             mats.forEach((m) => {
               const s = m as THREE.MeshStandardMaterial;
@@ -405,7 +437,6 @@ export default function Hero3D() {
               s.needsUpdate = true;
             });
 
-            // Place a small warm point light at the mesh's world position
             const wp = new THREE.Vector3();
             mesh.getWorldPosition(wp);
             const bulbLight = new THREE.PointLight(0xffd97a, 6.0, 12, 2.0);
@@ -425,6 +456,7 @@ export default function Hero3D() {
             x: 1, y: 1, z: 1,
             duration: CONFIG.entranceDuration,
             ease: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+            onComplete: () => { entranceDone = true; },
           });
 
           rotTarget.y = CONFIG.startRotationY + Math.PI * 2 * CONFIG.entranceSpinTurns;
@@ -467,6 +499,8 @@ export default function Hero3D() {
       );
     };
 
+    // ── Lazy load: IntersectionObserver fires first; 10 s fallback is a true
+    //    safety net for the rare case IntersectionObserver never reports.
     let modelLoadStarted = false;
     const modelObserver = new IntersectionObserver(
       ([entry]) => {
@@ -479,13 +513,21 @@ export default function Hero3D() {
       { threshold: 0.01 }
     );
     modelObserver.observe(container);
-    window.setTimeout(() => {
+    const safetyTimer = window.setTimeout(() => {
       if (!modelLoadStarted) {
         modelLoadStarted = true;
         modelObserver.disconnect();
         loadModel();
       }
-    }, 1000);
+    }, 10000);
+
+    // ── Viewport pause observer (200 px lookahead for smooth re-entry) ───────
+    let heroInViewport = true;
+    const viewportObserver = new IntersectionObserver(
+      ([entry]) => { heroInViewport = entry.isIntersecting; },
+      { rootMargin: "200px" }
+    );
+    viewportObserver.observe(container);
 
     // ── Interaction ───────────────────────────────────────────────────────────
     let mouseX = 0;
@@ -593,6 +635,7 @@ export default function Hero3D() {
     document.addEventListener("visibilitychange", handleVisibilityChange);
 
     let resizeTimer: ReturnType<typeof setTimeout>;
+    let lastRenderAfterResize = false;
     const onResize = () => {
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(() => {
@@ -601,8 +644,10 @@ export default function Hero3D() {
         camera.aspect = w / h;
         camera.updateProjectionMatrix();
         renderer.setSize(w, h);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
+        renderer.setPixelRatio(isPhone ? 1 : isTablet ? 1.5 : Math.min(window.devicePixelRatio, 2));
         if (model) frameCamera(modelGroup);
+        // Force one frame even if reduced-motion loop is parked
+        lastRenderAfterResize = true;
       }, 100);
     };
 
@@ -612,7 +657,20 @@ export default function Hero3D() {
     // ── Render loop ───────────────────────────────────────────────────────────
     const tick = () => {
       animationId = requestAnimationFrame(tick);
-      if (isPaused) return;
+
+      const shouldPause =
+        isPaused ||
+        !heroInViewport ||
+        (reducedMotion && entranceDone && !isDragging && !lastRenderAfterResize);
+
+      if (shouldPause) {
+        if (lastRenderAfterResize) {
+          // render one final frame then park
+          renderer.render(scene, camera);
+          lastRenderAfterResize = false;
+        }
+        return;
+      }
 
       const now = performance.now();
       const delta = Math.min((now - lastFrameTime) / 1000, 0.1);
@@ -656,6 +714,7 @@ export default function Hero3D() {
       cancelAnimationFrame(animationId);
       clearTimeout(resizeTimer);
       window.clearTimeout(loadTimeout);
+      window.clearTimeout(safetyTimer);
 
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("scroll", scrollHandler);
@@ -674,19 +733,29 @@ export default function Hero3D() {
       canvas.removeEventListener("touchmove", onTouchMove);
 
       modelObserver.disconnect();
-      ScrollTrigger.getAll().forEach((t) => t.kill());
+      viewportObserver.disconnect();
 
       scene.traverse((obj) => {
         const mesh = obj as THREE.Mesh;
         if (mesh.isMesh) {
           mesh.geometry?.dispose();
-          if (Array.isArray(mesh.material)) {
-            mesh.material.forEach((m) => m.dispose());
-          } else {
-            (mesh.material as THREE.Material)?.dispose();
-          }
+          const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material as THREE.Material];
+          mats.forEach((m) => {
+            const std = m as THREE.MeshStandardMaterial;
+            TEXTURE_SLOTS.forEach((slot) => {
+              const tex = std[slot as keyof typeof std] as THREE.Texture | undefined;
+              tex?.dispose();
+            });
+            m.dispose();
+          });
         }
       });
+
+      if (floorMesh) {
+        const fm = floorMesh.material as THREE.MeshStandardMaterial;
+        fm.map?.dispose();
+        fm.dispose();
+      }
 
       envTexture.dispose();
       pmrem.dispose();
@@ -699,7 +768,7 @@ export default function Hero3D() {
 
   return (
     <div ref={containerRef} className="hero-canvas-container relative w-full h-full">
-      <canvas ref={canvasRef} className="w-full h-full block" />
+      <canvas ref={canvasRef} className="w-full h-full block" style={{ touchAction: "none" }} />
 
       {status === "loading" && (
         <div className="absolute inset-0 z-50 pointer-events-none">

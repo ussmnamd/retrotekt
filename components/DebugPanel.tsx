@@ -2,12 +2,15 @@
 
 import { useEffect, useState } from "react";
 
-export default function DebugPanel() {
+// In production, Next.js will statically replace process.env.NODE_ENV === "production"
+// with `true` and dead-code-eliminate the entire panel body at build time.
+const IS_PROD = process.env.NODE_ENV === "production";
+
+function DebugPanelDev() {
   const [logs, setLogs] = useState<string[]>([]);
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    if (process.env.NODE_ENV === "production") return;
     if (typeof window === "undefined") return;
 
     const originalLog = console.log;
@@ -23,7 +26,7 @@ export default function DebugPanel() {
       originalError(...args);
     };
 
-    // Toggle with 'D' key
+    // Toggle with Shift + D
     const handleKey = (e: KeyboardEvent) => {
       if (e.key.toLowerCase() === "d" && e.shiftKey) setVisible((v) => !v);
     };
@@ -53,4 +56,9 @@ export default function DebugPanel() {
       </div>
     </div>
   );
+}
+
+export default function DebugPanel() {
+  if (IS_PROD) return null;
+  return <DebugPanelDev />;
 }

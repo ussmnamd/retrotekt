@@ -31,10 +31,41 @@ export default function Navbar() {
       // Find the last section whose top is above our nav line
       const activeSec = sections.reverse().find(sec => sec.getBoundingClientRect().top <= navY + 20);
       
+      let isDark = false;
       if (activeSec) {
-        const isDark = activeSec.classList.contains('bg-primary') || activeSec.classList.contains('bg-[#2C1F14]');
-        setIsDarkBg(isDark);
+        let el: HTMLElement | null = activeSec;
+        while (el && el !== document.body) {
+          const classes = Array.from(el.classList);
+          if (classes.includes('bg-primary') || classes.includes('bg-[#2C1F14]') || classes.includes('bg-[#0A0A0A]') || classes.includes('bg-[#0F0A06]')) {
+            isDark = true;
+            break;
+          }
+          if (classes.includes('bg-background') || classes.includes('bg-surface') || classes.includes('bg-[#F7F0E3]') || classes.includes('bg-[#EDE3CF]') || classes.includes('bg-[#ECE3CF]')) {
+            isDark = false;
+            break;
+          }
+          const bgStyle = el.style.background || el.style.backgroundColor || '';
+          if (bgStyle.includes('#1C1309') || bgStyle.includes('rgb(28, 19, 9)') || bgStyle.includes('#0A0A0A') || bgStyle.includes('rgb(10, 10, 10)') || bgStyle.includes('#0F0A06')) {
+            isDark = true;
+            break;
+          }
+          if (bgStyle.includes('#ECE3CF') || bgStyle.includes('rgb(236, 227, 207)') || bgStyle.includes('#EDE3CE') || bgStyle.includes('rgb(237, 227, 206)')) {
+            isDark = false;
+            break;
+          }
+          el = el.parentElement;
+        }
+      } else {
+        // Fallback for pages without sections, or before scrolling
+        const container = document.querySelector('main') || document.querySelector('div[class*="min-h-screen"]');
+        if (container) {
+          const classes = Array.from(container.classList);
+          isDark = classes.includes('bg-primary') || classes.includes('bg-[#2C1F14]') || classes.includes('bg-[#0A0A0A]') || classes.includes('bg-[#0F0A06]');
+        } else {
+          isDark = true; // default to body bg
+        }
       }
+      setIsDarkBg(isDark);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });

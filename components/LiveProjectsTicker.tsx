@@ -80,7 +80,7 @@ export function LiveProjectsTicker() {
             whiteSpace: "nowrap",
           }}
         >
-          Live Projects
+          Ongoing
         </span>
         {/* Thin vertical divider */}
         <span
