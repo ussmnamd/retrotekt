@@ -835,63 +835,6 @@ export default function HomeClient() {
           );
         })()}
 
-        {/* ── ZERO RISK ───────────────────────────────────────────────────── */}
-        <section className="py-10 md:py-14 px-6 md:px-16 lg:px-24" style={{ background: "#221709" }}>
-          <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-8">
-              <div>
-                <p className="font-body text-[11px] tracking-[0.22em] uppercase text-secondary/50 mb-3">
-                  Our Payment Promise
-                </p>
-                <h2
-                  data-anim="heading"
-                  className="font-heading font-bold text-background leading-[0.95] tracking-[-0.025em]"
-                  style={{ fontSize: "clamp(1.8rem, 4vw, 3rem)" }}
-                >
-                  Zero-Risk<br />Partnership.
-                </h2>
-              </div>
-              <p data-anim="fade" className="font-body text-[13px] text-background/35 max-w-[340px] leading-relaxed">
-                Trust is earned through performance. We don&apos;t believe you should
-                fund a project before seeing meaningful progress.
-              </p>
-            </div>
-
-            <div data-anim="fade" className="relative">
-              <div className="relative mb-0">
-                <div className="h-0.5 bg-[#3D2A1A] w-full" />
-                <div className="absolute top-0 left-0 h-0.5 w-1/2 bg-gradient-to-r from-secondary/60 to-secondary/30" />
-              </div>
-
-              <div className="grid grid-cols-3 -mt-2">
-                {[
-                  { label: "Project Start", amount: "$0", sub: "No upfront payment required", note: "We begin immediately", align: "left" },
-                  { label: "50% Complete", amount: "50% Due", sub: "Only on initial concept review", note: "You see it before you pay", align: "center" },
-                  { label: "Final Delivery", amount: "50% Due", sub: "On file handoff", note: "Paying for a product, not a promise", align: "right" },
-                ].map((m) => (
-                  <div
-                    key={m.label}
-                    className={`flex flex-col ${m.align === "center" ? "items-center text-center" : m.align === "right" ? "items-end text-right" : "items-start text-left"} pt-5`}
-                  >
-                    <div className="w-2.5 h-2.5 rounded-full bg-secondary ring-4 ring-secondary/15 mb-4" />
-                    <div className="font-body text-[10px] tracking-[0.16em] uppercase text-secondary/60 mb-1">{m.label}</div>
-                    <div className="font-heading font-light text-background mb-1 tabular-nums" style={{ fontSize: "clamp(1.1rem, 2.5vw, 1.6rem)" }}>{m.amount}</div>
-                    <div className="font-body text-[12px] text-background/40 mb-0.5">{m.sub}</div>
-                    <div className="font-body text-[11px] text-secondary/45 italic">{m.note}</div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-6 flex items-stretch gap-4 max-w-2xl">
-                <div className="w-0.5 bg-secondary/25 flex-shrink-0 rounded-full" />
-                <p className="font-body text-[13px] text-background/40 leading-relaxed italic">
-                  This structure ensures total alignment and protects you from paying for a promise
-                  rather than a product — from the very first line drawn to the final file delivered.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
 
         {/* ── FINAL CTA ───────────────────────────────────────────────────── */}
         <CTASection />
