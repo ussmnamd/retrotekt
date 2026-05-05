@@ -114,11 +114,11 @@ export const ProcessCard: React.FC<ProcessCardProps> = ({ phase, title, desc, in
       onMouseLeave={() => setHovered(false)}
       className="group relative overflow-hidden rounded-[1.5rem] cursor-default"
       style={{
-        background: '#EDE3CE',
-        border: `1px solid ${hovered ? 'rgba(140,110,75,0.45)' : 'rgba(44,31,20,0.09)'}`,
+        background: '#3D2A1A',
+        border: `1px solid ${hovered ? 'rgba(196,168,130,0.45)' : 'rgba(247,240,227,0.09)'}`,
         boxShadow: hovered
-          ? '0 16px 48px rgba(44,31,20,0.1)'
-          : '0 2px 12px rgba(44,31,20,0.05)',
+          ? '0 16px 48px rgba(0,0,0,0.4)'
+          : '0 2px 12px rgba(0,0,0,0.2)',
         opacity: active ? 1 : 0,
         transform: active ? 'translateY(0px)' : 'translateY(36px)',
         transition: [
@@ -142,7 +142,7 @@ export const ProcessCard: React.FC<ProcessCardProps> = ({ phase, title, desc, in
       <div
         className="absolute inset-0 pointer-events-none z-0"
         style={{
-          background: `radial-gradient(280px circle at ${mousePos.x}px ${mousePos.y}px, rgba(140,110,75,0.1), transparent 60%)`,
+          background: `radial-gradient(280px circle at ${mousePos.x}px ${mousePos.y}px, rgba(196,168,130,0.15), transparent 60%)`,
           opacity: hovered ? 1 : 0,
           transition: 'opacity 0.6s ease',
         }}
@@ -165,12 +165,12 @@ export const ProcessCard: React.FC<ProcessCardProps> = ({ phase, title, desc, in
         {/* Phase number + horizontal rule */}
         <div className="flex items-center gap-3 mb-5">
           <span className="font-heading text-[3.2rem] font-bold leading-none select-none"
-            style={{ color: hovered ? 'rgba(44,31,20,0.12)' : 'rgba(44,31,20,0.07)', transition: 'color 0.4s ease' }}>
+            style={{ color: hovered ? 'rgba(247,240,227,0.15)' : 'rgba(247,240,227,0.07)', transition: 'color 0.4s ease' }}>
             {phase}
           </span>
           <div className="h-px flex-1"
             style={{
-              background: 'rgba(44,31,20,0.12)',
+              background: 'rgba(247,240,227,0.15)',
               transformOrigin: 'left',
               transform: hovered ? 'scaleX(1)' : 'scaleX(0.45)',
               transition: 'transform 0.55s cubic-bezier(0.16,1,0.3,1)',
@@ -200,14 +200,14 @@ export const ProcessCard: React.FC<ProcessCardProps> = ({ phase, title, desc, in
         >
           <h3 className="text-[1.3rem] lg:text-[1.5rem] leading-[1.15] font-light font-heading tracking-tight mb-2"
             style={{
-              color: hovered ? '#4A3322' : '#2C1F14',
+              color: hovered ? '#F7F0E3' : '#C4A882',
               transition: 'color 0.4s ease',
             }}
           >
             {title}
           </h3>
           <p className="text-[13px] leading-relaxed font-body"
-            style={{ color: 'rgba(44,31,20,0.52)', opacity: hovered ? 1 : 0.85, transition: 'opacity 0.4s ease' }}
+            style={{ color: 'rgba(247,240,227,0.6)', opacity: hovered ? 1 : 0.85, transition: 'opacity 0.4s ease' }}
           >
             {desc}
           </p>

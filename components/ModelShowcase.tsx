@@ -6,26 +6,7 @@ import { showcase } from "@/lib/showcase-data";
 export default function ModelShowcase() {
   return (
     <section id="model-showcase" className="relative w-full bg-background">
-      {/* Duotone filter — remaps every image to a unified cream palette,
-          shadows → deep warm brown (#3D2A1A), highlights → light cream (#F7F0E3) */}
-      <svg width="0" height="0" className="absolute" aria-hidden="true">
-        <defs>
-          <filter id="cream-duotone" colorInterpolationFilters="sRGB">
-            <feColorMatrix
-              type="matrix"
-              values="0.299 0.587 0.114 0 0
-                      0.299 0.587 0.114 0 0
-                      0.299 0.587 0.114 0 0
-                      0     0     0     1 0"
-            />
-            <feComponentTransfer>
-              <feFuncR type="table" tableValues="0.239 0.969" />
-              <feFuncG type="table" tableValues="0.165 0.941" />
-              <feFuncB type="table" tableValues="0.102 0.890" />
-            </feComponentTransfer>
-          </filter>
-        </defs>
-      </svg>
+
 
       <div className="showcase-pin h-screen relative overflow-hidden">
 
@@ -119,7 +100,7 @@ export default function ModelShowcase() {
                   loading={i === 0 ? "eager" : "lazy"}
                   decoding={i === 0 ? "sync" : "async"}
                   className="showcase-img w-[70vw] h-[66vh] relative z-10 block object-contain"
-                  style={{ opacity: i === 0 ? 1 : 0, filter: "url(#cream-duotone)" }}
+                  style={{ opacity: i === 0 ? 1 : 0 }}
                   alt={s.title}
                   sizes="(max-width: 768px) 70vw, 50vw"
                 />
@@ -133,7 +114,7 @@ export default function ModelShowcase() {
                 aria-hidden="true"
                 className="showcase-img-ghost w-[70vw] h-[66vh] object-contain absolute inset-0 m-auto pointer-events-none z-10"
                 alt=""
-                style={{ opacity: 0, filter: "url(#cream-duotone)" }}
+                style={{ opacity: 0 }}
               />
               
             </figure>

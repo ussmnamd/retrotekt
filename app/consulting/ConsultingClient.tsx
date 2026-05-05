@@ -5,77 +5,6 @@ import { validators, sanitize, hasErrors, type FieldError } from "@/lib/validate
 
 // ── SVG Icons ────────────────────────────────────────────────────────────────
 
-function IconBuilding() {
-  return (
-    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="4" y="6" width="12" height="18" />
-      <path d="M16 11h8v13H16" />
-      <line x1="8" y1="10" x2="8" y2="10.01" />
-      <line x1="12" y1="10" x2="12" y2="10.01" />
-      <line x1="8" y1="14" x2="8" y2="14.01" />
-      <line x1="12" y1="14" x2="12" y2="14.01" />
-      <line x1="8" y1="18" x2="8" y2="18.01" />
-      <line x1="12" y1="18" x2="12" y2="18.01" />
-      <line x1="10" y1="24" x2="10" y2="20" />
-    </svg>
-  );
-}
-
-function IconHammer() {
-  return (
-    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M4 22 L16 10" />
-      <path d="M13 7 L21 5 L23 13 L15 11Z" />
-      <line x1="18" y1="9" x2="22" y2="5" />
-    </svg>
-  );
-}
-
-function IconSofa() {
-  return (
-    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="4" y="13" width="20" height="7" rx="1" />
-      <path d="M7 13V10a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3" />
-      <line x1="2" y1="13" x2="4" y2="13" />
-      <line x1="24" y1="13" x2="26" y2="13" />
-      <line x1="6" y1="20" x2="6" y2="23" />
-      <line x1="22" y1="20" x2="22" y2="23" />
-    </svg>
-  );
-}
-
-function IconDraftingCompass() {
-  return (
-    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="14" cy="8" r="3" />
-      <path d="M14 11 L8 24" />
-      <path d="M14 11 L20 24" />
-      <line x1="7" y1="20" x2="21" y2="20" />
-    </svg>
-  );
-}
-
-function IconMegaphone() {
-  return (
-    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M22 6 L10 11H5a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h5l12 5V6Z" />
-      <path d="M10 11v9" />
-      <path d="M25 9 C26.5 10.5 26.5 15.5 25 17" />
-    </svg>
-  );
-}
-
-function IconHotel() {
-  return (
-    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="8" width="22" height="16" />
-      <path d="M3 8 L14 3 L25 8" />
-      <rect x="11" y="17" width="6" height="7" />
-      <rect x="6" y="12" width="4" height="4" />
-      <rect x="18" y="12" width="4" height="4" />
-    </svg>
-  );
-}
 
 function IconWhatsApp() {
   return (
@@ -96,36 +25,32 @@ function IconEmail() {
 
 // ── Data ─────────────────────────────────────────────────────────────────────
 
-const INDUSTRIES = [
+const segments = [
   {
-    icon: <IconBuilding />,
-    title: "Real Estate Developers",
-    desc: "Pre-sales visuals, investor decks, aerials before ground breaks. Show units before you build them — and sell them faster.",
+    emoji: "🏗️",
+    label: "High-Value Builders & Designers",
+    items: [
+      { role: "General Contractors & Remodelers", value: "Close the trust gap and get contracts signed faster." },
+      { role: "Custom Home Builders", value: "Show clients exactly what they're paying for before breaking ground." },
+      { role: "Interior Designers & Architects", value: "Bring mood boards to life with stunning, pitch-ready accuracy." },
+    ],
   },
   {
-    icon: <IconHammer />,
-    title: "Contractors & Remodelers",
-    desc: "Win bids by showing clients the finished result before a nail is driven. Close faster and justify premium pricing with visuals.",
+    emoji: "🏡",
+    label: "Real Estate & Property Investors",
+    items: [
+      { role: "Real Estate Developers", value: "Secure funding faster with immersive pre-construction investor decks." },
+      { role: "Property Flippers & Airbnb Owners", value: "Elevate your listings to command premium rates." },
+      { role: "Luxury Real Estate Agents", value: "Market properties before renovations are even complete." },
+    ],
   },
   {
-    icon: <IconSofa />,
-    title: "Interior Designers",
-    desc: "Bring concepts to life for client approvals. Eliminate miscommunication and get sign-off on the first pass.",
-  },
-  {
-    icon: <IconDraftingCompass />,
-    title: "Architects",
-    desc: "Proposal-ready renders and animations that communicate your vision to clients, planning boards, and investors.",
-  },
-  {
-    icon: <IconMegaphone />,
-    title: "Property Marketers",
-    desc: "Campaign-ready visuals for listings, social, and print — delivered before the property even exists.",
-  },
-  {
-    icon: <IconHotel />,
-    title: "Hospitality & Hotels",
-    desc: "Pre-opening renders for investor presentations, booking sites, and brand materials. Make guests excited before you open.",
+    emoji: "☕",
+    label: "Commercial & B2B Brands",
+    items: [
+      { role: "Café, Restaurant & Retail", value: "Visualize brand identity and secure lease approvals." },
+      { role: "Office Fit-out & Hospitality", value: "Present polished, corporate-grade concepts to stakeholders." },
+    ],
   },
 ];
 
@@ -240,18 +165,18 @@ export default function ConsultingClient() {
     <main ref={pageRef} className="bg-background">
 
       {/* ── Section 1: HERO ─────────────────────────────────────────────────── */}
-      <section className="pt-20 md:pt-24 pb-20 md:pb-28 border-b border-[#D4C5A9]">
+      <section className="pt-16 md:pt-20 pb-16 md:pb-20 border-b border-[#D4C5A9]">
         <div className="px-6 md:px-10 lg:px-16 max-w-7xl mx-auto w-full">
-          <div className="max-w-3xl pt-14 md:pt-20">
+          <div className="max-w-3xl pt-8 md:pt-12">
             <div className="flex items-center gap-4 mb-6">
               <span className="section-label">Consulting</span>
               <div className="h-px bg-[#D4C5A9] w-16 flex-shrink-0" />
             </div>
-            <h1 className="reveal font-heading text-[clamp(2.4rem,6vw,5.2rem)] leading-[1.0] tracking-[-0.025em] text-primary mb-6">
+            <h1 className="reveal font-heading text-[clamp(2.4rem,6vw,5.2rem)] leading-[1.0] tracking-[-0.025em] text-primary mb-4">
               Architectural Visualization Consulting<br />
               for Developers &amp; Contractors
             </h1>
-            <p className="reveal reveal-delay-1 font-body text-[16px] text-deep leading-relaxed max-w-xl mb-10">
+            <p className="reveal reveal-delay-1 font-body text-[16px] text-deep leading-relaxed max-w-xl mb-8">
               We operate globally to deliver US-market quality at costs that make local studios hard to justify. Our clients save significantly — and close more deals because of it.
             </p>
             <div className="reveal reveal-delay-2">
@@ -266,29 +191,53 @@ export default function ConsultingClient() {
         </div>
       </section>
 
-      {/* ── Section 2: INDUSTRIES WE SERVE ─────────────────────────────────── */}
-      <section className="bg-surface py-20 md:py-28">
+      {/* ── Section 2: WHO WE PARTNER WITH ─────────────────────────────────── */}
+      <section className="bg-surface py-16 md:py-20 border-b border-[#D4C5A9]">
         <div className="px-6 md:px-10 lg:px-16 max-w-7xl mx-auto">
-          <div className="reveal mb-14">
-            <p className="section-label mb-3">Who We Work With</p>
-            <h2 className="font-heading text-[clamp(1.8rem,4vw,3rem)] leading-[1.02] tracking-[-0.025em] text-primary">
-              Industries We Serve
-            </h2>
+          {/* Header */}
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12 pb-12 border-b border-[#D4C5A9]">
+            <div>
+              <p className="section-label mb-5">
+                Who We Partner With
+              </p>
+              <h2
+                className="reveal font-heading font-bold text-primary leading-[0.95] tracking-[-0.025em]"
+                style={{ fontSize: "clamp(2.2rem, 5vw, 4rem)" }}
+              >
+                We Don&apos;t Work<br />With Everyone.
+              </h2>
+            </div>
+            <p className="reveal reveal-delay-1 font-body text-[15px] text-deep/60 max-w-[340px] leading-relaxed">
+              We engineer visual assets for professionals who rely on speed,
+              precision, and presentation to scale their businesses. If you
+              build, design, or sell spaces — you are in the right place.
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {INDUSTRIES.map((item, i) => (
+          {/* Segment columns */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-0 divide-y md:divide-y-0 md:divide-x divide-[#D4C5A9]">
+            {segments.map((seg, i) => (
               <div
-                key={item.title}
-                className={`reveal reveal-delay-${Math.min((i % 3) + 1, 3) as 1 | 2 | 3} bg-background border border-[#D4C5A9] p-7 hover:border-secondary/50 transition-colors duration-300`}
+                key={seg.label}
+                className={`reveal reveal-delay-${Math.min(i + 1, 2)} flex flex-col py-10 md:py-0 ${i > 0 ? "md:pl-12" : ""} ${i < segments.length - 1 ? "md:pr-12" : ""}`}
               >
-                <div className="text-muted mb-5">{item.icon}</div>
-                <h3 className="font-heading text-[17px] text-primary mb-3 leading-snug">
-                  {item.title}
+                <div className="text-4xl mb-6">{seg.emoji}</div>
+                <h3 className="font-body text-[12px] tracking-[0.18em] uppercase text-secondary mb-8 leading-snug">
+                  {seg.label}
                 </h3>
-                <p className="font-body text-[12px] text-deep leading-relaxed">
-                  {item.desc}
-                </p>
+                <ul className="flex flex-col gap-7">
+                  {seg.items.map((item) => (
+                    <li key={item.role} className="relative pl-4">
+                      <div className="absolute left-0 top-[6px] w-1 h-1 rounded-full bg-secondary/50" />
+                      <div className="font-body text-[15px] text-primary mb-1.5 leading-snug">
+                        {item.role}
+                      </div>
+                      <div className="font-body text-[14px] text-deep/60 leading-relaxed">
+                        {item.value}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
               </div>
             ))}
           </div>
@@ -296,10 +245,10 @@ export default function ConsultingClient() {
       </section>
 
       {/* ── Section 3: WHY RETROTEKT ────────────────────────────────────────── */}
-      <section className="py-20 md:py-28">
+      <section className="py-16 md:py-20">
         <div className="px-6 md:px-10 lg:px-16 max-w-7xl mx-auto">
 
-          <div className="reveal mb-14 max-w-2xl">
+          <div className="reveal mb-10 max-w-2xl">
             <p className="section-label mb-3">Why Retrotekt</p>
             <h2 className="font-heading text-[clamp(1.8rem,4vw,3rem)] leading-[1.02] tracking-[-0.025em] text-primary mb-4">
               Why Retrotekt Is the Smarter Choice
@@ -310,7 +259,7 @@ export default function ConsultingClient() {
           </div>
 
           {/* Comparison columns */}
-          <div className="reveal grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
+          <div className="reveal grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
             {/* LEFT — Traditional */}
             <div className="bg-surface border border-[#D4C5A9] p-8">
               <p className="font-body text-[13px] text-primary/40 uppercase tracking-[0.15em] mb-6">
@@ -353,7 +302,7 @@ export default function ConsultingClient() {
           </div>
 
           {/* Stat cards */}
-          <h2 className="font-heading text-[clamp(1.4rem,3vw,2rem)] leading-[1.02] tracking-[-0.025em] text-primary mb-6 mt-14">
+          <h2 className="font-heading text-[clamp(1.4rem,3vw,2rem)] leading-[1.02] tracking-[-0.025em] text-primary mb-6 mt-10">
             The Numbers Behind Our Work
           </h2>
           <div className="reveal grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -379,10 +328,10 @@ export default function ConsultingClient() {
       </section>
 
       {/* ── Section 4: THREE-CHANNEL CONTACT ───────────────────────────────── */}
-      <section className="bg-surface py-20 md:py-28 border-t border-[#D4C5A9]">
+      <section className="bg-surface py-16 md:py-20 border-t border-[#D4C5A9]">
         <div className="px-6 md:px-10 lg:px-16 max-w-7xl mx-auto">
 
-          <div className="reveal mb-14 max-w-2xl">
+          <div className="reveal mb-10 max-w-2xl">
             <p className="section-label mb-3">Get in Touch</p>
             <h2 className="font-heading text-[clamp(1.8rem,4vw,3rem)] leading-[1.02] tracking-[-0.025em] text-primary mb-4">
               Book a Consultation
@@ -395,7 +344,7 @@ export default function ConsultingClient() {
           <div className="flex flex-col md:flex-row gap-4">
 
             {/* Option 1 — BOOK A CALL */}
-            <div className="reveal flex-1 bg-background border border-[#D4C5A9] p-8 flex flex-col min-h-[340px]">
+            <div className="reveal flex-1 bg-background border border-[#D4C5A9] p-6 flex flex-col min-h-[340px]">
               <p className="font-body text-[11px] tracking-[0.2em] uppercase text-secondary mb-3">
                 Book a Call
               </p>
@@ -414,7 +363,7 @@ export default function ConsultingClient() {
             </div>
 
             {/* Option 2 — SEND A MESSAGE */}
-            <div className="reveal reveal-delay-1 flex-1 bg-background border border-[#D4C5A9] p-8 flex flex-col">
+            <div className="reveal reveal-delay-1 flex-1 bg-background border border-[#D4C5A9] p-6 flex flex-col">
               <p className="font-body text-[11px] tracking-[0.2em] uppercase text-secondary mb-3">
                 Send a Message
               </p>
@@ -502,7 +451,7 @@ export default function ConsultingClient() {
             </div>
 
             {/* Option 3 — QUICK CONNECT */}
-            <div className="reveal reveal-delay-2 flex-1 bg-background border border-[#D4C5A9] p-8 flex flex-col min-h-[340px]">
+            <div className="reveal reveal-delay-2 flex-1 bg-background border border-[#D4C5A9] p-6 flex flex-col min-h-[340px]">
               <p className="font-body text-[11px] tracking-[0.2em] uppercase text-secondary mb-3">
                 Quick Connect
               </p>

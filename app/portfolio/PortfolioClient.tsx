@@ -205,7 +205,7 @@ export default function PortfolioClient() {
       {/* ── 1. CINEMATIC HERO (~90vh) ──────────────────────────────────────── */}
       <section
         className="relative overflow-hidden"
-        style={{ height: '90vh', minHeight: '560px' }}
+        style={{ height: '90vh', minHeight: '480px' }}
       >
         {/* Video background */}
         {hero && (
@@ -264,14 +264,14 @@ export default function PortfolioClient() {
       {/* ── 2. FEATURED SLAB — MODESTO (~70vh) ────────────────────────────── */}
       <section
         className="relative overflow-hidden"
-        style={{ minHeight: '70vh' }}
+        style={{ minHeight: '60vh' }}
       >
         <Link href="/portfolio/chocolate-fish-modesto" className="block h-full group">
           {/* Split frame: render left, construction right on hover */}
           <div
             data-anim="featured-image"
             className="relative overflow-hidden"
-            style={{ minHeight: '70vh' }}
+            style={{ minHeight: '60vh' }}
           >
             {/* Render — fills frame by default */}
             {modestoAssets.renders[0] && (
@@ -363,12 +363,12 @@ export default function PortfolioClient() {
               <div
                 key={project.slug}
                 data-anim="location-card"
-                style={{ minHeight: '50vh' }}
+                style={{ minHeight: '40vh' }}
               >
                 <Link
                   href={`/portfolio/${project.slug}`}
                   className="relative overflow-hidden block h-full group"
-                  style={{ minHeight: '50vh' }}
+                  style={{ minHeight: '40vh' }}
                 >
                   {/* Default: render */}
                   {leadRender && (
@@ -444,9 +444,9 @@ export default function PortfolioClient() {
       {/* ── 5. GALLERY SECTION ────────────────────────────────────────────── */}
       <section
         id="renders"
-        className="max-w-[1400px] mx-auto px-6 md:px-12 lg:px-20 py-16 md:py-24"
+        className="max-w-[1400px] mx-auto px-6 md:px-12 lg:px-20 py-10 md:py-16"
       >
-        <div className="mb-10">
+        <div className="mb-8">
           <p className="font-body text-[10px] tracking-[0.2em] uppercase text-secondary mb-3">
             {galleryHeading.eyebrow}
           </p>
@@ -522,13 +522,13 @@ export default function PortfolioClient() {
       {/* ── 6. CTA STRIP ──────────────────────────────────────────────────── */}
       <section
         data-anim="cta"
-        className="bg-primary border-t border-primary/20 py-20 md:py-28 px-6 text-center"
+        className="bg-primary border-t border-primary/20 py-12 md:py-16 px-6 text-center"
       >
-        <p className="font-body text-[10px] tracking-[0.2em] uppercase text-secondary mb-6">
+        <p className="font-body text-[10px] tracking-[0.2em] uppercase text-secondary mb-4">
           NEXT PROJECT
         </p>
         <h2
-          className="font-heading text-background leading-[0.92] mb-10 mx-auto"
+          className="font-heading text-background leading-[0.92] mb-8 mx-auto"
           style={{ fontSize: 'clamp(2rem, 5vw, 4rem)', maxWidth: '36rem' }}
         >
           Have a project to bring to life?

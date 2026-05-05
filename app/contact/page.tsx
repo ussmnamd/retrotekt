@@ -127,8 +127,8 @@ export default function ContactPage() {
     <main className="bg-background pt-16 md:pt-20">
 
       {/* ── Page Header ─────────────────────────────────────────────────────── */}
-      <section className="py-24 md:py-28 px-6 md:px-16 lg:px-24 border-b border-primary/8">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-end">
+      <section className="py-16 md:py-20 px-6 md:px-16 lg:px-24 border-b border-primary/8">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-end">
           <div>
             <p className="font-body text-[10px] tracking-[0.4em] uppercase text-secondary mb-5">Contact</p>
             <h1 className="font-heading text-[clamp(3rem,7vw,6rem)] leading-[0.88] tracking-[-0.03em] text-primary">
@@ -160,9 +160,9 @@ export default function ContactPage() {
       </section>
 
       {/* ── Contact Form ─────────────────────────────────────────────────────── */}
-      <section className="py-24 md:py-32 px-6 md:px-16 lg:px-24">
+      <section className="py-16 md:py-24 px-6 md:px-16 lg:px-24">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
 
             {/* Form */}
             <div className="lg:col-span-8">

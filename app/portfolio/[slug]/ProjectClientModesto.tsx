@@ -408,7 +408,7 @@ export default function ProjectClientModesto({ project }: { project: Project }) 
   const otherProjects = allProjects.filter((p) => p.slug !== project.slug);
 
   // Video player state
-  const [activeVideoIndex, setActiveVideoIndex] = useState(0);
+  const [activeVideoIndex, setActiveVideoIndex] = useState(2);
   const [fadingVideo, setFadingVideo] = useState(false);
   const activeVideo = videos[activeVideoIndex] as ProjectVideo | undefined;
 

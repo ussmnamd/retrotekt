@@ -45,34 +45,6 @@ function HeroGrid() {
 
 /* ── Data ─────────────────────────────────────────────────────────────────── */
 
-const segments = [
-  {
-    emoji: "🏗️",
-    label: "High-Value Builders & Designers",
-    items: [
-      { role: "General Contractors & Remodelers", value: "Close the trust gap and get contracts signed faster." },
-      { role: "Custom Home Builders", value: "Show clients exactly what they're paying for before breaking ground." },
-      { role: "Interior Designers & Architects", value: "Bring mood boards to life with stunning, pitch-ready accuracy." },
-    ],
-  },
-  {
-    emoji: "🏡",
-    label: "Real Estate & Property Investors",
-    items: [
-      { role: "Real Estate Developers", value: "Secure funding faster with immersive pre-construction investor decks." },
-      { role: "Property Flippers & Airbnb Owners", value: "Elevate your listings to command premium rates." },
-      { role: "Luxury Real Estate Agents", value: "Market properties before renovations are even complete." },
-    ],
-  },
-  {
-    emoji: "☕",
-    label: "Commercial & B2B Brands",
-    items: [
-      { role: "Café, Restaurant & Retail", value: "Visualize brand identity and secure lease approvals." },
-      { role: "Office Fit-out & Hospitality", value: "Present polished, corporate-grade concepts to stakeholders." },
-    ],
-  },
-];
 
 const solutions = [
   {
@@ -240,7 +212,7 @@ export default function ServicesClient() {
       {/* ═══════════════════════════════════════════════════════════════
           SECTION 1 — HERO
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="relative min-h-[92vh] flex flex-col justify-center px-6 md:px-16 lg:px-24 pt-32 pb-28">
+      <section className="relative min-h-[70vh] flex flex-col justify-center px-6 md:px-16 lg:px-24 pt-24 pb-20">
         {/* Architectural blueprint grid */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none select-none">
           <HeroGrid />
@@ -315,11 +287,11 @@ export default function ServicesClient() {
       {/* ═══════════════════════════════════════════════════════════════
           SECTION 2 — SERVICE CATALOG
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-24 md:py-32 px-6 md:px-16 lg:px-24 border-b border-[#3D2A1A]" style={{ background: "#1C1309" }}>
+      <section className="py-16 md:py-24 px-6 md:px-16 lg:px-24 border-b border-[#3D2A1A]" style={{ background: "#1C1309" }}>
         <div className="max-w-7xl mx-auto">
 
           {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-20 pb-16 border-b border-[#3D2A1A]">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12 pb-12 border-b border-[#3D2A1A]">
             <div>
               <p className="font-body text-[12px] tracking-[0.22em] uppercase text-secondary/50 mb-5">
                 What We Deliver
@@ -1122,65 +1094,11 @@ export default function ServicesClient() {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════════════
-          SECTION 3 — WHO WE PARTNER WITH
-      ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-24 md:py-32 px-6 md:px-16 lg:px-24 border-b border-[#3D2A1A]" style={{ background: "#221709" }}>
-        <div className="max-w-7xl mx-auto">
-          {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-16 pb-16 border-b border-[#3D2A1A]">
-            <div>
-              <p className="font-body text-[12px] tracking-[0.22em] uppercase text-secondary/50 mb-5">
-                Who We Partner With
-              </p>
-              <h2
-                className="reveal font-heading font-bold text-background leading-[0.95] tracking-[-0.025em]"
-                style={{ fontSize: "clamp(2.2rem, 5vw, 4rem)" }}
-              >
-                We Don&apos;t Work<br />With Everyone.
-              </h2>
-            </div>
-            <p className="reveal reveal-delay-1 font-body text-[15px] text-background/35 max-w-[340px] leading-relaxed">
-              We engineer visual assets for professionals who rely on speed,
-              precision, and presentation to scale their businesses. If you
-              build, design, or sell spaces — you are in the right place.
-            </p>
-          </div>
-
-          {/* Segment columns */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-0 divide-y md:divide-y-0 md:divide-x divide-[#3D2A1A]">
-            {segments.map((seg, i) => (
-              <div
-                key={seg.label}
-                className={`reveal reveal-delay-${Math.min(i + 1, 2)} flex flex-col py-10 md:py-0 ${i > 0 ? "md:pl-12" : ""} ${i < segments.length - 1 ? "md:pr-12" : ""}`}
-              >
-                <div className="text-4xl mb-6">{seg.emoji}</div>
-                <h3 className="font-body text-[12px] tracking-[0.18em] uppercase text-secondary mb-8 leading-snug">
-                  {seg.label}
-                </h3>
-                <ul className="flex flex-col gap-7">
-                  {seg.items.map((item) => (
-                    <li key={item.role} className="relative pl-4">
-                      <div className="absolute left-0 top-[6px] w-1 h-1 rounded-full bg-secondary/50" />
-                      <div className="font-body text-[15px] text-background/80 mb-1.5 leading-snug">
-                        {item.role}
-                      </div>
-                      <div className="font-body text-[14px] text-background/35 leading-relaxed">
-                        {item.value}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* ═══════════════════════════════════════════════════════════════
           SECTION 3 — OUR SOLUTIONS
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-24 md:py-32 px-6 md:px-16 lg:px-24 border-b border-[#3D2A1A]">
+      <section className="py-16 md:py-24 px-6 md:px-16 lg:px-24 border-b border-[#3D2A1A]">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-4">
@@ -1205,7 +1123,7 @@ export default function ServicesClient() {
           {solutions.map((sol, i) => (
             <div
               key={sol.num}
-              className={`reveal group border-t border-[#3D2A1A] py-16 md:py-20 flex flex-col md:flex-row gap-12 md:gap-16 ${i % 2 === 1 ? "md:flex-row-reverse" : ""}`}
+              className={`reveal group border-t border-[#3D2A1A] py-12 md:py-16 flex flex-col md:flex-row gap-8 md:gap-12 ${i % 2 === 1 ? "md:flex-row-reverse" : ""}`}
             >
               {/* Left col: Ghost number + label + title + stats */}
               <div className="md:w-[42%] flex flex-col justify-between gap-8">
@@ -1274,10 +1192,10 @@ export default function ServicesClient() {
       {/* ═══════════════════════════════════════════════════════════════
           SECTION 4 — IN-HOUSE QUALITY GUARANTEE
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="bg-background py-24 md:py-32 px-6 md:px-16 lg:px-24 border-b border-[#D4C5A9]">
+      <section className="bg-background py-16 md:py-24 px-6 md:px-16 lg:px-24 border-b border-[#D4C5A9]">
         <div className="max-w-7xl mx-auto">
           {/* Top row */}
-          <div className="flex flex-col md:flex-row md:items-start gap-12 md:gap-24 mb-20">
+          <div className="flex flex-col md:flex-row md:items-start gap-10 md:gap-16 mb-12">
             <div className="md:w-1/2">
               <p className="font-body text-[12px] tracking-[0.22em] uppercase text-muted mb-5">
                 Our Guarantee
@@ -1342,10 +1260,10 @@ export default function ServicesClient() {
       {/* ═══════════════════════════════════════════════════════════════
           SECTION 5 — OUR PROCESS
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-24 md:py-32 px-6 md:px-16 lg:px-24 border-b border-[#3D2A1A]" style={{ background: "#1A1108" }}>
+      <section className="py-16 md:py-24 px-6 md:px-16 lg:px-24 border-b border-[#3D2A1A]" style={{ background: "#1A1108" }}>
         <div className="max-w-7xl mx-auto">
           {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-20">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-12">
             <div>
               <p className="font-body text-[12px] tracking-[0.22em] uppercase text-secondary/50 mb-5">
                 Our Process
@@ -1419,10 +1337,10 @@ export default function ServicesClient() {
       {/* ═══════════════════════════════════════════════════════════════
           SECTION 6 — PAYMENT PROMISE
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-24 md:py-32 px-6 md:px-16 lg:px-24 border-b border-[#3D2A1A]" style={{ background: "#221709" }}>
+      <section className="py-16 md:py-24 px-6 md:px-16 lg:px-24 border-b border-[#3D2A1A]" style={{ background: "#221709" }}>
         <div className="max-w-7xl mx-auto">
           {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-20">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-12">
             <div>
               <p className="font-body text-[12px] tracking-[0.22em] uppercase text-secondary/50 mb-5">
                 Our Payment Promise
@@ -1511,7 +1429,7 @@ export default function ServicesClient() {
       {/* ═══════════════════════════════════════════════════════════════
           SECTION 7 — FINAL CTA
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="bg-background py-28 md:py-40 px-6 md:px-16 lg:px-24">
+      <section className="bg-background py-20 md:py-28 px-6 md:px-16 lg:px-24">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-12">
             <div className="md:w-3/5">

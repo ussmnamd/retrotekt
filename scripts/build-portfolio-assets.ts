@@ -565,18 +565,12 @@ async function main(): Promise<void> {
     if (!fs.existsSync(mp4)) throw new Error(`Missing expected video: ${mp4}`);
   }
 
-  console.log("\n  [hero-loop] from walkthrough-01 source");
-  const heroLoop = encodeHeroLoop(path.join(modestoVideosDir, "modesto video (1).mp4"), videoDir);
-  const heroLoopMp4 = path.join(videoDir, "hero-loop.mp4");
-  if (!fs.existsSync(heroLoopMp4)) throw new Error("hero-loop.mp4 not produced");
-  console.log(`  hero-loop mp4: ${(fileSize(heroLoopMp4) / 1024 / 1024).toFixed(1)}MB`);
-
   const modestoAssets: ProjectAssets = {
     before: modestoBefore,
     construction: modestoConstruction,
     renders: modestoRenders,
     videos: modestoVideos,
-    heroLoop,
+    heroLoop: modestoVideos[2],
   };
 
   // ── LIVERMORE ────────────────────────────────────────────────────────────

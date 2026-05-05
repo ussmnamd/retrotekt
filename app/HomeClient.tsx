@@ -23,6 +23,7 @@ import { ProcessCard } from "@/components/ProcessCard";
 import PageLoader from "@/components/PageLoader";
 import DebugPanel from "@/components/DebugPanel";
 import { portfolioAssets } from "@/app/portfolio/assets";
+import CTASection from "@/components/CTASection";
 
 const ModelShowcase = dynamic(() => import("@/components/ModelShowcase"), { ssr: false });
 
@@ -332,37 +333,7 @@ export default function HomeClient() {
             },
           });
 
-          // ── 8. Final CTA — clip-path sweep reveal ─────────────────────────
-          const ctaSection = document.getElementById("final-cta");
-          if (ctaSection) {
-            const ctaH2 = ctaSection.querySelector("h2[data-anim='cta']");
-            const ctaOthers = Array.from(
-              ctaSection.querySelectorAll("[data-anim='cta']")
-            ).filter(el => el !== ctaH2);
-
-            if (ctaH2) {
-              gsapMod.from(ctaH2, {
-                clipPath: "inset(0 0 100% 0)", y: 30, opacity: 0,
-                duration: 1.0, ease: "expo.out",
-                scrollTrigger: {
-                  trigger: ctaSection,
-                  start: "top 84%",
-                  toggleActions: "play none none none",
-                  refreshPriority: 1,
-                },
-              });
-            }
-            if (ctaOthers.length) {
-              gsapMod.from(ctaOthers, {
-                y: 36, opacity: 0, duration: 0.9, ease: "expo.out", stagger: 0.1,
-                scrollTrigger: {
-                  trigger: ctaSection,
-                  start: "top 84%",
-                  toggleActions: "play none none none",
-                },
-              });
-            }
-          }
+          // ── 8. Final CTA — handled by CTASection's own IntersectionObserver ──
 
           // ── 9. Generic [data-anim] reveals (portfolio heading area etc.) ───
           // Exclude cta (handled above) and anything inside the showcase pin.
@@ -552,9 +523,9 @@ export default function HomeClient() {
         </section>
 
         {/* ── SERVICES ───────────────────────────────────────────────────── */}
-        <section id="services-section" className="bg-primary pt-28 pb-32 overflow-hidden relative">
+        <section id="services-section" className="bg-primary pt-16 pb-20 overflow-hidden relative">
 
-          <div className="heading-wrapper max-w-screen-2xl mx-auto px-6 md:px-12 lg:px-16 mb-20 relative flex flex-col items-center text-center">
+          <div className="heading-wrapper max-w-screen-2xl mx-auto px-6 md:px-12 lg:px-16 mb-12 relative flex flex-col items-center text-center">
             <div className="flex items-center gap-4 mb-5">
               <div className="h-px w-10 bg-secondary/40" />
               <span className="font-body text-[10px] tracking-[0.25em] uppercase text-secondary/90">What we do</span>
@@ -580,7 +551,7 @@ export default function HomeClient() {
             </div>
           </div>
 
-          <div className="max-w-screen-2xl mx-auto px-6 md:px-12 lg:px-16 mt-12 relative flex justify-center">
+          <div className="max-w-screen-2xl mx-auto px-6 md:px-12 lg:px-16 mt-8 relative flex justify-center">
             <div className="w-full max-w-sm h-px bg-secondary/20 relative overflow-hidden">
                <div
                  className="absolute top-0 left-0 h-full bg-secondary transition-all duration-700 ease-[cubic-bezier(0.76,0,0.24,1)]"
@@ -593,7 +564,7 @@ export default function HomeClient() {
             </div>
           </div>
 
-          <div className="max-w-screen-2xl mx-auto px-6 md:px-12 lg:px-16 mt-12 flex justify-center">
+          <div className="max-w-screen-2xl mx-auto px-6 md:px-12 lg:px-16 mt-8 flex justify-center">
              <Link href="/services" className="group flex items-center gap-4">
                 <div className="w-8 h-[1.5px] bg-secondary/60 group-hover:w-24 group-hover:bg-secondary transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"></div>
                 <span className="font-body font-medium text-[11px] tracking-[0.3em] uppercase text-secondary">Explore All Services</span>
@@ -604,49 +575,52 @@ export default function HomeClient() {
         <ModelShowcase />
 
         {/* ── PROCESS ─────────────────────────────────────────────────────── */}
-        <section ref={processRef as React.RefObject<HTMLElement>} className="py-28 md:py-36 overflow-hidden relative" style={{ background: '#ECE3CF' }}>
-
-          {/* Blueprint grid — very faint on cream */}
-          <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-            <svg width="100%" height="100%" className="opacity-[0.035]">
-              <defs>
-                <pattern id="proc-grid" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
-                  <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#2C1F14" strokeWidth="0.8" />
-                </pattern>
-              </defs>
-              <rect width="100%" height="100%" fill="url(#proc-grid)" />
-            </svg>
-            {/* Corner L-brackets in dark ink */}
-            <svg className="absolute top-8 left-8 opacity-15" width="44" height="44" fill="none">
-              <path d="M44 0 L0 0 L0 44" stroke="#2C1F14" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
-            <svg className="absolute top-8 right-8 opacity-15" width="44" height="44" fill="none">
-              <path d="M0 0 L44 0 L44 44" stroke="#2C1F14" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
-            <svg className="absolute bottom-8 left-8 opacity-15" width="44" height="44" fill="none">
-              <path d="M0 0 L0 44 L44 44" stroke="#2C1F14" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
-            <svg className="absolute bottom-8 right-8 opacity-15" width="44" height="44" fill="none">
-              <path d="M44 0 L44 44 L0 44" stroke="#2C1F14" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
-          </div>
+        <section ref={processRef as React.RefObject<HTMLElement>} className="py-8 md:py-10 overflow-hidden relative" style={{ background: '#2C1F14' }}>
 
           <div className="max-w-screen-2xl mx-auto px-6 md:px-12 lg:px-16">
 
             {/* Section heading */}
-            <div className="text-center mb-20">
-              <div className="flex items-center justify-center gap-4 mb-5">
-                <div className="h-px w-10 bg-primary/30" />
-                <span className="font-body text-[10px] tracking-[0.25em] uppercase text-[#8C6E4B]">Our Process</span>
-                <div className="h-px w-10 bg-primary/30" />
+            <div className="relative text-center mb-12 py-6">
+              {/* Selective grid background behind heading */}
+              <div className="absolute inset-0 pointer-events-none flex justify-center" aria-hidden="true">
+                <div className="w-full max-w-4xl relative">
+                  <svg width="100%" height="100%" className="opacity-[0.06]">
+                    <defs>
+                      <pattern id="proc-grid-heading" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
+                        <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#F7F0E3" strokeWidth="0.8" />
+                      </pattern>
+                    </defs>
+                    <rect width="100%" height="100%" fill="url(#proc-grid-heading)" />
+                  </svg>
+                  <svg className="absolute top-0 left-0 opacity-20" width="24" height="24" fill="none">
+                    <path d="M24 0 L0 0 L0 24" stroke="#F7F0E3" strokeWidth="1.5" strokeLinecap="round" />
+                  </svg>
+                  <svg className="absolute top-0 right-0 opacity-20" width="24" height="24" fill="none">
+                    <path d="M0 0 L24 0 L24 24" stroke="#F7F0E3" strokeWidth="1.5" strokeLinecap="round" />
+                  </svg>
+                  <svg className="absolute bottom-0 left-0 opacity-20" width="24" height="24" fill="none">
+                    <path d="M0 0 L0 24 L24 24" stroke="#F7F0E3" strokeWidth="1.5" strokeLinecap="round" />
+                  </svg>
+                  <svg className="absolute bottom-0 right-0 opacity-20" width="24" height="24" fill="none">
+                    <path d="M24 0 L24 24 L0 24" stroke="#F7F0E3" strokeWidth="1.5" strokeLinecap="round" />
+                  </svg>
+                </div>
               </div>
-              <h2 className="font-heading text-[clamp(2.2rem,4vw,3.5rem)] leading-[1.1] text-primary tracking-tight max-w-3xl mx-auto">
-                From plans to visuals
-                <span className="text-[#8C6E4B] italic font-serif"> in days, not weeks.</span>
-              </h2>
-              <p className="mt-5 font-body text-[14px] text-primary/45 max-w-md mx-auto">
-                A precision-driven workflow built for speed, quality, and zero guesswork.
-              </p>
+
+              <div className="relative z-10">
+                <div className="flex items-center justify-center gap-4 mb-5">
+                  <div className="h-px w-10 bg-[#C4A882]/30" />
+                  <span className="font-body text-[10px] tracking-[0.25em] uppercase text-[#C4A882]/70">Our Process</span>
+                  <div className="h-px w-10 bg-[#C4A882]/30" />
+                </div>
+                <h2 className="font-heading text-[clamp(2.2rem,4vw,3.5rem)] leading-[1.1] text-[#F7F0E3] tracking-tight max-w-3xl mx-auto">
+                  From plans to visuals
+                  <span className="text-[#C4A882] italic font-serif"> in days, not weeks.</span>
+                </h2>
+                <p className="mt-5 font-body text-[14px] text-[#F7F0E3]/40 max-w-md mx-auto">
+                  A precision-driven workflow built for speed, quality, and zero guesswork.
+                </p>
+              </div>
             </div>
 
             {/* ── Architectural blueprint rail — desktop only ── */}
@@ -654,7 +628,7 @@ export default function HomeClient() {
               {/* Horizontal dimension line */}
               <div className="absolute top-[18px] left-[12.5%] right-[12.5%] h-px"
                 style={{
-                  background: 'rgba(44,31,20,0.18)',
+                  background: 'rgba(247,240,227,0.15)',
                   transformOrigin: 'left center',
                   transform: processActivePhase >= 0 ? 'scaleX(1)' : 'scaleX(0)',
                   transition: 'transform 2.1s cubic-bezier(0.16,1,0.3,1) 0.1s',
@@ -667,7 +641,7 @@ export default function HomeClient() {
                     {/* Vertical drop */}
                     <div style={{
                       width: '1px',
-                      background: 'rgba(44,31,20,0.2)',
+                      background: 'rgba(247,240,227,0.2)',
                       height: processActivePhase >= i ? '14px' : '0px',
                       transition: `height 0.35s ease ${i * 0.7 + 0.45}s`,
                     }} />
@@ -675,8 +649,8 @@ export default function HomeClient() {
                     <div style={{
                       width: '7px', height: '7px',
                       borderRadius: '50%',
-                      border: '1.5px solid rgba(44,31,20,0.4)',
-                      background: processActivePhase >= i ? 'rgba(44,31,20,0.2)' : 'transparent',
+                      border: '1.5px solid rgba(196,168,130,0.5)',
+                      background: processActivePhase >= i ? 'rgba(196,168,130,0.3)' : 'transparent',
                       opacity: processActivePhase >= i ? 1 : 0,
                       transform: processActivePhase >= i ? 'scale(1)' : 'scale(0.3)',
                       transition: `opacity 0.3s ease ${i * 0.7}s, transform 0.3s ease ${i * 0.7}s, background 0.3s ease ${i * 0.7}s`,
@@ -701,10 +675,36 @@ export default function HomeClient() {
             </div>
 
             {/* Bottom CTA */}
-            <div className="mt-14 flex justify-center">
-              <Link href="/contact" className="group flex items-center gap-4">
-                <div className="w-8 h-[1.5px] bg-primary/40 group-hover:w-24 group-hover:bg-primary transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]" />
-                <span className="font-body font-medium text-[11px] tracking-[0.3em] uppercase text-primary/60 group-hover:text-primary transition-colors duration-300">Start Your Project</span>
+            <div className="mt-8 relative py-4 flex justify-center">
+              {/* Selective grid background behind CTA */}
+              <div className="absolute inset-0 pointer-events-none flex justify-center" aria-hidden="true">
+                <div className="w-full max-w-[320px] relative">
+                  <svg width="100%" height="100%" className="opacity-[0.06]">
+                    <defs>
+                      <pattern id="proc-grid-cta" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
+                        <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#F7F0E3" strokeWidth="0.8" />
+                      </pattern>
+                    </defs>
+                    <rect width="100%" height="100%" fill="url(#proc-grid-cta)" />
+                  </svg>
+                  <svg className="absolute top-0 left-0 opacity-20" width="16" height="16" fill="none">
+                    <path d="M16 0 L0 0 L0 16" stroke="#F7F0E3" strokeWidth="1.5" strokeLinecap="round" />
+                  </svg>
+                  <svg className="absolute top-0 right-0 opacity-20" width="16" height="16" fill="none">
+                    <path d="M0 0 L16 0 L16 16" stroke="#F7F0E3" strokeWidth="1.5" strokeLinecap="round" />
+                  </svg>
+                  <svg className="absolute bottom-0 left-0 opacity-20" width="16" height="16" fill="none">
+                    <path d="M0 0 L0 16 L16 16" stroke="#F7F0E3" strokeWidth="1.5" strokeLinecap="round" />
+                  </svg>
+                  <svg className="absolute bottom-0 right-0 opacity-20" width="16" height="16" fill="none">
+                    <path d="M16 0 L16 16 L0 16" stroke="#F7F0E3" strokeWidth="1.5" strokeLinecap="round" />
+                  </svg>
+                </div>
+              </div>
+
+              <Link href="/contact" className="group flex items-center gap-4 relative z-10">
+                <div className="w-8 h-[1.5px] bg-[#C4A882]/40 group-hover:w-24 group-hover:bg-[#C4A882] transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]" />
+                <span className="font-body font-medium text-[11px] tracking-[0.3em] uppercase text-[#F7F0E3]/50 group-hover:text-[#F7F0E3] transition-colors duration-300">Start Your Project</span>
               </Link>
             </div>
 
@@ -719,135 +719,182 @@ export default function HomeClient() {
             ? `${(heroLoop.height / heroLoop.width) * 100}%`
             : `${(fallbackRender.height / fallbackRender.width) * 100}%`;
           return (
-            <section className="py-28 md:py-36 px-6 md:px-16 lg:px-24">
-              <div className="max-w-7xl mx-auto">
-                <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-14">
-                  <div>
-                    <div className="flex items-center gap-4 mb-4">
-                      <span data-anim="label" className="section-label">Featured Project</span>
-                      <div data-anim="line" className="h-px bg-[#D4C5A9] w-20 flex-shrink-0" />
-                    </div>
-                    <h2 data-anim="heading" className="font-heading text-[clamp(2.2rem,5vw,3.8rem)] leading-[1.02] tracking-[-0.025em] text-primary mb-5">
-                      Work that<br />speaks for itself.
-                    </h2>
-                    <p data-anim="fade" className="font-body text-[14px] leading-[1.8] text-primary/55 max-w-xl">
-                      Three locations. One brand. We&apos;ve visualized every Chocolate Fish Coffee
-                      Roasters location in California — from pre-construction render to
-                      opening-day photograph.
-                    </p>
+            <section className="py-16 md:py-24 px-6 md:px-12 lg:px-16 overflow-hidden" style={{ background: '#F7F0E3' }}>
+              <div className="max-w-screen-2xl mx-auto">
+                
+                {/* High-End Art Studio Typography Header */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 mb-10 md:mb-16 items-end">
+                  <div className="lg:col-span-8 flex flex-col items-start">
+                     <div className="flex items-center gap-4 mb-6 md:mb-8">
+                       <span data-anim="label" className="font-body text-[9px] md:text-[10px] tracking-[0.3em] uppercase text-[#3b2516]/60">Featured Project // Modesto, CA</span>
+                     </div>
+                     <h2 data-anim="heading" className="font-heading text-[clamp(2.5rem,7vw,6.5rem)] leading-[0.9] tracking-[-0.03em] text-[#3b2516]">
+                       Chocolate Fish<br/>Coffee Roasters.
+                     </h2>
                   </div>
-                  <Link href="/portfolio" data-anim="fade" className="self-start sm:self-auto font-body text-[11px] tracking-[0.14em] uppercase text-primary/40 border-b border-primary/15 pb-0.5 hover:text-primary hover:border-primary/40 transition-colors duration-200 whitespace-nowrap">
-                    Full Portfolio →
-                  </Link>
+                  <div className="lg:col-span-4 flex flex-col lg:items-end lg:text-right pb-2">
+                     <p data-anim="fade" className="font-body text-[13px] md:text-[14px] leading-[1.6] text-[#3b2516]/70 max-w-sm mb-8 lg:mb-10">
+                       From pre-construction render to opening-day photograph. We visualized every location in California to absolute perfection.
+                     </p>
+                     <Link href="/portfolio" data-anim="fade" className="group flex items-center gap-4">
+                        <span className="font-body font-medium text-[10px] tracking-[0.3em] uppercase text-[#3b2516] transition-colors duration-300">View Full Portfolio</span>
+                        <div className="w-12 h-[1px] bg-[#3b2516]/30 group-hover:w-24 group-hover:bg-[#3b2516] transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"></div>
+                     </Link>
+                  </div>
                 </div>
 
-                {/* Walkthrough video — lazy-mounted via IntersectionObserver */}
-                <div ref={featuredVideoWrapRef}>
+                {/* The Video Highlight (Wow Factor) */}
+                <div ref={featuredVideoWrapRef} className="relative group w-full">
                   <Link
                     href="/portfolio/chocolate-fish-modesto"
                     data-anim="fade"
-                    className="relative block w-full overflow-hidden mb-10 group"
+                    className="relative block w-full overflow-hidden bg-[#ECE3CF] cursor-none"
                     style={{ paddingBottom: aspectPct }}
                     aria-label="Watch the Chocolate Fish Modesto case study"
                   >
-                    {featuredVideoInView && heroLoop ? (
-                      <video
-                        className="absolute inset-0 w-full h-full object-cover"
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                        preload="auto"
-                        poster={heroLoop.poster}
-                        width={heroLoop.width}
-                        height={heroLoop.height}
-                      >
-                        <source src={heroLoop.webm} type="video/webm" />
-                        <source src={heroLoop.mp4} type="video/mp4" />
-                      </video>
-                    ) : heroLoop ? (
-                      /* Poster fallback — no layout shift, no video bytes until near-viewport */
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={heroLoop.poster}
-                        alt="Chocolate Fish Modesto walkthrough preview"
-                        width={heroLoop.width}
-                        height={heroLoop.height}
-                        className="absolute inset-0 w-full h-full object-cover"
-                        loading="lazy"
-                        decoding="async"
-                      />
-                    ) : (
-                      <picture className="absolute inset-0 w-full h-full">
-                        <source type="image/avif" srcSet={fallbackRender.srcsetAvif} sizes="(max-width: 768px) 100vw, 90vw" />
-                        <source type="image/webp" srcSet={fallbackRender.srcsetWebp} sizes="(max-width: 768px) 100vw, 90vw" />
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                    {/* Subtle noise/grain overlay for texture */}
+                    <div className="absolute inset-0 z-10 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }}></div>
+
+                    <div className="absolute inset-0 w-full h-full transform transition-transform duration-[1.8s] ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:scale-[1.03]">
+                      {featuredVideoInView && heroLoop ? (
+                        <video
+                          className="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 group-hover:opacity-90"
+                          autoPlay
+                          muted
+                          loop
+                          playsInline
+                          preload="auto"
+                          poster={heroLoop.poster}
+                          width={heroLoop.width}
+                          height={heroLoop.height}
+                        >
+                          <source src={heroLoop.webm} type="video/webm" />
+                          <source src={heroLoop.mp4} type="video/mp4" />
+                        </video>
+                      ) : heroLoop ? (
+                        /* Poster fallback */
+                        // eslint-disable-next-line @next/next/no-img-element
                         <img
-                          src={fallbackRender.jpg}
-                          srcSet={fallbackRender.srcsetJpg}
-                          sizes="(max-width: 768px) 100vw, 90vw"
-                          alt={fallbackRender.alt}
-                          width={fallbackRender.width}
-                          height={fallbackRender.height}
+                          src={heroLoop.poster}
+                          alt="Chocolate Fish Modesto walkthrough preview"
+                          width={heroLoop.width}
+                          height={heroLoop.height}
+                          className="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 group-hover:opacity-90"
                           loading="lazy"
                           decoding="async"
-                          className="absolute inset-0 w-full h-full object-cover"
                         />
-                      </picture>
-                    )}
-
-                    {/* Project metadata overlay */}
-                    <div className="absolute inset-0 pointer-events-none flex flex-col justify-end p-6 md:p-10 bg-gradient-to-t from-primary/55 via-primary/10 to-transparent">
-                      <p className="font-body text-[10px] tracking-[0.28em] uppercase text-background/80 mb-2">
-                        Chocolate Fish Coffee Roasters · Modesto, CA · 2025
-                      </p>
-                      <p className="font-heading text-background text-[clamp(1.4rem,2.8vw,2.4rem)] leading-tight">
-                        Built from a render.
-                      </p>
+                      ) : (
+                        <picture className="absolute inset-0 w-full h-full">
+                          <source type="image/avif" srcSet={fallbackRender.srcsetAvif} sizes="(max-width: 768px) 100vw, 90vw" />
+                          <source type="image/webp" srcSet={fallbackRender.srcsetWebp} sizes="(max-width: 768px) 100vw, 90vw" />
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={fallbackRender.jpg}
+                            srcSet={fallbackRender.srcsetJpg}
+                            sizes="(max-width: 768px) 100vw, 90vw"
+                            alt={fallbackRender.alt}
+                            width={fallbackRender.width}
+                            height={fallbackRender.height}
+                            loading="lazy"
+                            decoding="async"
+                            className="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 group-hover:opacity-90"
+                          />
+                        </picture>
+                      )}
+                    </div>
+                    
+                    {/* Interactive Custom Cursor / Play Button Indicator */}
+                    <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
+                       <div className="w-24 h-24 md:w-32 md:h-32 rounded-full border border-background/30 bg-primary/5 backdrop-blur-md flex items-center justify-center opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]">
+                         <span className="font-body text-[10px] tracking-[0.25em] uppercase text-background">Play Film</span>
+                       </div>
                     </div>
                   </Link>
                 </div>
-
-                {/* CTA pills */}
-                <div data-anim="fade" className="flex flex-wrap gap-3">
+                
+                {/* Meta footer below video */}
+                <div data-anim="fade" className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-6 md:mt-8 border-t border-primary/10 pt-4">
+                  <div className="flex gap-8">
+                    <p className="font-body text-[10px] md:text-[11px] tracking-[0.2em] uppercase text-primary/50">
+                      Flagship Case Study
+                    </p>
+                    <p className="font-body text-[10px] md:text-[11px] tracking-[0.2em] uppercase text-primary/50 hidden sm:block">
+                      Render to Reality™
+                    </p>
+                  </div>
                   <Link
                     href="/portfolio/chocolate-fish-modesto"
-                    className="inline-flex items-center gap-2 bg-primary text-background font-body text-[11px] tracking-[0.14em] uppercase px-7 py-3.5 transition-opacity duration-200 hover:opacity-80"
+                    className="font-body text-[10px] md:text-[11px] tracking-[0.2em] uppercase text-primary hover:text-secondary transition-colors duration-300"
                   >
-                    See the case study →
-                  </Link>
-                  <Link
-                    href="/portfolio"
-                    className="inline-flex items-center gap-2 border border-primary/25 text-primary font-body text-[11px] tracking-[0.14em] uppercase px-7 py-3.5 transition-colors duration-200 hover:border-primary/60"
-                  >
-                    View all work
+                    Explore Details <span className="ml-1 text-secondary">✦</span>
                   </Link>
                 </div>
+
               </div>
             </section>
           );
         })()}
 
-        {/* ── FINAL CTA ───────────────────────────────────────────────────── */}
-        <section id="final-cta" className="py-28 md:py-36 px-6 md:px-16 lg:px-24 bg-primary overflow-hidden">
-          <div className="max-w-7xl mx-auto text-center">
-            <div data-anim="cta" className="flex items-center justify-center gap-4 mb-6">
-              <div className="h-px bg-background/20 w-16 flex-shrink-0" />
-              <span className="font-body text-[11px] tracking-[0.14em] uppercase text-secondary/70 whitespace-nowrap">Ready to Start?</span>
-              <div className="h-px bg-background/20 w-16 flex-shrink-0" />
+        {/* ── ZERO RISK ───────────────────────────────────────────────────── */}
+        <section className="py-10 md:py-14 px-6 md:px-16 lg:px-24" style={{ background: "#221709" }}>
+          <div className="max-w-7xl mx-auto">
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-8">
+              <div>
+                <p className="font-body text-[11px] tracking-[0.22em] uppercase text-secondary/50 mb-3">
+                  Our Payment Promise
+                </p>
+                <h2
+                  data-anim="heading"
+                  className="font-heading font-bold text-background leading-[0.95] tracking-[-0.025em]"
+                  style={{ fontSize: "clamp(1.8rem, 4vw, 3rem)" }}
+                >
+                  Zero-Risk<br />Partnership.
+                </h2>
+              </div>
+              <p data-anim="fade" className="font-body text-[13px] text-background/35 max-w-[340px] leading-relaxed">
+                Trust is earned through performance. We don&apos;t believe you should
+                fund a project before seeing meaningful progress.
+              </p>
             </div>
-            <h2 data-anim="cta" className="font-heading text-[clamp(2.5rem,7vw,5.5rem)] leading-[0.92] tracking-[-0.025em] text-background mb-7">
-              Turn your ideas into<br />visuals that sell.
-            </h2>
-            <p data-anim="cta" className="font-body text-[15px] text-background/45 max-w-sm mx-auto mb-12">
-              Custom quote within 24 hours. No commitment required.
-            </p>
-            <div data-anim="cta" className="flex flex-wrap gap-4 justify-center">
-              <Link href="/contact" className="btn-gold px-10 py-4 bg-secondary text-primary font-body text-[12px] tracking-[0.14em] uppercase">Get a Quote</Link>
-              <Link href="/contact" className="btn-outline-light px-10 py-4 border border-background/20 text-background/65 font-body text-[12px] tracking-[0.14em] uppercase">Book a Call</Link>
+
+            <div data-anim="fade" className="relative">
+              <div className="relative mb-0">
+                <div className="h-0.5 bg-[#3D2A1A] w-full" />
+                <div className="absolute top-0 left-0 h-0.5 w-1/2 bg-gradient-to-r from-secondary/60 to-secondary/30" />
+              </div>
+
+              <div className="grid grid-cols-3 -mt-2">
+                {[
+                  { label: "Project Start", amount: "$0", sub: "No upfront payment required", note: "We begin immediately", align: "left" },
+                  { label: "50% Complete", amount: "50% Due", sub: "Only on initial concept review", note: "You see it before you pay", align: "center" },
+                  { label: "Final Delivery", amount: "50% Due", sub: "On file handoff", note: "Paying for a product, not a promise", align: "right" },
+                ].map((m) => (
+                  <div
+                    key={m.label}
+                    className={`flex flex-col ${m.align === "center" ? "items-center text-center" : m.align === "right" ? "items-end text-right" : "items-start text-left"} pt-5`}
+                  >
+                    <div className="w-2.5 h-2.5 rounded-full bg-secondary ring-4 ring-secondary/15 mb-4" />
+                    <div className="font-body text-[10px] tracking-[0.16em] uppercase text-secondary/60 mb-1">{m.label}</div>
+                    <div className="font-heading font-light text-background mb-1 tabular-nums" style={{ fontSize: "clamp(1.1rem, 2.5vw, 1.6rem)" }}>{m.amount}</div>
+                    <div className="font-body text-[12px] text-background/40 mb-0.5">{m.sub}</div>
+                    <div className="font-body text-[11px] text-secondary/45 italic">{m.note}</div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-6 flex items-stretch gap-4 max-w-2xl">
+                <div className="w-0.5 bg-secondary/25 flex-shrink-0 rounded-full" />
+                <p className="font-body text-[13px] text-background/40 leading-relaxed italic">
+                  This structure ensures total alignment and protects you from paying for a promise
+                  rather than a product — from the very first line drawn to the final file delivered.
+                </p>
+              </div>
             </div>
           </div>
         </section>
+
+        {/* ── FINAL CTA ───────────────────────────────────────────────────── */}
+        <CTASection />
 
       </main>
     </>
