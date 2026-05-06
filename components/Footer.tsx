@@ -150,8 +150,48 @@ export default function Footer() {
         </p>
       </div>
 
+      {/* ── Big bold marquee strip ───────────────────────────────────────── */}
+      <div
+        className="relative z-10 overflow-hidden border-b"
+        style={{ borderColor: "rgba(196,168,130,0.10)", paddingTop: "1.4rem", paddingBottom: "1.4rem" }}
+        aria-hidden="true"
+      >
+        <div
+          className="flex"
+          style={{ animation: "footer-marquee 22s linear infinite" }}
+        >
+          {Array.from({ length: 6 }).map((_, i) => (
+            <span
+              key={i}
+              className="whitespace-nowrap flex-shrink-0 flex items-center"
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontWeight: 700,
+                fontSize: "clamp(1.4rem, 3.5vw, 2.6rem)",
+                letterSpacing: "-0.01em",
+                color: "rgba(180,148,104,0.38)",
+                paddingRight: "clamp(3rem, 6vw, 6rem)",
+              }}
+            >
+              PHOTOREALISTIC 3D VISUALIZATION
+              <span style={{ color: "rgba(180,148,104,0.55)", margin: "0 clamp(1.5rem,3vw,3rem)", fontSize: "0.6em" }}>✦</span>
+              RETROTEKT STUDIO
+              <span style={{ color: "rgba(180,148,104,0.55)", margin: "0 clamp(1.5rem,3vw,3rem)", fontSize: "0.6em" }}>✦</span>
+              STUDIO QUALITY · CONTRACTOR PRICING
+              <span style={{ color: "rgba(180,148,104,0.55)", margin: "0 clamp(1.5rem,3vw,3rem)", fontSize: "0.6em" }}>✦</span>
+            </span>
+          ))}
+        </div>
+        <style>{`
+          @keyframes footer-marquee {
+            from { transform: translateX(0); }
+            to   { transform: translateX(-50%); }
+          }
+        `}</style>
+      </div>
+
       {/* ── Main content ─────────────────────────────────────────────────── */}
-      <div className="relative z-10 max-w-screen-2xl mx-auto px-8 md:px-14 lg:px-20 pt-20 pb-12">
+      <div className="relative z-10 max-w-screen-2xl mx-auto px-8 md:px-14 lg:px-20 pt-14 pb-12">
 
         {/* Top section — Brand + Drawing Index */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 pb-16">
