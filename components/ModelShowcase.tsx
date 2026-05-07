@@ -7,7 +7,6 @@ export default function ModelShowcase() {
   return (
     <section id="model-showcase" className="relative w-full bg-background">
 
-
       <div className="showcase-pin h-screen relative overflow-hidden">
 
         {/* Architectural background grid */}
@@ -159,9 +158,7 @@ export default function ModelShowcase() {
               </div>
               <div className="hidden md:block w-px h-8" />
               <div className="flex items-center gap-7 md:gap-10">
-                <span className="font-body text-[10px] tracking-[0.2em] uppercase">Renders</span>
-                <span className="font-body text-[10px] tracking-[0.2em] uppercase">Walkthroughs</span>
-                <span className="font-body text-[10px] tracking-[0.2em] uppercase">Construction</span>
+                <span className="font-body text-[10px] tracking-[0.2em] uppercase">View Project Case Study</span>
               </div>
             </div>
 
@@ -170,18 +167,24 @@ export default function ModelShowcase() {
               <div
                 key={`cap-${i}`}
                 className="showcase-cap absolute inset-0 w-full h-full px-5 py-3 md:px-7 md:py-3.5 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 md:gap-10 z-10"
-                style={{ opacity: i === 0 ? 1 : 0 }}
+                style={{ opacity: i === 0 ? 1 : 0, pointerEvents: i === 0 ? 'auto' : 'none' }}
               >
                 {/* Left — project identity */}
                 <div className="flex-shrink-0">
                   <span className="font-body text-[8px] tracking-[0.3em] uppercase text-[#C4A882]/70 block mb-0.5">
                     {s.role}
                   </span>
-                  <Link href={s.href} className="group inline-flex items-baseline gap-2.5">
-                    <h3 className="font-heading text-[clamp(1rem,1.6vw,1.35rem)] text-[#F7F0E3] leading-[1.15] group-hover:text-[#C4A882] transition-colors duration-300">
-                      {s.title}
-                    </h3>
-                    <span className="text-[#C4A882]/40 text-xs translate-x-0 group-hover:translate-x-1 transition-transform duration-300 leading-none">→</span>
+                  <Link href={s.href} className="group relative flex flex-col items-start gap-[3px]">
+                    <span className="inline-flex items-baseline gap-2.5">
+                      <h3 className="font-heading text-[clamp(1rem,1.6vw,1.35rem)] text-[#F7F0E3] leading-[1.15] group-hover:text-[#C4A882] transition-colors duration-300">
+                        {s.title}
+                      </h3>
+                      <span className="text-[#C4A882]/40 text-xs translate-x-0 group-hover:translate-x-1 transition-transform duration-300 leading-none">→</span>
+                    </span>
+                    <span
+                      aria-hidden="true"
+                      className="block h-px bg-[#C4A882] w-0 group-hover:w-full transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"
+                    />
                   </Link>
                   <span className="font-body text-[8px] tracking-[0.22em] uppercase text-[#C4A882]/40 block mt-0.5">
                     {s.location}

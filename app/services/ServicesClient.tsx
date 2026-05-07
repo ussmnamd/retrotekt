@@ -322,7 +322,7 @@ export default function ServicesClient() {
           </div>
 
           {/* ── SERVICE 01: Hyper-Realistic Still Renders ── */}
-          <div className="reveal group border-b border-[#3D2A1A] pb-20 mb-20">
+          <div id="renders" className="reveal group border-b border-[#3D2A1A] pb-20 mb-20" style={{ scrollMarginTop: "80px" }}>
             <div className="flex flex-col lg:flex-row gap-12 lg:gap-20">
               {/* Left: Visual placeholder + meta */}
               <div className="lg:w-[45%] flex flex-col gap-6">
@@ -449,7 +449,7 @@ export default function ServicesClient() {
           </div>
 
           {/* ── SERVICE 02: Cinematic Walkthroughs ── */}
-          <div className="reveal group border-b border-[#3D2A1A] pb-20 mb-20">
+          <div id="walkthroughs" className="reveal group border-b border-[#3D2A1A] pb-20 mb-20" style={{ scrollMarginTop: "80px" }}>
             <div className="flex flex-col lg:flex-row-reverse gap-12 lg:gap-20">
               {/* Right side: Visual */}
               <div className="lg:w-[45%] flex flex-col gap-6">
@@ -571,7 +571,7 @@ export default function ServicesClient() {
           </div>
 
           {/* ── SERVICE 03: Aerial & Bird's-Eye Views ── */}
-          <div className="reveal group border-b border-[#3D2A1A] pb-20 mb-20">
+          <div id="aerial" className="reveal group border-b border-[#3D2A1A] pb-20 mb-20" style={{ scrollMarginTop: "80px" }}>
             <div className="flex flex-col lg:flex-row gap-12 lg:gap-20">
               {/* Left: Visual */}
               <div className="lg:w-[45%] flex flex-col gap-6">
@@ -805,7 +805,7 @@ export default function ServicesClient() {
           </div>
 
           {/* ── SERVICE 05: Floor Plan Renders ── */}
-          <div className="reveal group border-b border-[#3D2A1A] pb-20 mb-20">
+          <div id="floor-plans" className="reveal group border-b border-[#3D2A1A] pb-20 mb-20" style={{ scrollMarginTop: "80px" }}>
             <div className="flex flex-col lg:flex-row gap-12 lg:gap-20">
               {/* Left: Visual */}
               <div className="lg:w-[45%] flex flex-col gap-6">

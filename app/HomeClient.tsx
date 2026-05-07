@@ -143,9 +143,9 @@ export default function HomeClient() {
             gsapMod.set(caps[0], { x: 0, opacity: 1 });
 
             if (imgs[1]) gsapMod.set(imgs[1], { xPercent: -120, yPercent: -40, rotation: 14, scale: 0.62, opacity: 0 });
-            if (caps[1]) gsapMod.set(caps[1], { x: -30, opacity: 0 });
+            if (caps[1]) gsapMod.set(caps[1], { x: -30, opacity: 0, pointerEvents: 'none' });
             if (imgs[2]) gsapMod.set(imgs[2], { xPercent: -120, yPercent: -40, rotation: 14, scale: 0.62, opacity: 0 });
-            if (caps[2]) gsapMod.set(caps[2], { x: -30, opacity: 0 });
+            if (caps[2]) gsapMod.set(caps[2], { x: -30, opacity: 0, pointerEvents: 'none' });
 
             // Ghosts hidden by default — only used as trailing motion blur during transitions
             gsapMod.set(ghosts, { opacity: 0, visibility: "hidden" });
@@ -178,6 +178,13 @@ export default function HomeClient() {
                   duration: { min: 0.3, max: 0.7 },
                   ease: "power3.inOut",
                   delay: 0.05,
+                },
+                onUpdate: (self) => {
+                  const p = self.progress;
+                  const activeIdx = p < 0.25 ? 0 : p < 0.75 ? 1 : 2;
+                  caps.forEach((cap, i) => {
+                    (cap as HTMLElement).style.pointerEvents = i === activeIdx ? 'auto' : 'none';
+                  });
                 },
               },
             });
@@ -443,7 +450,8 @@ export default function HomeClient() {
         <link rel="preload" href="/models/updatedmodel.draco.glb" as="fetch" crossOrigin="anonymous" />
 
         {/* ── HERO ───────────────────────────────────────────────────────── */}
-        <section className="relative w-full h-screen min-h-[700px] overflow-hidden">
+        <div className="bg-primary">
+        <section className="relative w-full h-screen min-h-[700px] overflow-hidden bg-background rounded-b-[2.5rem]">
 
           {/* 1. BACK LAYER (Z-0) — no content */}
           <div className="absolute inset-0 z-0 w-full pointer-events-none" />
@@ -452,16 +460,6 @@ export default function HomeClient() {
           <div id="hero-section" className="absolute inset-0 z-10 pointer-events-auto">
             <Hero3D />
           </div>
-
-          {/* Organic cream wave at bottom of hero (Z-20) */}
-          <svg
-            className="absolute bottom-0 left-0 right-0 z-20 pointer-events-none w-full"
-            viewBox="0 0 1440 200"
-            preserveAspectRatio="none"
-            style={{ height: "clamp(80px, 15vw, 160px)" }}
-          >
-            <path d="M0,40 C360,180 1080,180 1440,40 L1440,200 L0,200 Z" fill="#F7F0E3" />
-          </svg>
 
           {/* 3. FRONT LAYER (Interactive Button & Solid Logo, Z-30) */}
           <div className="absolute inset-0 z-30 w-full pointer-events-none" aria-hidden="true">
@@ -508,6 +506,7 @@ export default function HomeClient() {
             </div>
           </div>
         </section>
+        </div>
 
         {/* ── SERVICES ───────────────────────────────────────────────────── */}
         <section id="services-section" className="bg-primary pt-16 pb-20 overflow-hidden relative">
@@ -559,7 +558,11 @@ export default function HomeClient() {
           </div>
         </section>
 
-        <ModelShowcase />
+        <div className="bg-primary">
+          <div className="mx-2 md:mx-3 overflow-hidden rounded-[2.5rem]">
+            <ModelShowcase />
+          </div>
+        </div>
 
         {/* ── PROCESS ─────────────────────────────────────────────────────── */}
         <section ref={processRef as React.RefObject<HTMLElement>} className="py-6 md:py-8 overflow-hidden relative" style={{ background: '#2C1F14' }}>
@@ -706,7 +709,8 @@ export default function HomeClient() {
             ? `${(heroLoop.height / heroLoop.width) * 100}%`
             : `${(fallbackRender.height / fallbackRender.width) * 100}%`;
           return (
-            <section className="py-16 md:py-24 px-6 md:px-12 lg:px-16 overflow-hidden" style={{ background: '#F7F0E3' }}>
+            <div className="bg-[#2C1F14] px-2 md:px-3 py-2 md:py-3">
+            <section className="py-16 md:py-24 px-6 md:px-12 lg:px-16 overflow-hidden rounded-[2.5rem]" style={{ background: '#F7F0E3' }}>
               <div className="max-w-screen-2xl mx-auto">
                 
                 {/* High-End Art Studio Typography Header */}
@@ -819,6 +823,7 @@ export default function HomeClient() {
 
               </div>
             </section>
+            </div>
           );
         })()}
 

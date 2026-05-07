@@ -134,11 +134,7 @@ export default function Navbar() {
         {/* Right side: inline links (homepage only, unscrolled) or Menu button */}
         <div className="pointer-events-auto relative mt-3" ref={menuRef}>
           {/* Desktop */}
-          <div
-            className="hidden md:flex items-center relative"
-            onMouseEnter={handleMenuEnter}
-            onMouseLeave={handleMenuLeave}
-          >
+          <div className="hidden md:flex items-center relative">
             {/* Inline links — homepage + not scrolled */}
             <ul
               className={`absolute right-0 flex items-center gap-10 font-body font-bold text-[10px] tracking-[0.25em] uppercase transition-all duration-700 ease-[cubic-bezier(0.76,0,0.24,1)] ${
@@ -167,7 +163,12 @@ export default function Navbar() {
               })}
             </ul>
 
-            {/* Menu button — all other states */}
+            {/* Menu button + dropdown — all other states */}
+            <div
+              className="relative"
+              onMouseEnter={handleMenuEnter}
+              onMouseLeave={handleMenuLeave}
+            >
             <button
               onClick={() => setIsMenuOpen((v) => !v)}
               aria-expanded={isMenuOpen}
@@ -227,6 +228,7 @@ export default function Navbar() {
                   })}
                 </ul>
               </div>
+            </div>
             </div>
           </div>
 

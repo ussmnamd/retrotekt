@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
@@ -90,7 +91,11 @@ const supporting = projects.slice(1); // Livermore, Sacramento
 // ── Component ──────────────────────────────────────────────────────────────────
 export default function PortfolioClient() {
   const root = useRef<HTMLDivElement>(null);
-  const [activeFilter, setActiveFilter] = useState<FilterLabel>('All');
+  const searchParams = useSearchParams();
+  const paramFilter = searchParams.get('filter') as FilterLabel;
+  const [activeFilter, setActiveFilter] = useState<FilterLabel>(
+    FILTERS.includes(paramFilter) ? paramFilter : 'All'
+  );
   // null = closed; number = index into galleryModalItems
   const [modalIndex, setModalIndex] = useState<number | null>(null);
 

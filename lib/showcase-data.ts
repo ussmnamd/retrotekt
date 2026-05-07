@@ -7,9 +7,7 @@ export const showcase = [
     location: "Modesto, CA · 2025",
     href: "/portfolio/chocolate-fish-modesto",
     links: [
-      { label: "Renders",       href: "/portfolio/chocolate-fish-modesto#renders" },
-      { label: "Walkthroughs",  href: "/portfolio/chocolate-fish-modesto#walkthroughs" },
-      { label: "Construction",  href: "/portfolio/chocolate-fish-modesto#construction" },
+      { label: "View Project Case Study", href: "/portfolio/chocolate-fish-modesto" },
     ],
   },
   {
@@ -20,9 +18,7 @@ export const showcase = [
     location: "Sacramento, CA · 2025",
     href: "/portfolio/chocolate-fish-sacramento",
     links: [
-      { label: "Renders",       href: "/portfolio/chocolate-fish-sacramento#renders" },
-      { label: "Walkthroughs",  href: "/portfolio/chocolate-fish-sacramento#walkthroughs" },
-      { label: "Construction",  href: "/portfolio/chocolate-fish-sacramento#construction" },
+      { label: "View Project Case Study", href: "/portfolio/chocolate-fish-sacramento" },
     ],
   },
   {
@@ -33,9 +29,7 @@ export const showcase = [
     location: "Livermore, CA · 2025",
     href: "/portfolio/chocolate-fish-livermore",
     links: [
-      { label: "Renders",       href: "/portfolio/chocolate-fish-livermore#renders" },
-      { label: "Walkthroughs",  href: "/portfolio/chocolate-fish-livermore#walkthroughs" },
-      { label: "Construction",  href: "/portfolio/chocolate-fish-livermore#construction" },
+      { label: "View Project Case Study", href: "/portfolio/chocolate-fish-livermore" },
     ],
   },
 ] as const;

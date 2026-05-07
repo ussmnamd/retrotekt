@@ -24,15 +24,53 @@ export default function Footer() {
 
   return (
     <footer
-      className="relative"
+      className="relative overflow-hidden"
       style={{
         background: "#D9CCBA",
         paddingLeft: "var(--frame-strip)",
         paddingRight: "var(--frame-strip)",
+        borderRadius: "2.5rem 2.5rem 0 0",
       }}
       aria-label="Site footer"
     >
-      {/* ── Inner dark container — rounded top corners ───────────────────── */}
+      {/* ── Running marquee — outside dark container so curves are visible ── */}
+      <Link
+        href="/contact"
+        className="group relative z-10 block overflow-hidden cursor-pointer"
+        style={{ background: "#D9CCBA", paddingTop: "1.5rem", paddingBottom: "1.5rem" }}
+        aria-label="Ready to move faster — go to contact"
+      >
+        <div
+          className="flex group-hover:[animation-play-state:paused]"
+          style={{ animation: "footer-marquee 30s linear infinite" }}
+        >
+          {Array.from({ length: 8 }).map((_, i) => (
+            <span
+              key={i}
+              className="whitespace-nowrap flex-shrink-0 flex items-center"
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontWeight: 400,
+                fontSize: "clamp(1.8rem, 4vw, 3.4rem)",
+                letterSpacing: "0.01em",
+                color: "#1A1008",
+                paddingRight: "clamp(1rem, 2.5vw, 2.5rem)",
+              }}
+            >
+              Ready to move faster?
+              <span style={{ color: "#8A7055", margin: "0 clamp(0.6rem,1.2vw,1.2rem)", fontSize: "0.5em", opacity: 0.6 }}>✦</span>
+            </span>
+          ))}
+        </div>
+        <style>{`
+          @keyframes footer-marquee {
+            from { transform: translateX(0); }
+            to   { transform: translateX(-50%); }
+          }
+        `}</style>
+      </Link>
+
+      {/* ── Inner dark container — rounded top corners visible against cream ── */}
       <div
         className="relative overflow-hidden"
         style={{ background: "#1A1008", borderRadius: "1.25rem 1.25rem 0 0" }}
@@ -86,51 +124,14 @@ export default function Footer() {
         </div>
 
         {/* Massive background wordmark */}
-        <div className="absolute bottom-0 left-0 right-0 pointer-events-none select-none overflow-hidden" aria-hidden="true" style={{ lineHeight: 0.85 }}>
+        <div className="absolute bottom-0 left-0 right-0 pointer-events-none select-none" aria-hidden="true" style={{ lineHeight: 0.85 }}>
           <p
             className="font-heading font-bold tracking-[-0.04em] text-[#C4A882] whitespace-nowrap"
-            style={{ fontSize: "clamp(6rem, 18vw, 18rem)", opacity: 0.04, transform: "translateY(18%)" }}
+            style={{ fontSize: "clamp(5rem, 14vw, 14rem)", opacity: 0.08 }}
           >
             RETROTEKT.
           </p>
         </div>
-
-        {/* ── Running marquee — links to contact ───────────────────────────── */}
-        <Link
-          href="/contact"
-          className="group relative z-10 block overflow-hidden cursor-pointer"
-          style={{ background: "#D9CCBA", paddingTop: "1.5rem", paddingBottom: "1.5rem" }}
-          aria-label="Ready to move faster — go to contact"
-        >
-          <div
-            className="flex group-hover:[animation-play-state:paused]"
-            style={{ animation: "footer-marquee 30s linear infinite" }}
-          >
-            {Array.from({ length: 8 }).map((_, i) => (
-              <span
-                key={i}
-                className="whitespace-nowrap flex-shrink-0 flex items-center"
-                style={{
-                  fontFamily: "'Inter', sans-serif",
-                  fontWeight: 400,
-                  fontSize: "clamp(1.8rem, 4vw, 3.4rem)",
-                  letterSpacing: "0.01em",
-                  color: "#1A1008",
-                  paddingRight: "clamp(2rem, 5vw, 5rem)",
-                }}
-              >
-                Ready to move faster?
-                <span style={{ color: "#8A7055", margin: "0 clamp(1.2rem,2.5vw,2.5rem)", fontSize: "0.5em", opacity: 0.6 }}>✦</span>
-              </span>
-            ))}
-          </div>
-          <style>{`
-            @keyframes footer-marquee {
-              from { transform: translateX(0); }
-              to   { transform: translateX(-50%); }
-            }
-          `}</style>
-        </Link>
 
         {/* ── Main content ─────────────────────────────────────────────────── */}
         <div className="relative z-10 max-w-screen-2xl mx-auto px-8 md:px-14 lg:px-20 pt-8 pb-6">

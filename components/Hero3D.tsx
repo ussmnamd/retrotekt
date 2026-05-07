@@ -46,12 +46,12 @@ const CONFIG = {
 
   envIntensity: 0.4,
   toneExposure: 1.15,
-  shadowMapSize: 2048,
+  shadowMapSize: 1024,
 };
 
 // ── MARBLE FLOOR TEXTURE ──────────────────────────────────────────────────────
 function createMarbleTexture(): THREE.CanvasTexture {
-  const size = 512;
+  const size = 256;
   const canvas = document.createElement("canvas");
   canvas.width = size;
   canvas.height = size;
@@ -70,7 +70,7 @@ function createMarbleTexture(): THREE.CanvasTexture {
   };
   const turbulence = (x: number, y: number) => {
     let v = 0, a = 0.5, f = 1;
-    for (let i = 0; i < 6; i++) { v += Math.abs(noise2d(x * f, y * f) - 0.5) * a; a *= 0.5; f *= 2.1; }
+    for (let i = 0; i < 4; i++) { v += Math.abs(noise2d(x * f, y * f) - 0.5) * a; a *= 0.5; f *= 2.1; }
     return v;
   };
 
@@ -142,15 +142,14 @@ export default function Hero3D() {
     const isMobile = isPhone || isTablet; // legacy compat for non-shadow-related checks
 
     // ── Renderer ─────────────────────────────────────────────────────────────
+    const dprCap = isPhone ? 1 : isTablet ? 1.5 : Math.min(window.devicePixelRatio, 2);
+
     const renderer = new THREE.WebGLRenderer({
       canvas,
       alpha: true,
       antialias: true,
       powerPreference: "high-performance",
     });
-
-    // Per-device pixel ratio caps
-    const dprCap = isPhone ? 1 : isTablet ? 1.5 : Math.min(window.devicePixelRatio, 2);
     renderer.setPixelRatio(dprCap);
     renderer.setSize(container.clientWidth, container.clientHeight);
     renderer.shadowMap.enabled = !isPhone;
@@ -647,7 +646,7 @@ export default function Hero3D() {
         camera.aspect = w / h;
         camera.updateProjectionMatrix();
         renderer.setSize(w, h);
-        renderer.setPixelRatio(isPhone ? 1 : isTablet ? 1.5 : Math.min(window.devicePixelRatio, 2));
+        renderer.setPixelRatio(dprCap);
         if (model) frameCamera(modelGroup);
         // Force one frame even if reduced-motion loop is parked
         lastRenderAfterResize = true;
