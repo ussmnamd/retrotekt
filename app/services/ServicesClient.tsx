@@ -49,9 +49,9 @@ function HeroGrid() {
 const solutions = [
   {
     num: "01",
-    tag: "Pre-Sale Visualization",
+    tag: "Pre-Sale",
     title: "The Deal Closer",
-    desc: "Your secret weapon to secure the contract before you swing a hammer. Help your client see it, approve it, and sign on the dotted line.",
+    desc: "Lightning-fast, budget-friendly visuals to get the signature.",
     stats: [
       { val: "24–48h", label: "Turnaround" },
       { val: "Budget", label: "Friendly" },
@@ -65,9 +65,9 @@ const solutions = [
   },
   {
     num: "02",
-    tag: "Full Project Visualization",
-    title: "High-End Precision",
-    desc: "Ultra-realistic renders for after you land the client. Finalize the vision with stunning material accuracy and full space coverage.",
+    tag: "Full Project",
+    title: "The Master Plan",
+    desc: "Ultra-realistic, 4K+ resolution for final alignment.",
     stats: [
       { val: "4K+", label: "Resolution" },
       { val: "Day/Night", label: "Lighting" },
@@ -81,9 +81,9 @@ const solutions = [
   },
   {
     num: "03",
-    tag: "Cinematic Walkthroughs",
-    title: "Immersive Experience",
-    desc: "Put investors and clients inside the space before a single wall goes up. Cinematic video built for sales pitches and social media.",
+    tag: "Cinematic",
+    title: "The Investor Magnet",
+    desc: "Immersive storytelling to secure capital and hype.",
     stats: [
       { val: "4K", label: "Video" },
       { val: "360°", label: "VR Ready" },
@@ -97,9 +97,9 @@ const solutions = [
   },
   {
     num: "04",
-    tag: "Strategic Design & Marketing",
-    title: "Creative Partnership",
-    desc: "We move beyond visualization to become your full creative partner — layout optimization, investor pitch decks, and lead-generating assets.",
+    tag: "Strategic",
+    title: "The Creative Partner",
+    desc: "Full layout optimization and pitch deck design.",
     stats: [
       { val: "Full", label: "Pitch Decks" },
       { val: "2D+3D", label: "Floor Plans" },
@@ -243,8 +243,8 @@ export default function ServicesClient() {
           {/* Subheadline */}
           <p className="reveal reveal-delay-3 font-body text-[16px] text-background/55 leading-[1.75] max-w-[520px] mb-14 relative z-10" style={{ transitionDelay: '0.5s' }}>
             Boutique 3D Visualization &amp; Design Solutions for Elite Builders,
-            Developers, and Designers — award-winning, agency-grade visuals
-            built for the speed of modern construction.
+            Developers, and Designers. Award-winning, agency-grade visuals
+            engineered for the high-velocity world of modern construction.
           </p>
 
           {/* CTA row */}
@@ -300,7 +300,7 @@ export default function ServicesClient() {
                 className="reveal font-heading font-bold text-background leading-[0.95] tracking-[-0.025em]"
                 style={{ fontSize: "clamp(2.2rem, 5vw, 4rem)" }}
               >
-                Every Visual Tool<br />You Need to Win.
+                The Toolkit: Every Visual Asset<br />You Need to Close
               </h2>
             </div>
             <p className="reveal reveal-delay-1 font-body text-[15px] text-background/35 max-w-[360px] leading-relaxed">
@@ -399,32 +399,20 @@ export default function ServicesClient() {
                   className="font-heading font-bold text-background leading-[0.95] tracking-[-0.02em] mb-6"
                   style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)" }}
                 >
-                  Hyper-Realistic<br />Still Renders
+                  Still Renders<br /><span className="text-secondary/70">The &ldquo;Indistinguishable&rdquo;<br />Standard</span>
                 </h3>
 
                 <p className="font-body text-[16px] text-background/50 leading-[1.85] mb-8 max-w-[480px]">
-                  Our photorealistic renders are indistinguishable from photography.
-                  Every material — stone, timber, brushed steel, fabric — is recreated
-                  with physical accuracy. Every light source behaves as it does in the
-                  real world: bouncing, scattering, casting shadow with precision.
-                </p>
-                <p className="font-body text-[16px] text-background/40 leading-[1.85] mb-10 max-w-[480px]">
-                  Delivered HD and print-ready, our renders work for client proposals,
-                  permit applications, investor presentations, and marketing campaigns.
-                  We offer interior, exterior, and mixed-scene coverage.
+                  Our photorealistic renders are a psychological trigger for client trust.
+                  We don&apos;t just &ldquo;show&rdquo; a room; we recreate the physics of reality—how light
+                  scatters across brushed steel, the grain of timber, and the soft bounce of a dusk sky.
                 </p>
 
                 {/* Feature list */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-10">
+                <div className="flex flex-col gap-3 mb-10">
                   {[
-                    "Interior & exterior scenes",
-                    "Physical material accuracy",
-                    "Natural & artificial lighting",
-                    "Day, dusk & night variants",
-                    "Furnished or unfurnished",
-                    "Before/after comparisons",
-                    "Permit-compatible output",
-                    "Social & print resolutions",
+                    "Best for: Client proposals, permit applications, and high-end marketing.",
+                    "Includes: Physical material accuracy, day/dusk/night studies, and permit-compatible output.",
                   ].map((f) => (
                     <div key={f} className="flex items-start gap-2.5">
                       <span className="text-secondary/60 flex-shrink-0 text-[12px] mt-0.5">✦</span>
@@ -535,31 +523,19 @@ export default function ServicesClient() {
                   className="font-heading font-bold text-background leading-[0.95] tracking-[-0.02em] mb-6"
                   style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)" }}
                 >
-                  Cinematic<br />Walkthroughs &amp;<br />Animations
+                  Cinematic Walkthroughs<br /><span className="text-secondary/70">Motion That Sells</span>
                 </h3>
 
                 <p className="font-body text-[16px] text-background/50 leading-[1.85] mb-8 max-w-[480px]">
-                  Put your clients and investors inside the space before a single wall
-                  goes up. Our cinematic walkthroughs use film-quality camera choreography,
-                  atmospheric lighting, and real-world physics to deliver an experience
-                  that stills simply cannot match.
-                </p>
-                <p className="font-body text-[16px] text-background/40 leading-[1.85] mb-10 max-w-[480px]">
-                  From 15-second social clips to 60-second full interior tours and
-                  sweeping exterior flythroughs — each video is crafted to land funding,
-                  close sales, and dominate your market on social media.
+                  Put your investors inside the space before the foundation is poured.
+                  Using film-quality camera choreography and atmospheric soundscapes,
+                  our animations turn a &ldquo;maybe&rdquo; into a &ldquo;yes.&rdquo;
                 </p>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-10">
+                <div className="flex flex-col gap-3 mb-10">
                   {[
-                    "Room walkthroughs (15–30s)",
-                    "Full interior tours (45–60s)",
-                    "Exterior flythroughs & drone-angle",
-                    "4K cinematic quality",
-                    "Background music included",
-                    "Logo & branding overlays",
-                    "Social-ready aspect ratios",
-                    "Investor deck integration",
+                    "Best for: Landing funding, viral social media marketing, and investor decks.",
+                    "Includes: 15–60s 4K Ultra HD video, branding overlays, and social-ready aspect ratios.",
                   ].map((f) => (
                     <div key={f} className="flex items-start gap-2.5">
                       <span className="text-secondary/60 flex-shrink-0 text-[12px] mt-0.5">✦</span>
@@ -665,31 +641,19 @@ export default function ServicesClient() {
                   className="font-heading font-bold text-background leading-[0.95] tracking-[-0.02em] mb-6"
                   style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)" }}
                 >
-                  Aerial &amp;<br />Bird&apos;s-Eye Views
+                  Aerial &amp; Bird&apos;s-Eye Views<br /><span className="text-secondary/70">The Big Picture</span>
                 </h3>
 
                 <p className="font-body text-[16px] text-background/50 leading-[1.85] mb-8 max-w-[480px]">
-                  Show the full picture. Our aerial renders give developers, investors,
-                  and planning committees a drone-perspective view of the entire site —
-                  lot coverage, massing, landscaping, and surrounding context all rendered
-                  with the same photorealistic precision as our ground-level work.
-                </p>
-                <p className="font-body text-[16px] text-background/40 leading-[1.85] mb-10 max-w-[480px]">
-                  Essential for pre-construction marketing, zoning approvals, and investor
-                  pitch decks where stakeholders need to understand the scale, location,
-                  and relationship of the project to its environment.
+                  Essential for large-scale developers and zoning boards. Show the
+                  relationship between the project and its environment—lot coverage,
+                  landscaping, and massing—all from a drone&apos;s perspective.
                 </p>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-10">
+                <div className="flex flex-col gap-3 mb-10">
                   {[
-                    "True vertical bird's-eye views",
-                    "Drone-angle (45° perspective)",
-                    "Full site context & surroundings",
-                    "Exterior massing clearly shown",
-                    "Landscaping & hardscape included",
-                    "Lot boundary overlays available",
-                    "Pre-construction marketing",
-                    "Zoning & permit presentations",
+                    "Best for: Zoning/permit approvals and pre-construction site marketing.",
+                    "Includes: True vertical site plans, drone-angle perspectives, and boundary overlays.",
                   ].map((f) => (
                     <div key={f} className="flex items-start gap-2.5">
                       <span className="text-secondary/60 flex-shrink-0 text-[12px] mt-0.5">✦</span>
@@ -793,32 +757,19 @@ export default function ServicesClient() {
                   className="font-heading font-bold text-background leading-[0.95] tracking-[-0.02em] mb-6"
                   style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)" }}
                 >
-                  360° Panoramas<br />&amp; Virtual Tours
+                  360° Panoramas &amp; VR<br /><span className="text-secondary/70">Total Immersion</span>
                 </h3>
 
                 <p className="font-body text-[16px] text-background/50 leading-[1.85] mb-8 max-w-[480px]">
-                  Fully immersive, interactive 360° room renders your clients can
-                  explore at their own pace — on any device, from anywhere in the world.
-                  No app download, no headset required. Just a shareable link they can
-                  open on their phone or laptop and step inside.
-                </p>
-                <p className="font-body text-[16px] text-background/40 leading-[1.85] mb-10 max-w-[480px]">
-                  Each panorama is rendered at ultra-high resolution and includes
-                  navigation hotspots between rooms. Perfect for luxury listings,
-                  remote client approvals, and investor presentations where physical
-                  site visits aren&apos;t practical.
+                  A shareable link that lets your client step inside the design from
+                  their phone or laptop. No apps, no headsets—just pure, interactive
+                  immersion that allows for remote approvals from anywhere in the world.
                 </p>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-10">
+                <div className="flex flex-col gap-3 mb-10">
                   {[
-                    "Interactive — client self-navigates",
-                    "Shareable link — no app needed",
-                    "Works on mobile, desktop & VR",
-                    "Multi-room linked tours",
-                    "Navigation hotspots between spaces",
-                    "Ultra-high-res equirectangular render",
-                    "Ideal for remote client reviews",
-                    "Embeds in websites & pitch decks",
+                    "Best for: Luxury listings and remote client sign-offs.",
+                    "Includes: Multi-room navigation hotspots and browser-based 3D exploration.",
                   ].map((f) => (
                     <div key={f} className="flex items-start gap-2.5">
                       <span className="text-secondary/60 flex-shrink-0 text-[12px] mt-0.5">✦</span>
@@ -924,31 +875,19 @@ export default function ServicesClient() {
                   className="font-heading font-bold text-background leading-[0.95] tracking-[-0.02em] mb-6"
                   style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)" }}
                 >
-                  Architectural<br />Floor Plan Renders
+                  Architectural Floor Plans<br /><span className="text-secondary/70">Precision Meets Clarity</span>
                 </h3>
 
                 <p className="font-body text-[16px] text-background/50 leading-[1.85] mb-8 max-w-[480px]">
-                  Clean, precise, permit-compatible floor plan renders that communicate
-                  your design with professional clarity. Every wall thickness, door
-                  swing, window placement, and room dimension rendered to U.S. architectural
-                  standards and annotated for immediate use in proposals and permits.
-                </p>
-                <p className="font-body text-[16px] text-background/40 leading-[1.85] mb-10 max-w-[480px]">
-                  We work from your CAD files, PDF drawings, or rough sketches — and
-                  deliver polished, visually sharp floor plans your clients can actually
-                  read and approve without needing an architecture degree.
+                  Clean, precise, and permit-compatible. We turn your CAD files or rough
+                  sketches into visually sharp, 2D or 3D color-coded plans that clients
+                  can actually understand at a glance.
                 </p>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-10">
+                <div className="flex flex-col gap-3 mb-10">
                   {[
-                    "Full dimension annotations",
-                    "Room labels & square footage",
-                    "Door & window placements",
-                    "Permit-ready U.S. format",
-                    "2D rendered & color-coded options",
-                    "Multi-floor buildings supported",
-                    "Fast 2–3 day turnaround",
-                    "Works from CAD, PDF, or sketch",
+                    "Best for: Sales brochures and permit-ready documentation.",
+                    "Includes: U.S. standard annotations, room labels, and square footage details.",
                   ].map((f) => (
                     <div key={f} className="flex items-start gap-2.5">
                       <span className="text-secondary/60 flex-shrink-0 text-[12px] mt-0.5">✦</span>
@@ -1043,32 +982,19 @@ export default function ServicesClient() {
                   className="font-heading font-bold text-background leading-[0.95] tracking-[-0.02em] mb-6"
                   style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)" }}
                 >
-                  Pre-Sale<br />Concepts &amp;<br />Rapid Visuals
+                  Pre-Sale Concepts<br /><span className="text-secondary/70">The 48-Hour Closer</span>
                 </h3>
 
                 <p className="font-body text-[16px] text-background/50 leading-[1.85] mb-8 max-w-[480px]">
-                  Your secret weapon for closing the contract before the project even
-                  begins. Before you invest in full production renders, these rapid
-                  concept visuals give your client just enough — enough to see it,
-                  believe it, and sign off on it.
-                </p>
-                <p className="font-body text-[16px] text-background/40 leading-[1.85] mb-10 max-w-[480px]">
-                  Delivered in 24–48 hours from whatever you have on hand — a napkin
-                  sketch, cell phone photo, or rough PDF. Budget-friendly, lightning-fast,
-                  and specifically designed to remove hesitation and accelerate the
-                  signing process.
+                  Your secret weapon for the &ldquo;undecided&rdquo; client. Before you commit to
+                  full-scale production, these rapid visuals give the client just enough
+                  to see the vision and sign the contract today.
                 </p>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-10">
+                <div className="flex flex-col gap-3 mb-10">
                   {[
-                    "24–48 hour concept delivery",
-                    "Works from any input format",
-                    "Before/after compositions",
-                    "Basic 3D massing concepts",
-                    "Budget-friendly pricing",
-                    "Exterior & interior options",
-                    "Removes client hesitation",
-                    "Upgrade path to full renders",
+                    "Best for: Rapid bidding and stopping client hesitation.",
+                    "Includes: Before/after comparisons and basic 3D massing from any input (even napkin sketches).",
                   ].map((f) => (
                     <div key={f} className="flex items-start gap-2.5">
                       <span className="text-secondary/60 flex-shrink-0 text-[12px] mt-0.5">✦</span>
@@ -1079,8 +1005,8 @@ export default function ServicesClient() {
 
                 <div className="flex items-center gap-6 pt-6 border-t border-[#3D2A1A]">
                   <div>
-                    <div className="font-body text-[11px] tracking-[0.14em] uppercase text-secondary/40 mb-0.5">Pricing</div>
-                    <div className="font-heading text-secondary font-light text-[1.6rem]">Custom <span className="text-[0.9rem] text-background/30">/ scope</span></div>
+                    <div className="font-body text-[11px] tracking-[0.14em] uppercase text-secondary/40 mb-0.5">Turnaround</div>
+                    <div className="font-heading text-secondary font-light text-[1.6rem]">24–48h</div>
                   </div>
                   <Link href="/contact" className="group flex items-center gap-4 ml-auto">
                     <div className="w-6 h-[1.5px] bg-secondary/60 group-hover:w-16 group-hover:bg-secondary transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"></div>
@@ -1110,12 +1036,12 @@ export default function ServicesClient() {
                 className="reveal font-heading font-bold text-background leading-[0.95] tracking-[-0.025em]"
                 style={{ fontSize: "clamp(2.2rem, 5vw, 4rem)" }}
               >
-                Engineered<br />to Close Deals.
+                Engineered to<br />Close Deals.
               </h2>
             </div>
             <p className="reveal reveal-delay-1 font-body text-[15px] text-background/35 max-w-[360px] leading-relaxed">
-              We don&apos;t sell &ldquo;renders.&rdquo; We package our services as strategic
-              solutions tailored to where you are in the project lifecycle.
+              We don&apos;t sell &ldquo;renders.&rdquo; We package strategic solutions
+              based on where you are in the project lifecycle:
             </p>
           </div>
 
@@ -1446,20 +1372,16 @@ export default function ServicesClient() {
             </div>
             <div className="md:w-2/5 flex flex-col gap-6">
               <p className="reveal reveal-delay-1 font-body text-[16px] text-deep/60 leading-[1.8] max-w-sm">
-                Stop explaining your vision. Start showing it. Submit your project
-                details and get a custom quote within 24 hours — no obligation, no
-                upfront payment.
+                Stop losing bids to a &ldquo;lack of imagination.&rdquo; Stop explaining your
+                vision—start showing it. Submit your plans (CAD, PDF, or Photo) and
+                let&apos;s get to work.
               </p>
               <div className="reveal reveal-delay-2 flex flex-col sm:flex-row gap-4">
                 <Link href="/contact" className="group flex items-center gap-4">
                   <div className="w-8 h-[1.5px] bg-primary/60 group-hover:w-24 group-hover:bg-primary transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"></div>
-                  <span className="font-body font-medium text-[11px] tracking-[0.3em] uppercase text-primary transition-colors duration-300">Get a Custom Quote in 24 Hours</span>
+                  <span className="font-body font-medium text-[11px] tracking-[0.3em] uppercase text-primary transition-colors duration-300">Get Your Custom Quote in 24 Hours</span>
                 </Link>
               </div>
-              <Link href="/contact" className="reveal reveal-delay-2 group flex items-center gap-4 self-start mt-4">
-                <div className="w-8 h-[1.5px] bg-primary/60 group-hover:w-16 group-hover:bg-primary transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"></div>
-                <span className="font-body font-medium text-[10px] tracking-[0.25em] uppercase text-primary transition-colors duration-300">Start Your Project Intake Form</span>
-              </Link>
             </div>
           </div>
         </div>
