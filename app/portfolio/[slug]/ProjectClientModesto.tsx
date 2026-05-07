@@ -13,253 +13,12 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 import type { Project } from '../data';
 import { portfolioAssets } from '../assets';
-import type { ProjectVideo, ResponsiveImage } from '../assets';
+import type { ResponsiveImage } from '../assets';
 import PortfolioPicture from '../_components/PortfolioPicture';
-import Lightbox from '../_components/Lightbox';
+import MediaModal, { type ModalItem } from '../_components/MediaModal';
 import StartLink from '../_components/StartLink';
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
-
-// ── helpers ────────────────────────────────────────────────────────────────────
-
-function fmtTime(secs: number): string {
-  if (!isFinite(secs) || isNaN(secs)) return '0:00';
-  const m = Math.floor(secs / 60);
-  const s = Math.floor(secs % 60);
-  return `${m}:${s.toString().padStart(2, '0')}`;
-}
-
-// ── Custom video player (primary — full featured) ──────────────────────────────
-
-interface VideoPlayerProps {
-  video: ProjectVideo;
-  autoPlay?: boolean;
-  className?: string;
-  preload?: 'none' | 'metadata' | 'auto';
-}
-
-function VideoPlayer({ video, autoPlay = false, className = '', preload = 'metadata' }: VideoPlayerProps) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const scrubRef = useRef<HTMLDivElement>(null);
-  const inactivityTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const [playing, setPlaying] = useState(false);
-  const [muted, setMuted] = useState(true);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [controlsVisible, setControlsVisible] = useState(false);
-  const [reduceMotion, setReduceMotion] = useState(false);
-
-  // Detect reduce-motion on mount
-  useEffect(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setReduceMotion(mq.matches);
-  }, []);
-
-  // Autoplay when mounted (muted)
-  useEffect(() => {
-    if (!autoPlay || !videoRef.current || reduceMotion) return;
-    videoRef.current.play().then(() => setPlaying(true)).catch(() => {});
-  }, [autoPlay, reduceMotion]);
-
-  const showControls = useCallback(() => {
-    setControlsVisible(true);
-    if (inactivityTimer.current) clearTimeout(inactivityTimer.current);
-    inactivityTimer.current = setTimeout(() => setControlsVisible(false), 2500);
-  }, []);
-
-  const togglePlay = useCallback(() => {
-    const v = videoRef.current;
-    if (!v) return;
-    if (v.paused) {
-      v.play().then(() => setPlaying(true)).catch(() => {});
-    } else {
-      v.pause();
-      setPlaying(false);
-    }
-  }, []);
-
-  const toggleMute = useCallback(() => {
-    const v = videoRef.current;
-    if (!v) return;
-    v.muted = !v.muted;
-    setMuted(v.muted);
-  }, []);
-
-  const handleScrubClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    const v = videoRef.current;
-    const bar = scrubRef.current;
-    if (!v || !bar || !isFinite(v.duration)) return;
-    const rect = bar.getBoundingClientRect();
-    const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-    v.currentTime = ratio * v.duration;
-  }, []);
-
-  const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
-
-  return (
-    <div
-      className={`relative overflow-hidden bg-primary group ${className}`}
-      onMouseMove={showControls}
-      onFocus={showControls}
-    >
-      <video
-        ref={videoRef}
-        className="w-full h-full object-cover cursor-pointer"
-        muted={muted}
-        playsInline
-        preload={preload}
-        poster={video.poster}
-        onClick={togglePlay}
-        onTimeUpdate={() => setCurrentTime(videoRef.current?.currentTime ?? 0)}
-        onLoadedMetadata={() => setDuration(videoRef.current?.duration ?? 0)}
-        onEnded={() => setPlaying(false)}
-      >
-        <source src={video.webm} type="video/webm" />
-        <source src={video.mp4} type="video/mp4" />
-      </video>
-
-      {/* Mute button — always visible top-right */}
-      <button
-        onClick={(e) => { e.stopPropagation(); toggleMute(); }}
-        className="absolute top-4 right-4 z-20 w-9 h-9 flex items-center justify-center bg-primary/50 hover:bg-primary/70 text-background transition-colors"
-        aria-label={muted ? 'Unmute' : 'Mute'}
-      >
-        {muted ? (
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-            <line x1="23" y1="9" x2="17" y2="15" />
-            <line x1="17" y1="9" x2="23" y2="15" />
-          </svg>
-        ) : (
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-            <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
-            <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
-          </svg>
-        )}
-      </button>
-
-      {/* Controls overlay — hide on prefers-reduced-motion */}
-      {!reduceMotion && (
-        <div
-          className={`absolute bottom-0 left-0 right-0 z-20 transition-opacity duration-300 ${
-            controlsVisible ? 'opacity-100' : 'opacity-0'
-          }`}
-          style={{ background: 'linear-gradient(transparent, rgba(44,31,20,0.7))' }}
-        >
-          {/* Scrub bar */}
-          <div
-            ref={scrubRef}
-            className="mx-4 mb-2 h-1 bg-background/20 cursor-pointer relative"
-            onClick={handleScrubClick}
-            role="slider"
-            aria-label="Video progress"
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-valuenow={Math.round(progress)}
-          >
-            <div
-              className="absolute inset-y-0 left-0 bg-secondary pointer-events-none"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-
-          {/* Controls row */}
-          <div className="flex items-center gap-3 px-4 pb-3">
-            <button
-              onClick={(e) => { e.stopPropagation(); togglePlay(); }}
-              className="w-7 h-7 flex items-center justify-center text-background hover:text-secondary transition-colors"
-              aria-label={playing ? 'Pause' : 'Play'}
-            >
-              {playing ? (
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                  <rect x="6" y="4" width="4" height="16" /><rect x="14" y="4" width="4" height="16" />
-                </svg>
-              ) : (
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                  <polygon points="5 3 19 12 5 21 5 3" />
-                </svg>
-              )}
-            </button>
-
-            <span className="font-body text-[10px] tracking-[0.08em] text-background/70 tabular-nums">
-              {fmtTime(currentTime)} / {fmtTime(duration)}
-            </span>
-          </div>
-        </div>
-      )}
-
-      {/* Reduced-motion fallback: explicit play button */}
-      {reduceMotion && !playing && (
-        <button
-          onClick={togglePlay}
-          className="absolute inset-0 flex items-center justify-center bg-primary/40"
-          aria-label="Play video"
-        >
-          <div className="w-16 h-16 rounded-full border border-background/60 flex items-center justify-center text-background">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <polygon points="5 3 19 12 5 21 5 3" />
-            </svg>
-          </div>
-        </button>
-      )}
-    </div>
-  );
-}
-
-// ── Thumbnail video tile ──────────────────────────────────────────────────────
-
-interface VideoThumbProps {
-  video: ProjectVideo;
-  index: number;
-  isActive: boolean;
-  onSelect: (i: number) => void;
-}
-
-function VideoThumb({ video, index, isActive, onSelect }: VideoThumbProps) {
-  return (
-    <button
-      data-anim="film-thumb"
-      className={`relative overflow-hidden block w-full text-left group border-2 transition-colors duration-200 ${
-        isActive ? 'border-secondary' : 'border-transparent hover:border-secondary/50'
-      }`}
-      style={{ aspectRatio: '16/9' }}
-      onClick={() => onSelect(index)}
-      aria-label={`Play walkthrough ${index + 1}`}
-      aria-pressed={isActive}
-    >
-      {/* Poster */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={video.poster}
-        alt={`Walkthrough ${index + 1} poster`}
-        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-        loading="lazy"
-        width={video.width}
-        height={video.height}
-      />
-
-      <div className="absolute inset-0 bg-primary/40 group-hover:bg-primary/20 transition-colors duration-200" />
-
-      {/* Play icon */}
-      <div className="absolute inset-0 flex items-center justify-center">
-        <div className={`w-10 h-10 rounded-full border flex items-center justify-center transition-colors duration-200 ${
-          isActive ? 'border-secondary bg-secondary/20' : 'border-background/60'
-        }`}>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill={isActive ? '#C4A882' : 'white'}>
-            <polygon points="5 3 19 12 5 21 5 3" />
-          </svg>
-        </div>
-      </div>
-
-      {/* Number label */}
-      <div className="absolute bottom-2 left-3 font-body text-[10px] tracking-[0.1em] uppercase text-background/60">
-        0{index + 1}
-      </div>
-    </button>
-  );
-}
 
 // ── Before/After Slider ────────────────────────────────────────────────────────
 
@@ -396,7 +155,7 @@ export default function ProjectClientModesto({ project }: { project: Project }) 
   const root = useRef<HTMLDivElement>(null);
 
   const assets = portfolioAssets[project.assetKey];
-  const { before, construction, renders, videos } = assets;
+  const { before, construction, renders, videos, heroLoop } = assets;
 
   // Other projects for cross-linking
   const { projects: allProjects } = (() => {
@@ -407,22 +166,17 @@ export default function ProjectClientModesto({ project }: { project: Project }) 
   })();
   const otherProjects = allProjects.filter((p) => p.slug !== project.slug);
 
-  // Video player state
-  const [activeVideoIndex, setActiveVideoIndex] = useState(2);
-  const [fadingVideo, setFadingVideo] = useState(false);
-  const activeVideo = videos[activeVideoIndex] as ProjectVideo | undefined;
+  // ── Unified modal state ─────────────────────────────────────────────────────
+  const [modal, setModal] = useState<{ items: ModalItem[]; index: number } | null>(null);
 
-  const switchVideo = useCallback((idx: number) => {
-    if (idx === activeVideoIndex) return;
-    setFadingVideo(true);
-    setTimeout(() => {
-      setActiveVideoIndex(idx);
-      setFadingVideo(false);
-    }, 250);
-  }, [activeVideoIndex]);
+  // Build ModalItem arrays once per render (assets are static)
+  const rendersItems: ModalItem[]      = renders.map(img => ({ kind: 'image' as const, data: img }));
+  const videoItems: ModalItem[]        = videos.map((v, i) => ({ kind: 'video' as const, data: v, label: `Walkthrough 0${i + 1}` }));
+  const beforeItems: ModalItem[]       = before.map(img => ({ kind: 'image' as const, data: img }));
+  const constructionItems: ModalItem[] = construction.map(img => ({ kind: 'image' as const, data: img }));
 
-  // Lightbox
-  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  // Hero loop: prefer dedicated heroLoop, fall back to first video in list
+  const heroVideo = heroLoop ?? videos[0];
 
   // ── Master GSAP timeline ────────────────────────────────────────────────────
   useGSAP(
@@ -496,12 +250,7 @@ export default function ProjectClientModesto({ project }: { project: Project }) 
             scrollTrigger: { trigger: '#reveal', start: 'top 75%' },
           });
 
-          // 6. Films
-          tl.from('[data-anim="film-primary"]', {
-            opacity: 0,
-            y: 30,
-            scrollTrigger: { trigger: '#films', start: 'top 80%' },
-          });
+          // 6. Films poster grid
           tl.from('[data-anim="film-thumb"]', {
             opacity: 0,
             y: 20,
@@ -539,14 +288,21 @@ export default function ProjectClientModesto({ project }: { project: Project }) 
 
       {/* ── 1. HERO FILM SECTION ──────────────────────────────────────────── */}
       <section id="film" className="relative overflow-hidden" style={{ minHeight: '90vh' }}>
-        {/* Full-bleed video */}
-        {activeVideo && (
+        {/* Full-bleed looping video */}
+        {heroVideo && (
           <div className="absolute inset-0">
-            <VideoPlayer
-              video={activeVideo}
+            <video
               autoPlay
-              className="absolute inset-0 w-full h-full"
-            />
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              poster={heroVideo.poster}
+              className="absolute inset-0 w-full h-full object-cover"
+            >
+              <source src={heroVideo.webm} type="video/webm" />
+              <source src={heroVideo.mp4}  type="video/mp4"  />
+            </video>
           </div>
         )}
 
@@ -686,28 +442,36 @@ export default function ProjectClientModesto({ project }: { project: Project }) 
             style={{ scrollbarWidth: 'thin', scrollbarColor: '#C4A882 #EDE3CE' }}
           >
             {before.map((img, i) => (
-              <div
+              <button
                 key={img.jpg}
                 data-anim="before-card"
-                className="shrink-0 md:snap-start relative overflow-hidden"
+                className="shrink-0 md:snap-start relative overflow-hidden cursor-pointer group text-left"
                 style={{
                   width: 'clamp(220px, 38vw, 380px)',
                   aspectRatio: '3/4',
                   minWidth: '220px',
                 }}
+                onClick={() => setModal({ items: beforeItems, index: i })}
+                aria-label={`View before photo ${i + 1}`}
               >
                 <PortfolioPicture
                   image={img}
                   sizes="(max-width: 768px) 90vw, 38vw"
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 hover:scale-103"
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-103"
                 />
+                {/* Hover overlay */}
+                <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/20 transition-colors duration-300 flex items-center justify-center">
+                  <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 font-body text-[11px] tracking-[0.12em] uppercase text-background border border-background/40 px-4 py-2">
+                    View Full
+                  </span>
+                </div>
                 {/* Caption */}
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-primary/70 to-transparent px-4 py-4">
                   <span className="font-body text-[10px] tracking-[0.12em] uppercase text-background/60">
                     0{i + 1} / Before construction
                   </span>
                 </div>
-              </div>
+              </button>
             ))}
           </div>
         </section>
@@ -731,10 +495,12 @@ export default function ProjectClientModesto({ project }: { project: Project }) 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               {/* Hero cell */}
               {construction[0] && (
-                <div
+                <button
                   data-anim="construction-cell"
-                  className="md:col-span-2 md:row-span-2 relative overflow-hidden group"
+                  className="md:col-span-2 md:row-span-2 relative overflow-hidden group cursor-pointer"
                   style={{ aspectRatio: '4/3', minHeight: '320px' }}
+                  onClick={() => setModal({ items: constructionItems, index: 0 })}
+                  aria-label="View construction photo 1"
                 >
                   {/* Grayscale layer — fades out on hover via opacity */}
                   <div
@@ -753,16 +519,24 @@ export default function ProjectClientModesto({ project }: { project: Project }) 
                     sizes="(max-width: 768px) 100vw, 66vw"
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
                   />
-                </div>
+                  {/* View hint */}
+                  <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/15 transition-colors duration-300 flex items-center justify-center">
+                    <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 font-body text-[11px] tracking-[0.12em] uppercase text-background border border-background/40 px-4 py-2">
+                      View Full
+                    </span>
+                  </div>
+                </button>
               )}
 
               {/* 3 side cells */}
               {construction.slice(1, 4).map((img, i) => (
-                <div
+                <button
                   key={img.jpg}
                   data-anim="construction-cell"
-                  className="relative overflow-hidden group"
+                  className="relative overflow-hidden group cursor-pointer"
                   style={{ aspectRatio: '4/3' }}
+                  onClick={() => setModal({ items: constructionItems, index: i + 1 })}
+                  aria-label={`View construction photo ${i + 2}`}
                 >
                   {/* Grayscale layer */}
                   <div
@@ -784,7 +558,7 @@ export default function ProjectClientModesto({ project }: { project: Project }) 
                   <div className="absolute bottom-2 left-3 font-body text-[9px] tracking-[0.1em] uppercase text-background/40 z-10">
                     0{i + 2}
                   </div>
-                </div>
+                </button>
               ))}
             </div>
           </div>
@@ -811,7 +585,7 @@ export default function ProjectClientModesto({ project }: { project: Project }) 
                 data-anim="render-hero"
                 className="relative overflow-hidden cursor-pointer group mb-3"
                 style={{ aspectRatio: '16/9' }}
-                onClick={() => setLightboxIndex(0)}
+                onClick={() => setModal({ items: rendersItems, index: 0 })}
               >
                 <PortfolioPicture
                   image={renders[0]}
@@ -839,7 +613,7 @@ export default function ProjectClientModesto({ project }: { project: Project }) 
                     data-anim="render-tile"
                     className="relative overflow-hidden cursor-pointer group"
                     style={{ aspectRatio: '16/9' }}
-                    onClick={() => setLightboxIndex(i + 1)}
+                    onClick={() => setModal({ items: rendersItems, index: i + 1 })}
                   >
                     <PortfolioPicture
                       image={img}
@@ -901,35 +675,45 @@ export default function ProjectClientModesto({ project }: { project: Project }) 
               Every room, before the doors opened.
             </h2>
 
-            {/* Primary player */}
-            {activeVideo && (
-              <div
-                data-anim="film-primary"
-                className={`mb-4 transition-opacity duration-250 ${fadingVideo ? 'opacity-0' : 'opacity-100'}`}
-                style={{ aspectRatio: '16/9' }}
-              >
-                <VideoPlayer
-                  video={activeVideo}
-                  className="w-full h-full"
-                  preload="none"
-                />
-              </div>
-            )}
-
-            {/* Thumbnail row */}
-            {videos.length > 1 && (
-              <div data-anim="films-grid" className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {videos.map((v, i) => (
-                  <VideoThumb
-                    key={v.mp4}
-                    video={v}
-                    index={i}
-                    isActive={i === activeVideoIndex}
-                    onSelect={switchVideo}
+            {/* Poster grid — click any card to open modal and auto-play */}
+            <div data-anim="films-grid" className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {videos.map((v, i) => (
+                <button
+                  key={v.mp4}
+                  data-anim="film-thumb"
+                  className="relative overflow-hidden group cursor-pointer text-left"
+                  style={{ aspectRatio: '16/9' }}
+                  onClick={() => setModal({ items: videoItems, index: i })}
+                  aria-label={`Play walkthrough ${i + 1}`}
+                >
+                  {/* Poster image */}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={v.poster}
+                    alt={`Walkthrough 0${i + 1} poster`}
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                   />
-                ))}
-              </div>
-            )}
+
+                  {/* Dark overlay + play button */}
+                  <div className="absolute inset-0 bg-primary/30 group-hover:bg-primary/50 transition-colors duration-300 flex items-center justify-center">
+                    <div className="w-14 h-14 rounded-full bg-background/20 border border-background/40 flex items-center justify-center backdrop-blur-sm group-hover:bg-secondary/40 transition-colors duration-300">
+                      <svg
+                        width="20" height="20" viewBox="0 0 24 24"
+                        fill="currentColor"
+                        className="text-background ml-1"
+                      >
+                        <polygon points="5 3 19 12 5 21 5 3" />
+                      </svg>
+                    </div>
+                  </div>
+
+                  {/* Label */}
+                  <div className="absolute bottom-3 left-4 font-body text-[10px] tracking-[0.12em] uppercase text-background/70">
+                    Walkthrough 0{i + 1}
+                  </div>
+                </button>
+              ))}
+            </div>
           </div>
         </section>
       )}
@@ -1031,12 +815,12 @@ export default function ProjectClientModesto({ project }: { project: Project }) 
         </div>
       </section>
 
-      {/* Lightbox */}
-      {lightboxIndex !== null && (
-        <Lightbox
-          images={renders}
-          startIndex={lightboxIndex}
-          onClose={() => setLightboxIndex(null)}
+      {/* ── Unified media modal ───────────────────────────────────────────── */}
+      {modal !== null && (
+        <MediaModal
+          items={modal.items}
+          startIndex={modal.index}
+          onClose={() => setModal(null)}
         />
       )}
     </div>

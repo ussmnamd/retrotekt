@@ -249,7 +249,7 @@ export default function ServicesClient() {
 
           {/* CTA row */}
           <div className="reveal reveal-delay-3 flex flex-wrap items-center gap-5 mb-20 relative z-10" style={{ transitionDelay: '0.6s' }}>
-            <Link href="/contact" className="group flex items-center gap-4">
+            <Link href="/contact" className="group inline-flex items-center gap-4 px-5 py-[10px] rounded-[3px] border border-[#C4A882]/20 bg-[#F7F0E3]/[0.05] hover:bg-[#F7F0E3]/10 hover:border-[#C4A882]/35 transition-colors duration-300">
               <div className="w-8 h-[1.5px] bg-secondary/60 group-hover:w-24 group-hover:bg-secondary transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"></div>
               <span className="font-body font-medium text-[11px] tracking-[0.3em] uppercase text-secondary group-hover:text-secondary transition-colors duration-300">Request Your Custom Project Blueprint</span>
             </Link>
@@ -1377,7 +1377,7 @@ export default function ServicesClient() {
                 let&apos;s get to work.
               </p>
               <div className="reveal reveal-delay-2 flex flex-col sm:flex-row gap-4">
-                <Link href="/contact" className="group flex items-center gap-4">
+                <Link href="/contact" className="group inline-flex items-center gap-4 px-5 py-[10px] rounded-[3px] border border-primary/10 bg-primary/[0.04] hover:bg-primary/[0.09] hover:border-primary/20 transition-colors duration-300">
                   <div className="w-8 h-[1.5px] bg-primary/60 group-hover:w-24 group-hover:bg-primary transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"></div>
                   <span className="font-body font-medium text-[11px] tracking-[0.3em] uppercase text-primary transition-colors duration-300">Get Your Custom Quote in 24 Hours</span>
                 </Link>

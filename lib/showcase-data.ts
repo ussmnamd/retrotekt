@@ -1,6 +1,6 @@
 export const showcase = [
   {
-    src: "/showcase/model-01.png",
+    src: "/showcase/model-01.webp",
     ghost: "/showcase/model-01-ghost.webp",
     role: "Hospitality / Cafe",
     title: "Chocolate Fish — Modesto",
@@ -13,7 +13,7 @@ export const showcase = [
     ],
   },
   {
-    src: "/showcase/model-02.png",
+    src: "/showcase/model-02.webp",
     ghost: "/showcase/model-02-ghost.webp",
     role: "Retail / Roastery",
     title: "Chocolate Fish — Sacramento",
@@ -26,7 +26,7 @@ export const showcase = [
     ],
   },
   {
-    src: "/showcase/model-03.png",
+    src: "/showcase/model-03.webp",
     ghost: "/showcase/model-03-ghost.webp",
     role: "Hospitality / Lounge",
     title: "Chocolate Fish — Livermore",

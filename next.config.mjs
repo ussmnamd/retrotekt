@@ -68,19 +68,37 @@ const nextConfig = {
           { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
         ],
       },
+      // Portfolio & showcase images are content-addressed (build script writes
+      // fixed filenames) — treat them as immutable for repeat-visitor caching.
+      {
+        source: '/portfolio/:path*',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+        ],
+      },
+      {
+        source: '/showcase/:path*',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+        ],
+      },
       {
         source: '/_next/static/:path*',
         headers: [
           { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
         ],
       },
-      // Home route: preload Draco WASM decoder so Three.js finds it pre-fetched.
+      // Home route: preload Draco WASM decoder + hero GLB so both are in flight
+      // from the first HTTP response — before React hydrates.
       {
         source: '/',
         headers: [
           {
             key: 'Link',
-            value: '</draco/draco_decoder.wasm>; rel=preload; as=fetch; crossorigin=anonymous',
+            value: [
+              '</draco/draco_decoder.wasm>; rel=preload; as=fetch; crossorigin=anonymous',
+              '</models/updatedmodel.draco.glb>; rel=preload; as=fetch; crossorigin=anonymous',
+            ].join(', '),
           },
         ],
       },

@@ -114,9 +114,10 @@ export default function ContactPage() {
           </p>
           <button
             onClick={() => setSent(false)}
-            className="font-body text-[12px] tracking-[0.12em] uppercase text-primary/40 border-b border-primary/15 pb-0.5 hover:text-primary hover:border-primary/40 transition-colors"
+            className="group inline-flex items-center gap-4 px-5 py-[10px] rounded-[3px] border border-primary/10 bg-primary/[0.04] hover:bg-primary/[0.09] hover:border-primary/20 transition-colors duration-300"
           >
-            Send Another Message
+            <div className="w-8 h-[1.5px] bg-primary/40 group-hover:w-24 group-hover:bg-primary transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]" />
+            <span className="font-body font-medium text-[11px] tracking-[0.3em] uppercase text-primary/50 group-hover:text-primary transition-colors duration-300">Send Another Message</span>
           </button>
         </div>
       </main>
@@ -239,20 +240,23 @@ export default function ContactPage() {
                   <p className="font-body text-[10px] tracking-[0.3em] uppercase text-primary/40">
                     Budget Range
                   </p>
-                  <div className="flex flex-wrap gap-2" role="group" aria-label="Budget range">
+                  <div className="flex flex-wrap gap-x-6 gap-y-3" role="group" aria-label="Budget range">
                     {BUDGETS.map((b) => (
                       <button
                         key={b}
                         type="button"
                         onClick={() => update("budget", b)}
                         aria-pressed={form.budget === b}
-                        className={`px-4 py-2 font-body text-[12px] transition-all duration-200 border ${
-                          form.budget === b
-                            ? "bg-primary text-background border-primary"
-                            : "border-primary/15 text-primary/50 hover:border-primary/30 hover:text-primary"
-                        }`}
+                        className="group flex items-center gap-2.5"
                       >
-                        {b}
+                        <div className={`h-px transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] ${
+                          form.budget === b
+                            ? "w-5 bg-primary"
+                            : "w-2 bg-primary/25 group-hover:w-5 group-hover:bg-primary/60"
+                        }`} />
+                        <span className={`font-body text-[11px] tracking-[0.15em] uppercase transition-colors duration-300 ${
+                          form.budget === b ? "text-primary" : "text-primary/40 group-hover:text-primary/70"
+                        }`}>{b}</span>
                       </button>
                     ))}
                   </div>
@@ -286,9 +290,12 @@ export default function ContactPage() {
                 <button
                   type="submit"
                   disabled={sending}
-                  className="btn-dark self-start px-10 py-4 bg-primary text-background font-body text-[12px] tracking-[0.14em] uppercase disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="group inline-flex items-center gap-4 self-start px-5 py-[10px] rounded-[3px] border border-primary/10 bg-primary/[0.04] hover:bg-primary/[0.09] hover:border-primary/20 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {sending ? "Opening Email…" : "Send Message →"}
+                  <div className="w-8 h-[1.5px] bg-primary/60 group-hover:w-24 group-hover:bg-primary transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]" />
+                  <span className="font-body font-medium text-[11px] tracking-[0.3em] uppercase text-primary">
+                    {sending ? "Opening Email…" : "Send Message"}
+                  </span>
                 </button>
               </form>
             </div>

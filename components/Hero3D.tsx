@@ -115,6 +115,9 @@ const TEXTURE_SLOTS = [
   "map", "normalMap", "roughnessMap", "emissiveMap", "metalnessMap", "aoMap",
 ] as const;
 
+// Reused in traverse loops — avoids per-mesh allocation and GC pressure.
+const ZERO_COLOR = new THREE.Color(0, 0, 0);
+
 export default function Hero3D() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -340,7 +343,7 @@ export default function Hero3D() {
             std.metalness = 0.55;
           }
 
-          if (std.emissive && !std.emissive.equals(new THREE.Color(0, 0, 0))) {
+          if (std.emissive && !std.emissive.equals(ZERO_COLOR)) {
             std.emissiveIntensity = (std.emissiveIntensity ?? 1) * 6.0;
           }
 
@@ -422,7 +425,7 @@ export default function Hero3D() {
               const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
               return mats.some((m) => {
                 const s = m as THREE.MeshStandardMaterial;
-                return s.emissive && !s.emissive.equals(new THREE.Color(0, 0, 0));
+                return s.emissive && !s.emissive.equals(ZERO_COLOR);
               });
             })();
             const isBulb = bulbKeywords.test(name) || isEmissive;

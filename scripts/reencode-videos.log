@@ -1,0 +1,34 @@
+[reenc] === STAGE 1: MP4 (parallel) ===
+[reenc]   encode walkthrough-01.mp4 -> tmp
+[reenc]   encode walkthrough-02.mp4 -> tmp
+[reenc]   encode walkthrough-03.mp4 -> tmp
+[reenc]   all mp4 encodes finished
+[reenc] SWAP  walkthrough-01.mp4  8423KB -> 5825KB  (-2597KB)
+[reenc] SWAP  walkthrough-02.mp4  3569KB -> 2448KB  (-1121KB)
+[reenc] SWAP  walkthrough-03.mp4  3675KB -> 2295KB  (-1380KB)
+[reenc] SWAP  hero-loop.mp4  1369KB -> 1125KB  (-244KB)
+[reenc] === STAGE 2: WebM (serial) ===
+[reenc]   encode walkthrough-01.webm
+[reenc] SWAP  walkthrough-01.webm  10836KB -> 3893KB  (-6942KB)
+[reenc]   encode walkthrough-02.webm
+[reenc] SWAP  walkthrough-02.webm  4539KB -> 1518KB  (-3020KB)
+[reenc]   encode walkthrough-03.webm
+[reenc] SWAP  walkthrough-03.webm  4959KB -> 1958KB  (-3001KB)
+[reenc]   encode hero-loop.webm
+[reenc] SWAP  hero-loop.webm  2997KB -> 675KB  (-2322KB)
+[reenc] === DONE ===
+total 20632
+drwxr-xr-x 1 uahme 197609       0 May  7 21:44 .
+drwxr-xr-x 1 uahme 197609       0 May  4 01:14 ..
+-rw-r--r-- 1 uahme 197609 1152262 May  7 21:41 hero-loop.mp4
+-rw-r--r-- 1 uahme 197609  220211 May  4 16:51 hero-loop.poster.jpg
+-rw-r--r-- 1 uahme 197609  691252 May  7 21:44 hero-loop.webm
+-rw-r--r-- 1 uahme 197609 5965720 May  7 21:42 walkthrough-01.mp4
+-rw-r--r-- 1 uahme 197609  252271 May  4 16:47 walkthrough-01.poster.jpg
+-rw-r--r-- 1 uahme 197609 3987215 May  7 21:43 walkthrough-01.webm
+-rw-r--r-- 1 uahme 197609 2507019 May  7 21:42 walkthrough-02.mp4
+-rw-r--r-- 1 uahme 197609  155892 May  4 16:49 walkthrough-02.poster.jpg
+-rw-r--r-- 1 uahme 197609 1555165 May  7 21:43 walkthrough-02.webm
+-rw-r--r-- 1 uahme 197609 2350846 May  7 21:42 walkthrough-03.mp4
+-rw-r--r-- 1 uahme 197609  256366 May  4 16:50 walkthrough-03.poster.jpg
+-rw-r--r-- 1 uahme 197609 2005560 May  7 21:44 walkthrough-03.webm

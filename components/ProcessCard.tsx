@@ -160,22 +160,14 @@ export const ProcessCard: React.FC<ProcessCardProps> = ({ phase, title, desc, in
       />
 
       {/* Content */}
-      <div className="relative flex flex-col p-6 lg:p-8 min-h-[280px] z-10">
+      <div className="relative flex flex-col p-6 lg:p-8 min-h-[280px] z-10 h-full">
 
-        {/* Phase number + horizontal rule */}
-        <div className="flex items-center gap-3 mb-5">
+        {/* Phase number */}
+        <div className="mb-5">
           <span className="font-heading text-[3.2rem] font-bold leading-none select-none"
             style={{ color: hovered ? 'rgba(247,240,227,0.15)' : 'rgba(247,240,227,0.07)', transition: 'color 0.4s ease' }}>
             {phase}
           </span>
-          <div className="h-px flex-1"
-            style={{
-              background: 'rgba(247,240,227,0.15)',
-              transformOrigin: 'left',
-              transform: hovered ? 'scaleX(1)' : 'scaleX(0.45)',
-              transition: 'transform 0.55s cubic-bezier(0.16,1,0.3,1)',
-            }}
-          />
         </div>
 
         {/* Architectural icon — top-right */}
@@ -191,14 +183,15 @@ export const ProcessCard: React.FC<ProcessCardProps> = ({ phase, title, desc, in
           <IconComponent active={isActive} />
         </div>
 
-        {/* Title + description — bottom-aligned */}
-        <div className="mt-auto"
+        {/* Spacer + Title + description — heading row aligns across cards */}
+        <div className="flex-1" />
+        <div
           style={{
             transform: hovered ? 'translateY(-5px)' : 'translateY(0)',
             transition: 'transform 0.45s cubic-bezier(0.16,1,0.3,1)',
           }}
         >
-          <h3 className="text-[1.3rem] lg:text-[1.5rem] leading-[1.15] font-light font-heading tracking-tight mb-2"
+          <h3 className="text-[1.3rem] lg:text-[1.5rem] leading-[1.15] font-light font-heading tracking-tight mb-2 line-clamp-1"
             style={{
               color: hovered ? '#F7F0E3' : '#C4A882',
               transition: 'color 0.4s ease',
@@ -206,7 +199,7 @@ export const ProcessCard: React.FC<ProcessCardProps> = ({ phase, title, desc, in
           >
             {title}
           </h3>
-          <p className="text-[13px] leading-relaxed font-body"
+          <p className="text-[13px] leading-relaxed font-body line-clamp-2"
             style={{ color: 'rgba(247,240,227,0.6)', opacity: hovered ? 1 : 0.85, transition: 'opacity 0.4s ease' }}
           >
             {desc}

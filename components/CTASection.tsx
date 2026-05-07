@@ -93,7 +93,7 @@ export default function CTASection() {
           style={{ opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(12px)", transition: "opacity 0.7s ease, transform 0.7s ease", transitionDelay: "0.05s" }}
         >
           <div className="w-5 h-px bg-[#C4A882]/35" />
-          <span className="uppercase text-[#C4A882]/45 tracking-[0.32em]" style={{ fontFamily: "monospace", fontSize: "9px" }}>
+          <span className="uppercase text-[#C4A882]/45 tracking-[0.32em]" style={{ fontFamily: "monospace", fontSize: "11px" }}>
             The Studio That Delivers
           </span>
           <div className="w-5 h-px bg-[#C4A882]/35" />
@@ -115,7 +115,7 @@ export default function CTASection() {
         <div className="w-full max-w-2xl mb-12" style={fadeUp("0.28s")}>
           <span
             className="uppercase text-[#C4A882]/70 tracking-[0.32em] mb-6 block"
-            style={{ fontFamily: "monospace", fontSize: "8px" }}
+            style={{ fontFamily: "monospace", fontSize: "11px" }}
           >
             Our Payment Promise
           </span>
@@ -164,17 +164,17 @@ export default function CTASection() {
                 </span>
                 <span
                   className="font-body font-medium text-[#C4A882] tracking-[0.08em] uppercase"
-                  style={{ fontSize: "10px" }}
+                  style={{ fontSize: "12px" }}
                 >
                   {step.label}
                 </span>
                 <span
                   className="text-[#C4A882]/80 tracking-[0.12em] uppercase"
-                  style={{ fontFamily: "monospace", fontSize: "7.5px" }}
+                  style={{ fontFamily: "monospace", fontSize: "10px" }}
                 >
                   {step.sub}
                 </span>
-                <p className="font-body text-[12px] text-[#F7F0E3]/70 leading-relaxed mt-1 max-w-[160px]">
+                <p className="font-body font-medium text-[13px] text-[#F7F0E3]/70 leading-relaxed mt-1 max-w-[160px] text-center">
                   {step.note}
                 </p>
               </div>
@@ -193,14 +193,14 @@ export default function CTASection() {
           className="flex flex-col sm:flex-row items-center gap-7 mb-12"
           style={fadeUp("0.45s")}
         >
-          <Link href="/contact" className="group flex items-center gap-4">
+          <Link href="/contact" className="group inline-flex items-center gap-4 px-5 py-[10px] rounded-[3px] border border-[#C4A882]/20 bg-[#F7F0E3]/[0.05] hover:bg-[#F7F0E3]/10 hover:border-[#C4A882]/35 transition-colors duration-300">
             <div className="w-8 h-[1.5px] bg-[#C4A882]/40 group-hover:w-20 group-hover:bg-[#C4A882] transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]" />
             <span className="font-body font-medium text-[11px] tracking-[0.3em] uppercase text-[#F7F0E3]/85 group-hover:text-[#F7F0E3] transition-colors duration-300">
               Start Your Project
             </span>
           </Link>
           <div className="hidden sm:block w-px h-3.5 bg-[#C4A882]/15" />
-          <Link href="/portfolio" className="group flex items-center gap-4">
+          <Link href="/portfolio" className="group inline-flex items-center gap-4 px-5 py-[10px] rounded-[3px] border border-[#F7F0E3]/[0.08] bg-[#F7F0E3]/[0.03] hover:bg-[#F7F0E3]/[0.07] hover:border-[#F7F0E3]/15 transition-colors duration-300">
             <div className="w-8 h-[1.5px] bg-[#F7F0E3]/12 group-hover:w-20 group-hover:bg-[#F7F0E3]/35 transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]" />
             <span className="font-body font-medium text-[11px] tracking-[0.3em] uppercase text-[#F7F0E3]/55 group-hover:text-[#F7F0E3]/80 transition-colors duration-300">
               View Our Work
@@ -237,36 +237,6 @@ export default function CTASection() {
         </div>
       </div>
 
-      {/* ── BOTTOM MARQUEE ── */}
-      <div
-        className="relative overflow-hidden"
-        style={{ borderTop: "1px solid rgba(196,168,130,0.12)", paddingTop: "1.5rem", paddingBottom: "1.5rem" }}
-        aria-hidden="true"
-      >
-        <div className="flex" style={{ animation: "cta-strip 30s linear infinite" }}>
-          {Array.from({ length: 8 }).map((_, i) => (
-            <span
-              key={i}
-              className="whitespace-nowrap flex-shrink-0 flex items-center gap-6"
-              style={{
-                fontFamily: "monospace",
-                fontSize: "clamp(0.75rem, 1.4vw, 1rem)",
-                color: "rgba(196,168,130,0.45)",
-                letterSpacing: "0.25em",
-                paddingRight: "clamp(3rem, 5vw, 5rem)",
-              }}
-            >
-              PHOTOREALISTIC · 3D VISUALIZATION · RETROTEKT · USA · 2026 · STUDIO QUALITY · CONTRACTOR PRICING ·
-            </span>
-          ))}
-        </div>
-        <style>{`
-          @keyframes cta-strip {
-            from { transform: translateX(0); }
-            to   { transform: translateX(-50%); }
-          }
-        `}</style>
-      </div>
     </section>
   );
 }

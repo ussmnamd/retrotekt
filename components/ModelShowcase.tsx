@@ -80,17 +80,17 @@ export default function ModelShowcase() {
               data-slide={i}
               className="showcase-slide absolute inset-0 flex items-center justify-center"
             >
-              {/* Color image — AVIF/WebP with PNG fallback.
+              {/* Color image — AVIF/WebP with JPEG fallback.
                   showcase-img class stays on the <img> so GSAP transforms apply
                   to the rendered image and HomeClient's img.complete check works. */}
               <picture>
                 <source
-                  srcSet={s.src.replace(".png", ".avif")}
+                  srcSet={s.src.replace(/\.[^.]+$/, ".avif")}
                   type="image/avif"
                   sizes="(max-width: 768px) 70vw, 50vw"
                 />
                 <source
-                  srcSet={s.src.replace(".png", ".webp")}
+                  srcSet={s.src.replace(/\.[^.]+$/, ".webp")}
                   type="image/webp"
                   sizes="(max-width: 768px) 70vw, 50vw"
                 />

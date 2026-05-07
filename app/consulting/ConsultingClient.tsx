@@ -3,12 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 import { validators, sanitize, hasErrors, type FieldError } from "@/lib/validate";
 
-// ── SVG Icons ────────────────────────────────────────────────────────────────
-
+// ── Icons ─────────────────────────────────────────────────────────────────────
 
 function IconWhatsApp() {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
       <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z" />
     </svg>
   );
@@ -16,43 +15,61 @@ function IconWhatsApp() {
 
 function IconEmail() {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <rect x="2" y="4" width="20" height="16" rx="2" />
       <path d="M2 7l10 7 10-7" />
     </svg>
   );
 }
 
-// ── Data ─────────────────────────────────────────────────────────────────────
+function SelectChevron() {
+  return (
+    <svg width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+      <path d="M1 1l4 4 4-4" stroke="#8C6E4B" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
 
-const segments = [
-  {
-    emoji: "🏗️",
-    label: "High-Value Builders & Designers",
-    items: [
-      { role: "General Contractors & Remodelers", value: "Close the trust gap and get contracts signed faster." },
-      { role: "Custom Home Builders", value: "Show clients exactly what they're paying for before breaking ground." },
-      { role: "Interior Designers & Architects", value: "Bring mood boards to life with stunning, pitch-ready accuracy." },
-    ],
-  },
-  {
-    emoji: "🏡",
-    label: "Real Estate & Property Investors",
-    items: [
-      { role: "Real Estate Developers", value: "Secure funding faster with immersive pre-construction investor decks." },
-      { role: "Property Flippers & Airbnb Owners", value: "Elevate your listings to command premium rates." },
-      { role: "Luxury Real Estate Agents", value: "Market properties before renovations are even complete." },
-    ],
-  },
-  {
-    emoji: "☕",
-    label: "Commercial & B2B Brands",
-    items: [
-      { role: "Café, Restaurant & Retail", value: "Visualize brand identity and secure lease approvals." },
-      { role: "Office Fit-out & Hospitality", value: "Present polished, corporate-grade concepts to stakeholders." },
-    ],
-  },
+function FieldErrorMsg({ error }: { error: FieldError }) {
+  if (!error) return null;
+  return (
+    <p role="alert" className="font-body text-[11px] text-red-600 mt-1.5">
+      {error}
+    </p>
+  );
+}
+
+// ── Data ──────────────────────────────────────────────────────────────────────
+
+const WHO_WE_WORK_WITH = [
+  "General Contractors & Remodelers",
+  "Custom Home Builders",
+  "Real Estate Developers",
+  "Interior Designers",
+  "Architects",
+  "Property Marketers",
+  "Luxury Real Estate Agents",
+  "Hospitality & Commercial Brands",
 ];
+
+const TURNAROUND = [
+  { label: "Custom Quote", time: "Within 24 hours" },
+  { label: "Still Renders", time: "3–5 business days" },
+  { label: "Rush Delivery", time: "24–48 hrs  (+50%)" },
+  { label: "Walkthroughs", time: "5–7 business days" },
+];
+
+const INDUSTRIES = [
+  "Real Estate Developer",
+  "Contractor / Remodeler",
+  "Interior Design",
+  "Architecture",
+  "Property Marketing",
+  "Hospitality",
+  "Other",
+];
+
+// ── Types ─────────────────────────────────────────────────────────────────────
 
 type MessageForm = {
   name: string;
@@ -69,26 +86,7 @@ type FormErrors = {
   message: FieldError;
 };
 
-function FieldErrorMsg({ error }: { error: FieldError }) {
-  if (!error) return null;
-  return (
-    <p role="alert" className="font-body text-[11px] text-red-600 mt-1">
-      {error}
-    </p>
-  );
-}
-
-const INDUSTRIES_LIST = [
-  "Real Estate Developer",
-  "Contractor / Remodeler",
-  "Interior Design",
-  "Architecture",
-  "Property Marketing",
-  "Hospitality",
-  "Other",
-];
-
-// ── Main client component ─────────────────────────────────────────────────────
+// ── Component ─────────────────────────────────────────────────────────────────
 
 export default function ConsultingClient() {
   const pageRef = useRef<HTMLDivElement>(null);
@@ -118,6 +116,7 @@ export default function ConsultingClient() {
     industry: "",
     message: "",
   });
+
   const [errors, setErrors] = useState<FormErrors>({
     name: null,
     email: null,
@@ -130,17 +129,14 @@ export default function ConsultingClient() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
     const newErrors: FormErrors = {
       name: validators.name(form.name),
       email: validators.email(form.email),
       company: validators.company(form.company),
       message: validators.message(form.message),
     };
-
     setErrors(newErrors);
     if (hasErrors(newErrors)) return;
-
     const safeName = sanitize(form.name);
     const safeCompany = sanitize(form.company);
     const subject = `Consulting Inquiry from ${safeName}${safeCompany ? ` — ${safeCompany}` : ""}`;
@@ -159,329 +155,267 @@ export default function ConsultingClient() {
   };
 
   const inputCls =
-    "w-full bg-transparent border border-[#D4C5A9] px-4 py-3 font-body text-[13px] text-primary placeholder:text-primary/30 focus:border-secondary/60 focus:outline-none transition-colors duration-200";
+    "w-full bg-transparent border border-[#D4C5A9] px-4 py-3.5 font-body text-[14px] text-primary placeholder:text-primary/25 focus:border-[#8C6E4B]/60 focus:outline-none transition-colors duration-200";
+
+  const labelCls =
+    "block font-body text-[10px] tracking-[0.3em] uppercase text-primary/40 mb-2";
 
   return (
     <main ref={pageRef} className="bg-background">
 
-      {/* ── Section 1: HERO ─────────────────────────────────────────────────── */}
-      <section className="pt-16 md:pt-20 pb-16 md:pb-20 border-b border-[#D4C5A9]">
-        <div className="px-6 md:px-10 lg:px-16 max-w-7xl mx-auto w-full">
-          <div className="max-w-3xl pt-8 md:pt-12">
-            <div className="flex items-center gap-4 mb-6">
-              <span className="section-label">Consulting</span>
-              <div className="h-px bg-[#D4C5A9] w-16 flex-shrink-0" />
-            </div>
-            <h1 className="reveal font-heading text-[clamp(2.4rem,6vw,5.2rem)] leading-[1.0] tracking-[-0.025em] text-primary mb-4">
-              Architectural Visualization Consulting<br />
-              for Developers &amp; Contractors
-            </h1>
-            <p className="reveal reveal-delay-1 font-body text-[16px] text-deep leading-relaxed max-w-xl mb-8">
-              We operate globally to deliver US-market quality at costs that make local studios hard to justify. Our clients save significantly — and close more deals because of it.
+      {/* ── Hero ─────────────────────────────────────────────────────────────── */}
+      <section className="pt-28 md:pt-36 pb-20 md:pb-24 border-b border-[#D4C5A9]">
+        <div className="px-6 md:px-10 lg:px-16 max-w-7xl mx-auto">
+
+          {/* Section index */}
+          <div className="flex items-center gap-3 mb-10">
+            <span className="font-body text-[10px] tracking-[0.4em] uppercase text-primary/25">04</span>
+            <div className="w-8 h-px bg-[#D4C5A9]" />
+            <span className="section-label">Consulting &amp; Contact</span>
+          </div>
+
+          {/* Display heading */}
+          <h1 className="reveal font-heading text-[clamp(3.6rem,9vw,8.5rem)] leading-[0.88] tracking-[-0.03em] text-primary mb-10 max-w-4xl">
+            Let&apos;s work<br />together.
+          </h1>
+
+          {/* Tagline + stats row */}
+          <div className="reveal reveal-delay-1 flex flex-col sm:flex-row sm:items-end gap-10 sm:gap-20">
+            <p className="font-body text-[15px] text-deep/60 max-w-xs leading-relaxed">
+              We partner with contractors, developers, and designers who rely on speed, precision, and visualization to close more deals.
             </p>
-            <div className="reveal reveal-delay-2">
-              <a
-                href="#"
-                className="btn-dark inline-block bg-primary text-background px-8 py-4 font-body text-[12px] tracking-[0.14em] uppercase"
-              >
-                Book a Free Consultation
-              </a>
+
+            <div className="flex gap-8 sm:gap-12 flex-wrap">
+              {[
+                { num: "3×",   label: "Faster approvals" },
+                { num: "40%",  label: "More bids won"    },
+                { num: "5–7×", label: "ROI per render"   },
+              ].map((s) => (
+                <div key={s.label}>
+                  <p className="font-heading text-[2.4rem] leading-none tracking-[-0.025em] text-primary">
+                    {s.num}
+                  </p>
+                  <p className="section-label mt-1.5">{s.label}</p>
+                </div>
+              ))}
             </div>
           </div>
+
         </div>
       </section>
 
-      {/* ── Section 2: WHO WE PARTNER WITH ─────────────────────────────────── */}
-      <section className="bg-surface py-16 md:py-20 border-b border-[#D4C5A9]">
+      {/* ── Body: sidebar + form ──────────────────────────────────────────────── */}
+      <section className="py-20 md:py-28">
         <div className="px-6 md:px-10 lg:px-16 max-w-7xl mx-auto">
-          {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12 pb-12 border-b border-[#D4C5A9]">
-            <div>
-              <p className="section-label mb-5">
-                Who We Partner With
-              </p>
-              <h2
-                className="reveal font-heading font-bold text-primary leading-[0.95] tracking-[-0.025em]"
-                style={{ fontSize: "clamp(2.2rem, 5vw, 4rem)" }}
-              >
-                We Don&apos;t Work<br />With Everyone.
-              </h2>
-            </div>
-            <p className="reveal reveal-delay-1 font-body text-[15px] text-deep/60 max-w-[340px] leading-relaxed">
-              We engineer visual assets for professionals who rely on speed,
-              precision, and presentation to scale their businesses. If you
-              build, design, or sell spaces — you are in the right place.
-            </p>
-          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-14 lg:gap-20">
 
-          {/* Segment columns */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-0 divide-y md:divide-y-0 md:divide-x divide-[#D4C5A9]">
-            {segments.map((seg, i) => (
-              <div
-                key={seg.label}
-                className={`reveal reveal-delay-${Math.min(i + 1, 2)} flex flex-col py-10 md:py-0 ${i > 0 ? "md:pl-12" : ""} ${i < segments.length - 1 ? "md:pr-12" : ""}`}
-              >
-                <div className="text-4xl mb-6">{seg.emoji}</div>
-                <h3 className="font-body text-[12px] tracking-[0.18em] uppercase text-secondary mb-8 leading-snug">
-                  {seg.label}
-                </h3>
-                <ul className="flex flex-col gap-7">
-                  {seg.items.map((item) => (
-                    <li key={item.role} className="relative pl-4">
-                      <div className="absolute left-0 top-[6px] w-1 h-1 rounded-full bg-secondary/50" />
-                      <div className="font-body text-[15px] text-primary mb-1.5 leading-snug">
-                        {item.role}
-                      </div>
-                      <div className="font-body text-[14px] text-deep/60 leading-relaxed">
-                        {item.value}
-                      </div>
+            {/* ── LEFT: context sidebar ────────────────────────────────────── */}
+            <aside className="lg:col-span-4 flex flex-col gap-10 reveal">
+
+              {/* Who we work with */}
+              <div>
+                <p className="section-label mb-6">Who We Work With</p>
+                <ul className="flex flex-col gap-2.5">
+                  {WHO_WE_WORK_WITH.map((w) => (
+                    <li key={w} className="flex items-start gap-3">
+                      <span className="w-4 h-px bg-[#C4A882] flex-shrink-0 mt-[9px]" aria-hidden="true" />
+                      <span className="font-body text-[13px] text-deep/65 leading-snug">{w}</span>
                     </li>
                   ))}
                 </ul>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* ── Section 3: WHY RETROTEKT ────────────────────────────────────────── */}
-      <section className="py-16 md:py-20">
-        <div className="px-6 md:px-10 lg:px-16 max-w-7xl mx-auto">
+              <div className="h-px bg-[#D4C5A9]" aria-hidden="true" />
 
-          <div className="reveal mb-10 max-w-2xl">
-            <p className="section-label mb-3">Why Retrotekt</p>
-            <h2 className="font-heading text-[clamp(1.8rem,4vw,3rem)] leading-[1.02] tracking-[-0.025em] text-primary mb-4">
-              Why Retrotekt Is the Smarter Choice
-            </h2>
-            <p className="font-body text-[15px] text-deep leading-relaxed">
-              Global operations mean we pass real savings directly to you — without cutting corners on quality, speed, or communication.
-            </p>
-          </div>
-
-          {/* Comparison columns */}
-          <div className="reveal grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-            {/* LEFT — Traditional */}
-            <div className="bg-surface border border-[#D4C5A9] p-8">
-              <p className="font-body text-[13px] text-primary/40 uppercase tracking-[0.15em] mb-6">
-                Traditional local studio
-              </p>
-              <ul className="flex flex-col gap-4">
-                {[
-                  "High overhead passed to the client",
-                  "Week-long or longer turnarounds",
-                  "Limited revision rounds",
-                  "Rigid, one-size-fits-all packages",
-                ].map((item) => (
-                  <li key={item} className="flex items-start gap-3 font-body text-[14px] text-primary/45">
-                    <span className="mt-0.5 flex-shrink-0 text-primary/25 font-bold">×</span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* RIGHT — Retrotekt */}
-            <div className="bg-background border border-secondary/40 p-8">
-              <p className="font-body text-[13px] text-secondary font-bold uppercase tracking-[0.15em] mb-6">
-                Retrotekt
-              </p>
-              <ul className="flex flex-col gap-4">
-                {[
-                  "Up to 60% less than comparable US studio rates",
-                  "3–5 day standard delivery",
-                  "Multiple revision rounds included",
-                  "Custom scoped for every project",
-                ].map((item) => (
-                  <li key={item} className="flex items-start gap-3 font-body text-[14px] text-primary/75">
-                    <span className="mt-0.5 flex-shrink-0 text-secondary font-bold">✓</span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          {/* Stat cards */}
-          <h2 className="font-heading text-[clamp(1.4rem,3vw,2rem)] leading-[1.02] tracking-[-0.025em] text-primary mb-6 mt-10">
-            The Numbers Behind Our Work
-          </h2>
-          <div className="reveal grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {[
-              { number: "3×", label: "Faster approvals" },
-              { number: "40%", label: "More bids won" },
-              { number: "5–7×", label: "ROI per render" },
-            ].map((stat, i) => (
-              <div
-                key={stat.label}
-                className={`reveal reveal-delay-${(i + 1) as 1 | 2 | 3} bg-surface border border-[#D4C5A9] p-6 text-center`}
-              >
-                <p className="font-heading text-5xl font-light text-primary mb-2 tracking-[-0.02em]">
-                  {stat.number}
-                </p>
-                <p className="font-body text-[12px] text-muted uppercase tracking-[0.12em]">
-                  {stat.label}
-                </p>
+              {/* Turnaround */}
+              <div>
+                <p className="section-label mb-6">Turnaround</p>
+                <div className="flex flex-col gap-3.5">
+                  {TURNAROUND.map((t) => (
+                    <div key={t.label} className="flex justify-between items-baseline gap-4">
+                      <span className="font-body text-[13px] text-primary/45">{t.label}</span>
+                      <span className="font-body text-[12px] text-primary/70 tabular-nums shrink-0">
+                        {t.time}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* ── Section 4: THREE-CHANNEL CONTACT ───────────────────────────────── */}
-      <section className="bg-surface py-16 md:py-20 border-t border-[#D4C5A9]">
-        <div className="px-6 md:px-10 lg:px-16 max-w-7xl mx-auto">
+              <div className="h-px bg-[#D4C5A9]" aria-hidden="true" />
 
-          <div className="reveal mb-10 max-w-2xl">
-            <p className="section-label mb-3">Get in Touch</p>
-            <h2 className="font-heading text-[clamp(1.8rem,4vw,3rem)] leading-[1.02] tracking-[-0.025em] text-primary mb-4">
-              Book a Consultation
-            </h2>
-            <p className="font-body text-[15px] text-deep leading-relaxed">
-              Choose how you&apos;d like to connect. We respond within a few hours.
-            </p>
-          </div>
+              {/* Direct contact */}
+              <div>
+                <p className="section-label mb-5">Direct Contact</p>
+                <a
+                  href="mailto:shahan@retrotekt.com"
+                  className="font-body text-[13px] text-primary hover:text-secondary transition-colors duration-200 border-b border-[#D4C5A9] hover:border-secondary/40 pb-0.5 inline-block mb-6"
+                >
+                  shahan@retrotekt.com
+                </a>
+                <div className="flex gap-3">
+                  <a
+                    href="https://wa.me/NUMBER_TBD"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Contact via WhatsApp"
+                    className="w-10 h-10 border border-[#D4C5A9] hover:border-secondary/50 flex items-center justify-center text-primary/35 hover:text-secondary transition-all duration-200"
+                  >
+                    <IconWhatsApp />
+                  </a>
+                  <a
+                    href="mailto:shahan@retrotekt.com"
+                    aria-label="Send an email directly"
+                    className="w-10 h-10 border border-[#D4C5A9] hover:border-secondary/50 flex items-center justify-center text-primary/35 hover:text-secondary transition-all duration-200"
+                  >
+                    <IconEmail />
+                  </a>
+                </div>
+              </div>
 
-          <div className="flex flex-col md:flex-row gap-4">
+              {/* Book a call — dark card */}
+              <div className="bg-primary p-7">
+                <p className="section-label text-[#C4A882]/70 mb-3">Book a Call</p>
+                <p className="font-heading text-[1.1rem] text-background leading-snug mb-4">
+                  Free 30-min consultation
+                </p>
+                <p className="font-body text-[13px] text-background/45 leading-relaxed mb-6">
+                  Prefer to talk first? Schedule a call and we&apos;ll walk through your project scope, timeline, and pricing together.
+                </p>
+                <a href="#" className="group inline-flex items-center gap-4 px-5 py-[10px] rounded-[3px] border border-[#C4A882]/20 bg-[#F7F0E3]/[0.05] hover:bg-[#F7F0E3]/10 hover:border-[#C4A882]/35 transition-colors duration-300">
+                  <div className="w-8 h-[1.5px] bg-background/50 group-hover:w-24 group-hover:bg-background transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]" />
+                  <span className="font-body font-medium text-[11px] tracking-[0.3em] uppercase text-background/70 group-hover:text-background transition-colors duration-300">Schedule a Call</span>
+                </a>
+              </div>
 
-            {/* Option 1 — BOOK A CALL */}
-            <div className="reveal flex-1 bg-background border border-[#D4C5A9] p-6 flex flex-col min-h-[340px]">
-              <p className="font-body text-[11px] tracking-[0.2em] uppercase text-secondary mb-3">
-                Book a Call
-              </p>
-              <p className="font-heading text-[22px] text-primary leading-snug mb-3">
-                Free 30-min consultation
-              </p>
-              <p className="font-body text-[13px] text-deep leading-relaxed mb-auto">
-                Schedule a free 30-min call with our team. We&apos;ll discuss your project scope, timeline, and how we can help you close more deals.
-              </p>
-              <a
-                href="#"
-                className="btn-dark mt-8 inline-block bg-primary text-background hover:bg-primary/90 px-6 py-3 font-body text-[11px] tracking-[0.12em] uppercase transition-colors duration-200 text-center"
-              >
-                Schedule a Call
-              </a>
-            </div>
+            </aside>
 
-            {/* Option 2 — SEND A MESSAGE */}
-            <div className="reveal reveal-delay-1 flex-1 bg-background border border-[#D4C5A9] p-6 flex flex-col">
-              <p className="font-body text-[11px] tracking-[0.2em] uppercase text-secondary mb-3">
-                Send a Message
-              </p>
-              <p className="font-heading text-[22px] text-primary leading-snug mb-3">
-                We reply within a few hours
-              </p>
-              <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-3 mt-2">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {/* ── RIGHT: form ──────────────────────────────────────────────── */}
+            <div className="lg:col-span-8 lg:border-l lg:border-[#D4C5A9] lg:pl-16 xl:pl-20 reveal reveal-delay-1">
+
+              <div className="mb-10">
+                <p className="section-label mb-4">Send a Message</p>
+                <h2 className="font-heading text-[clamp(2rem,4vw,3.2rem)] leading-[0.93] tracking-[-0.025em] text-primary">
+                  Tell us about<br />your project.
+                </h2>
+              </div>
+
+              <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
+
+                {/* Name + Email */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div>
+                    <label htmlFor="c-name" className={labelCls}>Name *</label>
                     <input
+                      id="c-name"
                       type="text"
                       autoComplete="name"
-                      placeholder="Name *"
+                      placeholder="John Smith"
                       value={form.name}
                       maxLength={100}
                       onChange={(e) => update("name", e.target.value)}
                       onBlur={() => setErrors((p) => ({ ...p, name: validators.name(form.name) }))}
                       aria-invalid={!!errors.name}
-                      className={`${inputCls} ${errors.name ? "border-red-400" : ""}`}
+                      className={`${inputCls} ${errors.name ? "border-red-400 focus:border-red-500" : ""}`}
                     />
                     <FieldErrorMsg error={errors.name} />
                   </div>
                   <div>
+                    <label htmlFor="c-email" className={labelCls}>Email *</label>
                     <input
+                      id="c-email"
                       type="email"
                       autoComplete="email"
-                      placeholder="Email *"
+                      placeholder="john@company.com"
                       value={form.email}
                       maxLength={255}
                       onChange={(e) => update("email", e.target.value)}
                       onBlur={() => setErrors((p) => ({ ...p, email: validators.email(form.email) }))}
                       aria-invalid={!!errors.email}
-                      className={`${inputCls} ${errors.email ? "border-red-400" : ""}`}
+                      className={`${inputCls} ${errors.email ? "border-red-400 focus:border-red-500" : ""}`}
                     />
                     <FieldErrorMsg error={errors.email} />
                   </div>
                 </div>
-                <div>
-                  <input
-                    type="text"
-                    autoComplete="organization"
-                    placeholder="Company (optional)"
-                    value={form.company}
-                    maxLength={200}
-                    onChange={(e) => update("company", e.target.value)}
-                    aria-invalid={!!errors.company}
-                    className={`${inputCls} ${errors.company ? "border-red-400" : ""}`}
-                  />
-                  <FieldErrorMsg error={errors.company} />
+
+                {/* Company + Industry */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <div>
+                    <label htmlFor="c-company" className={labelCls}>Company</label>
+                    <input
+                      id="c-company"
+                      type="text"
+                      autoComplete="organization"
+                      placeholder="Your firm or company"
+                      value={form.company}
+                      maxLength={200}
+                      onChange={(e) => update("company", e.target.value)}
+                      className={`${inputCls} ${errors.company ? "border-red-400" : ""}`}
+                    />
+                    <FieldErrorMsg error={errors.company} />
+                  </div>
+                  <div>
+                    <label htmlFor="c-industry" className={labelCls}>Industry</label>
+                    <div className="relative">
+                      <select
+                        id="c-industry"
+                        value={form.industry}
+                        onChange={(e) => update("industry", e.target.value)}
+                        className={`${inputCls} appearance-none cursor-pointer bg-background pr-10`}
+                      >
+                        <option value="" disabled className="text-primary/30">
+                          Select your industry
+                        </option>
+                        {INDUSTRIES.map((ind) => (
+                          <option key={ind} value={ind} className="bg-background text-primary">
+                            {ind}
+                          </option>
+                        ))}
+                      </select>
+                      <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2">
+                        <SelectChevron />
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <select
-                  value={form.industry}
-                  onChange={(e) => update("industry", e.target.value)}
-                  className={`${inputCls} appearance-none cursor-pointer bg-background`}
-                >
-                  <option value="" disabled className="text-primary/30 bg-background">
-                    Industry
-                  </option>
-                  {INDUSTRIES_LIST.map((ind) => (
-                    <option key={ind} value={ind} className="bg-background text-primary">
-                      {ind}
-                    </option>
-                  ))}
-                </select>
+
+                {/* Message */}
                 <div>
+                  <label htmlFor="c-message" className={labelCls}>Project Details *</label>
                   <textarea
-                    rows={4}
-                    placeholder="Tell us about your project… *"
+                    id="c-message"
+                    rows={6}
+                    placeholder="Describe your project — space type, style, reference images, timeline…"
                     value={form.message}
                     maxLength={5000}
                     onChange={(e) => update("message", e.target.value)}
                     onBlur={() => setErrors((p) => ({ ...p, message: validators.message(form.message) }))}
                     aria-invalid={!!errors.message}
-                    className={`${inputCls} resize-none ${errors.message ? "border-red-400" : ""}`}
+                    className={`${inputCls} resize-none ${errors.message ? "border-red-400 focus:border-red-500" : ""}`}
                   />
-                  <FieldErrorMsg error={errors.message} />
+                  <div className="flex items-start justify-between gap-4 mt-1.5">
+                    <FieldErrorMsg error={errors.message} />
+                    <p className="font-body text-[10px] text-primary/25 shrink-0 ml-auto">
+                      {form.message.length}/5000
+                    </p>
+                  </div>
                 </div>
-                <button
-                  type="submit"
-                  className="btn-dark self-start bg-primary text-background px-6 py-3 font-body text-[11px] tracking-[0.14em] uppercase transition-all duration-200"
-                >
-                  Send Message
-                </button>
-              </form>
-            </div>
 
-            {/* Option 3 — QUICK CONNECT */}
-            <div className="reveal reveal-delay-2 flex-1 bg-background border border-[#D4C5A9] p-6 flex flex-col min-h-[340px]">
-              <p className="font-body text-[11px] tracking-[0.2em] uppercase text-secondary mb-3">
-                Quick Connect
-              </p>
-              <p className="font-heading text-[22px] text-primary leading-snug mb-3">
-                Reach us directly
-              </p>
-              <p className="font-body text-[13px] text-deep leading-relaxed mb-auto">
-                Prefer a direct line? Drop us a message on WhatsApp or send an email — whichever works for you.
-              </p>
-              <div className="flex gap-4 mt-8">
-                <a
-                  href="https://wa.me/NUMBER_TBD"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Contact via WhatsApp"
-                  className="w-12 h-12 border border-[#D4C5A9] hover:border-secondary/50 flex items-center justify-center text-primary/40 hover:text-secondary transition-all duration-200"
-                >
-                  <IconWhatsApp />
-                </a>
-                <a
-                  href="mailto:shahan@retrotekt.com"
-                  aria-label="Send an email"
-                  className="w-12 h-12 border border-[#D4C5A9] hover:border-secondary/50 flex items-center justify-center text-primary/40 hover:text-secondary transition-all duration-200"
-                >
-                  <IconEmail />
-                </a>
-              </div>
-              <p className="font-body text-[11px] text-primary/30 mt-4 leading-relaxed">
-                shahan@retrotekt.com
-              </p>
+                {/* Submit row */}
+                <div className="flex flex-col sm:flex-row sm:items-center gap-5 pt-2">
+                  <button
+                    type="submit"
+                    className="group inline-flex items-center gap-4 self-start px-5 py-[10px] rounded-[3px] border border-primary/10 bg-primary/[0.04] hover:bg-primary/[0.09] hover:border-primary/20 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <div className="w-8 h-[1.5px] bg-primary/60 group-hover:w-24 group-hover:bg-primary transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]" />
+                    <span className="font-body font-medium text-[11px] tracking-[0.3em] uppercase text-primary group-hover:text-primary transition-colors duration-300">Send Message</span>
+                  </button>
+                  <p className="font-body text-[11px] text-primary/30">
+                    We reply within a few hours.
+                  </p>
+                </div>
+
+              </form>
             </div>
 
           </div>

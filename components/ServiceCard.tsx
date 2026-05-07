@@ -97,13 +97,16 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ title, description, hr
 
       {/* Content */}
       <div className="relative h-full flex flex-col p-6 lg:p-8 min-h-[260px] z-10">
-        
-        {/* Title & Description aligned bottom */}
-        <div className="mt-auto transform transition-transform duration-500 group-hover:-translate-y-2">
-          <h3 className="text-[1.5rem] lg:text-[1.7rem] leading-[1.1] font-light font-heading text-[#F7F0E3] tracking-tight mb-2 group-hover:text-[#C4A882] group-hover:translate-x-1 group-hover:drop-shadow-[0_0_8px_rgba(196,168,130,0.3)] transition-all duration-500">
+
+        {/* Spacer pushes content block to bottom */}
+        <div className="flex-1" />
+
+        {/* Title & Description — fixed bottom position so heading row aligns across cards */}
+        <div className="transform transition-transform duration-500 group-hover:-translate-y-2">
+          <h3 className="text-[1.5rem] lg:text-[1.7rem] leading-[1.1] font-light font-heading text-[#F7F0E3] tracking-tight mb-2 line-clamp-1 group-hover:text-[#C4A882] group-hover:translate-x-1 group-hover:drop-shadow-[0_0_8px_rgba(196,168,130,0.3)] transition-all duration-500">
             {title}
           </h3>
-          <p className="text-[13px] text-[#F7F0E3]/60 leading-relaxed font-body opacity-80 group-hover:opacity-100 transition-opacity duration-500 max-w-[95%]">
+          <p className="text-[13px] text-[#F7F0E3]/60 leading-relaxed font-body opacity-80 group-hover:opacity-100 transition-opacity duration-500 line-clamp-2">
             {description}
           </p>
         </div>

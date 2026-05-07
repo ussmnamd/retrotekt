@@ -12,6 +12,7 @@ import { projects } from './data';
 import type { Project } from './data';
 import PortfolioPicture from './_components/PortfolioPicture';
 import StartLink from './_components/StartLink';
+import MediaModal, { type ModalItem } from './_components/MediaModal';
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -90,6 +91,8 @@ const supporting = projects.slice(1); // Livermore, Sacramento
 export default function PortfolioClient() {
   const root = useRef<HTMLDivElement>(null);
   const [activeFilter, setActiveFilter] = useState<FilterLabel>('All');
+  // null = closed; number = index into galleryModalItems
+  const [modalIndex, setModalIndex] = useState<number | null>(null);
 
   // ── Filter change handler with ScrollTrigger refresh ────────────────────────
   const onFilterChange = (next: FilterLabel) => {
@@ -198,6 +201,13 @@ export default function PortfolioClient() {
   const hero = modestoAssets.heroLoop;
   const galleryItems = itemsForFilter(activeFilter);
   const galleryHeading = GALLERY_HEADINGS[activeFilter];
+
+  // Build modal item list that mirrors galleryItems index-for-index
+  const galleryModalItems: ModalItem[] = galleryItems.map(item =>
+    item.kind === 'video'
+      ? { kind: 'video', data: item.video, label: `${item.project.city} · Walkthrough` }
+      : { kind: 'image', data: item.img,   label: `${item.project.city} · ${item.kind === 'render' ? 'Render' : 'Construction'}` }
+  );
 
   return (
     <div ref={root} className="bg-background min-h-screen text-primary">
@@ -429,13 +439,16 @@ export default function PortfolioClient() {
             <button
               key={f}
               onClick={() => onFilterChange(f)}
-              className={`font-body text-[10px] tracking-[0.12em] uppercase px-4 py-2 transition-all duration-200 ${
-                activeFilter === f
-                  ? 'bg-primary text-background border border-primary'
-                  : 'border border-primary/20 text-primary/50 hover:border-secondary/60 hover:text-secondary'
-              }`}
+              className="group flex items-center gap-2.5 py-2 pr-4"
             >
-              {f}
+              <div className={`h-px transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] ${
+                activeFilter === f
+                  ? 'w-6 bg-primary'
+                  : 'w-2 bg-primary/25 group-hover:w-6 group-hover:bg-primary/60'
+              }`} />
+              <span className={`font-body text-[10px] tracking-[0.2em] uppercase transition-colors duration-300 ${
+                activeFilter === f ? 'text-primary' : 'text-primary/40 group-hover:text-primary/70'
+              }`}>{f}</span>
             </button>
           ))}
         </div>
@@ -463,44 +476,50 @@ export default function PortfolioClient() {
           {galleryItems.map((item, i) => {
             if (item.kind === 'video') {
               return (
-                <Link
+                <button
                   key={item.key}
-                  href={`/portfolio/${item.project.slug}#films`}
-                  className="relative overflow-hidden block group bg-primary"
+                  onClick={() => setModalIndex(i)}
+                  className="relative overflow-hidden block w-full group bg-primary cursor-pointer"
                   style={{ paddingBottom: '56.25%' }}
                   data-anim="render-tile"
+                  aria-label={`Play walkthrough — ${item.project.city}`}
                 >
+                  {/* Silent looping preview */}
                   <video
                     className="absolute inset-0 w-full h-full object-cover"
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    preload="none"
+                    autoPlay muted loop playsInline preload="metadata"
                     poster={item.video.poster}
                   >
                     <source src={item.video.webm} type="video/webm" />
-                    <source src={item.video.mp4} type="video/mp4" />
+                    <source src={item.video.mp4}  type="video/mp4"  />
                   </video>
                   <div className="absolute inset-0 bg-gradient-to-t from-primary/55 via-transparent to-transparent" />
-                  {/* hover label */}
+                  {/* Play icon on hover */}
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
+                    <div className="w-12 h-12 rounded-full border border-background/70 bg-primary/40 flex items-center justify-center">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+                        <polygon points="5 3 19 12 5 21 5 3"/>
+                      </svg>
+                    </div>
+                  </div>
                   <div className="absolute bottom-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
                     <span className="font-body text-[9px] tracking-[0.12em] uppercase text-background/90">
                       {item.project.city} · Walkthrough
                     </span>
                   </div>
-                </Link>
+                </button>
               );
             }
 
             // render or construction → image tile
             return (
-              <Link
+              <button
                 key={item.key}
-                href={`/portfolio/${item.project.slug}${item.kind === 'construction' ? '#construction' : ''}`}
-                className={`relative overflow-hidden block group ${item.kind === 'construction' ? 'construction-tile' : ''}`}
+                onClick={() => setModalIndex(i)}
+                className={`relative overflow-hidden block w-full group cursor-pointer ${item.kind === 'construction' ? 'construction-tile' : ''}`}
                 style={{ paddingBottom: i % 7 === 0 ? '66.67%' : '56.25%' }}
                 data-anim="render-tile"
+                aria-label={`View ${item.kind === 'render' ? 'render' : 'construction photo'} — ${item.project.city}`}
               >
                 <PortfolioPicture
                   image={item.img}
@@ -513,11 +532,20 @@ export default function PortfolioClient() {
                     {item.project.city} · {item.kind === 'render' ? 'Render' : 'Construction'}
                   </span>
                 </div>
-              </Link>
+              </button>
             );
           })}
         </div>
       </section>
+
+      {/* ── Media modal ────────────────────────────────────────────────────── */}
+      {modalIndex !== null && (
+        <MediaModal
+          items={galleryModalItems}
+          startIndex={modalIndex}
+          onClose={() => setModalIndex(null)}
+        />
+      )}
 
       {/* ── 6. CTA STRIP ──────────────────────────────────────────────────── */}
       <section

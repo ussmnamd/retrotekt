@@ -445,18 +445,8 @@ export default function HomeClient() {
         {/* ── HERO ───────────────────────────────────────────────────────── */}
         <section className="relative w-full h-screen min-h-[700px] overflow-hidden">
 
-          {/* 1. BACK LAYER (Solid Text, Z-0) */}
-          <div className="absolute inset-0 z-0 w-full pointer-events-none">
-
-            {/* QUESTION - Right Side */}
-            <div className="absolute top-[45%] md:top-[50%] right-6 md:right-12 lg:right-16 flex flex-col items-start max-w-[85vw] md:max-w-sm lg:max-w-md z-0">
-              <h2 data-hero-back className="font-heading text-[clamp(1.6rem,3vw,2.4rem)] leading-[1.1] text-primary tracking-[-0.01em] mb-8">
-                They&apos;re already showing the finished space.
-                <span className="text-secondary italic font-light mt-2 block">Why aren&apos;t you?</span>
-              </h2>
-            </div>
-
-          </div>
+          {/* 1. BACK LAYER (Z-0) — no content */}
+          <div className="absolute inset-0 z-0 w-full pointer-events-none" />
 
           {/* 2. 3D MODEL (Z-10) */}
           <div id="hero-section" className="absolute inset-0 z-10 pointer-events-auto">
@@ -473,16 +463,8 @@ export default function HomeClient() {
             <path d="M0,40 C360,180 1080,180 1440,40 L1440,200 L0,200 Z" fill="#F7F0E3" />
           </svg>
 
-          {/* 3. FRONT LAYER (Outline Text & Interactive Button & Solid Logo, Z-30) */}
+          {/* 3. FRONT LAYER (Interactive Button & Solid Logo, Z-30) */}
           <div className="absolute inset-0 z-30 w-full pointer-events-none" aria-hidden="true">
-
-            {/* QUESTION - Right Side (Outlined) */}
-            <div className="absolute top-[45%] md:top-[50%] right-6 md:right-12 lg:right-16 flex flex-col items-start max-w-[85vw] md:max-w-sm lg:max-w-md z-30">
-              <h2 data-hero-front className="font-heading text-[clamp(1.6rem,3vw,2.4rem)] leading-[1.1] text-transparent tracking-[-0.01em] mb-8 [-webkit-text-stroke:1.5px_var(--color-ink)]">
-                They&apos;re already showing the finished space.
-                <span className="text-transparent [-webkit-text-stroke:1.5px_var(--color-accent)] italic font-light mt-2 block">Why aren&apos;t you?</span>
-              </h2>
-            </div>
 
             {/* BOTTOM BAR: LOGO (Left) & CTA (Right) */}
             <div className="absolute bottom-20 md:bottom-28 left-0 w-full px-6 md:px-12 lg:px-16 flex justify-between items-end pointer-events-none">
@@ -501,12 +483,17 @@ export default function HomeClient() {
                 </div>
               </div>
 
-              {/* INTERACTIVE MINIMAL BUTTON - Bottom Right */}
-              <div data-hero-front className="pointer-events-auto flex-shrink-0 pb-[1px]">
-                 <Link href="/contact" className="group flex items-center gap-4">
-                    <div className="w-8 h-[1.5px] bg-primary/60 group-hover:w-24 group-hover:bg-primary transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"></div>
-                    <span className="font-body font-medium text-[11px] tracking-[0.3em] uppercase text-primary group-hover:text-primary transition-colors duration-300">Start Project</span>
-                 </Link>
+              {/* TAGLINE + BUTTON - Bottom Right */}
+              <div data-hero-front className="pointer-events-auto flex-shrink-0 flex flex-col items-end gap-4">
+                <h2 className="font-heading font-light text-[clamp(1.6rem,3vw,2.4rem)] leading-[1.1] text-primary tracking-[-0.01em] text-right">
+                  They&apos;re <span className="font-bold">already showing</span><br />
+                  the finished space.<br />
+                  <span className="text-secondary italic font-light mt-2 block">Why aren&apos;t you?</span>
+                </h2>
+                <Link href="/contact" className="group inline-flex items-center gap-4 px-5 py-[10px] rounded-[3px] border border-primary/10 bg-primary/[0.04] hover:bg-primary/[0.09] hover:border-primary/20 transition-colors duration-300">
+                  <div className="w-8 h-[1.5px] bg-primary/60 group-hover:w-24 group-hover:bg-primary transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"></div>
+                  <span className="font-body font-medium text-[11px] tracking-[0.3em] uppercase text-primary group-hover:text-primary transition-colors duration-300">Start Project</span>
+                </Link>
               </div>
 
             </div>
@@ -565,7 +552,7 @@ export default function HomeClient() {
           </div>
 
           <div className="max-w-screen-2xl mx-auto px-6 md:px-12 lg:px-16 mt-8 flex justify-center">
-             <Link href="/services" className="group flex items-center gap-4">
+             <Link href="/services" className="group inline-flex items-center gap-4 px-5 py-[10px] rounded-[3px] border border-[#C4A882]/20 bg-[#F7F0E3]/[0.05] hover:bg-[#F7F0E3]/10 hover:border-[#C4A882]/35 transition-colors duration-300">
                 <div className="w-8 h-[1.5px] bg-secondary/60 group-hover:w-24 group-hover:bg-secondary transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"></div>
                 <span className="font-body font-medium text-[11px] tracking-[0.3em] uppercase text-secondary">Explore All Services</span>
              </Link>
@@ -575,12 +562,12 @@ export default function HomeClient() {
         <ModelShowcase />
 
         {/* ── PROCESS ─────────────────────────────────────────────────────── */}
-        <section ref={processRef as React.RefObject<HTMLElement>} className="py-8 md:py-10 overflow-hidden relative" style={{ background: '#2C1F14' }}>
+        <section ref={processRef as React.RefObject<HTMLElement>} className="py-6 md:py-8 overflow-hidden relative" style={{ background: '#2C1F14' }}>
 
           <div className="max-w-screen-2xl mx-auto px-6 md:px-12 lg:px-16">
 
             {/* Section heading */}
-            <div className="relative text-center mb-12 py-6">
+            <div className="relative text-center mb-8 py-4">
               {/* Selective grid background behind heading */}
               <div className="absolute inset-0 pointer-events-none flex justify-center" aria-hidden="true">
                 <div className="w-full max-w-4xl relative">
@@ -675,7 +662,7 @@ export default function HomeClient() {
             </div>
 
             {/* Bottom CTA */}
-            <div className="mt-8 relative py-4 flex justify-center">
+            <div className="mt-5 relative py-3 flex justify-center">
               {/* Selective grid background behind CTA */}
               <div className="absolute inset-0 pointer-events-none flex justify-center" aria-hidden="true">
                 <div className="w-full max-w-[320px] relative">
@@ -702,7 +689,7 @@ export default function HomeClient() {
                 </div>
               </div>
 
-              <Link href="/contact" className="group flex items-center gap-4 relative z-10">
+              <Link href="/contact" className="group inline-flex items-center gap-4 relative z-10 px-5 py-[10px] rounded-[3px] border border-[#C4A882]/20 bg-[#F7F0E3]/[0.05] hover:bg-[#F7F0E3]/10 hover:border-[#C4A882]/35 transition-colors duration-300">
                 <div className="w-8 h-[1.5px] bg-[#C4A882]/40 group-hover:w-24 group-hover:bg-[#C4A882] transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]" />
                 <span className="font-body font-medium text-[11px] tracking-[0.3em] uppercase text-[#F7F0E3]/50 group-hover:text-[#F7F0E3] transition-colors duration-300">Start Your Project</span>
               </Link>
@@ -736,7 +723,7 @@ export default function HomeClient() {
                      <p data-anim="fade" className="font-body text-[13px] md:text-[14px] leading-[1.6] text-[#3b2516]/70 max-w-sm mb-8 lg:mb-10">
                        From pre-construction render to opening-day photograph. We visualized every location in California to absolute perfection.
                      </p>
-                     <Link href="/portfolio" data-anim="fade" className="group flex items-center gap-4">
+                     <Link href="/portfolio" data-anim="fade" className="group inline-flex items-center gap-4 px-5 py-[10px] rounded-[3px] border border-[#3b2516]/10 bg-[#3b2516]/[0.04] hover:bg-[#3b2516]/[0.09] hover:border-[#3b2516]/20 transition-colors duration-300">
                         <span className="font-body font-medium text-[10px] tracking-[0.3em] uppercase text-[#3b2516] transition-colors duration-300">View Full Portfolio</span>
                         <div className="w-12 h-[1px] bg-[#3b2516]/30 group-hover:w-24 group-hover:bg-[#3b2516] transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"></div>
                      </Link>
@@ -763,7 +750,7 @@ export default function HomeClient() {
                           muted
                           loop
                           playsInline
-                          preload="auto"
+                          preload="none"
                           poster={heroLoop.poster}
                           width={heroLoop.width}
                           height={heroLoop.height}
