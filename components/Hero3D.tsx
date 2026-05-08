@@ -421,6 +421,11 @@ export default function Hero3D() {
           }
 
           // ── Bulb lighting — find light meshes, glow them, place point lights ──
+          // Cap the number of dynamic point lights — every extra real-time light
+          // costs per-frame; emissive material alone gives the glow look without
+          // the cost. Phones get zero point lights, others get a small budget.
+          const MAX_BULB_LIGHTS = isPhone ? 0 : isTablet ? 2 : 4;
+          const bulbPositions: THREE.Vector3[] = [];
           const bulbKeywords = /light|bulb|lamp|glow|led|emit|neon|tube|globe|lantern|flame|candle/i;
           model.traverse((child) => {
             const mesh = child as THREE.Mesh;
@@ -448,10 +453,19 @@ export default function Hero3D() {
 
             const wp = new THREE.Vector3();
             mesh.getWorldPosition(wp);
-            const bulbLight = new THREE.PointLight(0xffd97a, 6.0, 12, 2.0);
-            bulbLight.position.copy(wp);
-            scene.add(bulbLight);
+            bulbPositions.push(wp);
           });
+
+          // Pick up to MAX_BULB_LIGHTS bulb anchors, evenly spaced through the list,
+          // so we get a representative spread instead of clustering on the first few.
+          if (bulbPositions.length > 0 && MAX_BULB_LIGHTS > 0) {
+            const step = Math.max(1, Math.floor(bulbPositions.length / MAX_BULB_LIGHTS));
+            for (let i = 0, count = 0; i < bulbPositions.length && count < MAX_BULB_LIGHTS; i += step, count++) {
+              const bulbLight = new THREE.PointLight(0xffd97a, 6.0, 12, 2.0);
+              bulbLight.position.copy(bulbPositions[i]);
+              scene.add(bulbLight);
+            }
+          }
 
           if (gltf.animations.length > 0) {
             mixer = new THREE.AnimationMixer(model);

@@ -36,8 +36,20 @@ function classifyEl(el: HTMLElement): "dark" | "light" | null {
   return null;
 }
 
-function detectIsDark(): boolean {
+function detectIsDark(pathname: string): boolean {
   const navY = 50;
+
+  if (pathname === "/portfolio" || pathname.startsWith("/portfolio/")) {
+    const mediaElements = Array.from(document.querySelectorAll("img, video"));
+    const isOverMedia = mediaElements.some(media => {
+      const rect = media.getBoundingClientRect();
+      return navY >= rect.top && navY <= rect.bottom;
+    });
+    if (isOverMedia) {
+      return true;
+    }
+  }
+
   const sections = Array.from(document.querySelectorAll("section"));
   const activeSec = [...sections].reverse().find(s => s.getBoundingClientRect().top <= navY + 20);
 
@@ -72,6 +84,12 @@ export default function Navbar() {
   }, [pathname]);
 
   useEffect(() => {
+    if (!isScrolled) {
+      setIsMenuOpen(false);
+    }
+  }, [isScrolled]);
+
+  useEffect(() => {
     if (!isMenuOpen) return;
     const handler = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
@@ -84,13 +102,25 @@ export default function Navbar() {
 
   const detectBg = useCallback(() => {
     setIsScrolled(window.scrollY > 80);
-    setIsDarkBg(detectIsDark());
-  }, []);
+    setIsDarkBg(detectIsDark(pathname));
+  }, [pathname]);
 
+  // rAF-throttle the scroll handler. detectIsDark() reads layout
+  // (querySelectorAll + getBoundingClientRect + DOM walk-up), so running it
+  // unthrottled on every scroll event causes layout thrash on every page.
   useEffect(() => {
-    window.addEventListener("scroll", detectBg, { passive: true });
+    let pending = false;
+    const onScroll = () => {
+      if (pending) return;
+      pending = true;
+      requestAnimationFrame(() => {
+        pending = false;
+        detectBg();
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
     detectBg();
-    return () => window.removeEventListener("scroll", detectBg);
+    return () => window.removeEventListener("scroll", onScroll);
   }, [detectBg, pathname]);
 
   const handleMenuEnter = () => {
@@ -140,10 +170,10 @@ export default function Navbar() {
         <div className="pointer-events-auto relative mt-3" ref={menuRef}>
           {/* Desktop */}
           <div className="hidden md:flex items-center relative">
-            {/* Inline links — homepage + not scrolled */}
+            {/* Inline links — not scrolled */}
             <ul
               className={`absolute right-0 flex items-center gap-10 font-body font-bold text-[10px] tracking-[0.25em] uppercase transition-all duration-700 ease-[cubic-bezier(0.76,0,0.24,1)] ${
-                pathname === "/" && !isScrolled
+                !isScrolled
                   ? "opacity-100 translate-y-0 pointer-events-auto"
                   : "opacity-0 -translate-y-4 pointer-events-none"
               }`}
@@ -179,7 +209,7 @@ export default function Navbar() {
               aria-expanded={isMenuOpen}
               aria-label="Toggle navigation menu"
               className={`group relative flex items-center gap-3 py-1 h-14 font-body font-medium text-[10px] tracking-[0.25em] uppercase transition-all duration-700 ease-[cubic-bezier(0.76,0,0.24,1)] ${textMain} ${
-                pathname === "/" && !isScrolled
+                !isScrolled
                   ? "opacity-0 translate-y-4 pointer-events-none"
                   : "opacity-100 translate-y-0 pointer-events-auto"
               }`}

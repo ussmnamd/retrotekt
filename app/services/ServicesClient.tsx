@@ -203,7 +203,7 @@ function StatCounter({ prefix, num, suffix, active, delay }: {
 export default function ServicesClient() {
   const pageRef = useRef<HTMLDivElement>(null);
   const statsRef = useRef<HTMLDivElement>(null);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const glowRef = useRef<HTMLDivElement>(null);
   const [statsActive, setStatsActive] = useState(false);
 
   // Stats count-up trigger
@@ -218,14 +218,24 @@ export default function ServicesClient() {
     return () => obs.disconnect();
   }, []);
 
-  // Cursor tracking for dynamic flashlight glow
+  // Cursor tracking — write to CSS vars on a ref'd element via rAF.
+  // Avoids re-rendering the whole page tree on every mousemove.
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      // Use client coordinates + scroll for absolute positioning if needed
-      // but clientX/Y is fine if the glow is fixed, or we can use pageX/pageY
-      setMousePos({ x: e.pageX, y: e.pageY });
+    let pending = false;
+    let nx = 0, ny = 0;
+    const flush = () => {
+      pending = false;
+      const el = glowRef.current;
+      if (el) {
+        el.style.setProperty("--mx", `${nx}px`);
+        el.style.setProperty("--my", `${ny}px`);
+      }
     };
-    window.addEventListener("mousemove", handleMouseMove);
+    const handleMouseMove = (e: MouseEvent) => {
+      nx = e.pageX; ny = e.pageY;
+      if (!pending) { pending = true; requestAnimationFrame(flush); }
+    };
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
@@ -249,12 +259,13 @@ export default function ServicesClient() {
   }, []);
 
   return (
-    <main ref={pageRef} className="bg-primary overflow-hidden relative">
+    <main ref={pageRef} className="bg-primary overflow-hidden relative rounded-b-[2.5rem] mb-6">
       {/* ── GLOBAL AESTHETICS: GRAIN & CURSOR GLOW ── */}
-      <div 
+      <div
+        ref={glowRef}
         className="pointer-events-none absolute inset-0 z-0 mix-blend-screen opacity-60 transition-opacity duration-300"
         style={{
-          background: `radial-gradient(900px circle at ${mousePos.x}px ${mousePos.y}px, rgba(196,168,130,0.08), transparent 40%)`
+          background: "radial-gradient(900px circle at var(--mx,50%) var(--my,50%), rgba(196,168,130,0.08), transparent 40%)"
         }}
         aria-hidden="true"
       />
@@ -291,7 +302,7 @@ export default function ServicesClient() {
             {/* Left */}
             <div className="flex-1">
               <h1
-                className="font-heading font-light text-background leading-[0.93] tracking-[-0.03em] mb-10 relative z-10"
+                className="font-heading font-medium text-background leading-[0.93] tracking-[-0.03em] mb-10 relative z-10"
                 style={{ fontSize: "clamp(1rem, 7vw, 4rem)" }}
               >
                 <span className="block overflow-hidden"><span className="block reveal">We Don&apos;t Just</span></span>
@@ -362,7 +373,7 @@ export default function ServicesClient() {
       {/* ═══════════════════════════════════════════════════════════════
           SECTION 2 — SERVICE CATALOG
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-16 md:py-24 px-6 md:px-16 lg:px-24 border-b border-[#3D2A1A]" style={{ background: "#1C1309" }}>
+      <section className="pt-8 pb-8 px-6 md:px-16 lg:px-24 border-b border-[#3D2A1A]" style={{ background: "#1C1309" }}>
         <div className="max-w-7xl mx-auto">
 
           {/* Header */}
@@ -1099,7 +1110,7 @@ export default function ServicesClient() {
       {/* ═══════════════════════════════════════════════════════════════
           SECTION 3 — OUR SOLUTIONS
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-16 md:py-24 px-6 md:px-16 lg:px-24 border-b border-[#3D2A1A]">
+      <section className="pt-8 pb-16 md:pb-24 px-6 md:px-16 lg:px-24 border-b border-[#3D2A1A]">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-2">
@@ -1211,12 +1222,12 @@ export default function ServicesClient() {
             </div>
             <div className="md:w-[58%] flex flex-col gap-3">
               <p
-                className="reveal font-heading font-light text-primary/40 leading-tight"
+                className="reveal font-heading font-light text-primary/70 leading-tight"
                 style={{ fontSize: "clamp(1rem, 1.8vw, 1.25rem)" }}
               >
                 A Guarantee of Execution, Not Just Art.
               </p>
-              <p className="reveal reveal-delay-1 font-body text-[14px] text-deep/60 leading-[1.85]">
+              <p className="reveal reveal-delay-1 font-body text-[14px] text-deep/90 leading-[1.85]">
                 We don&apos;t just deliver images; we provide a competitive edge.
                 Our guarantee is built on the four pillars that separate high-stakes
                 visualization from &ldquo;just another pretty picture.&rdquo;
@@ -1244,7 +1255,7 @@ export default function ServicesClient() {
                       {pt.title}
                     </h3>
                     <p
-                      className="font-heading font-light text-primary/40 italic leading-snug"
+                      className="font-heading font-light text-primary/70 italic leading-snug"
                       style={{ fontSize: "clamp(0.9rem, 1.5vw, 1.15rem)" }}
                     >
                       {pt.sub}
@@ -1253,7 +1264,7 @@ export default function ServicesClient() {
                 </div>
                 {/* Right: body */}
                 <div className="md:w-[58%]">
-                  <p className="font-body text-[14px] text-deep/60 leading-[1.85]">
+                  <p className="font-body text-[14px] text-deep/90 leading-[1.85]">
                     {pt.body}
                   </p>
                 </div>
@@ -1264,87 +1275,11 @@ export default function ServicesClient() {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════════════
-          SECTION 5 — OUR PROCESS
-      ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-16 md:py-24 px-6 md:px-16 lg:px-24 border-b border-[#3D2A1A]" style={{ background: "#1A1108" }}>
-        <div className="max-w-7xl mx-auto">
-          {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-12">
-            <div>
-              <p className="font-body text-[12px] tracking-[0.22em] uppercase text-secondary/50 mb-5">
-                Our Process
-              </p>
-              <h2
-                className="reveal font-heading font-light text-background leading-[0.95] tracking-[-0.025em]"
-                style={{ fontSize: "clamp(2.2rem, 5vw, 4rem)" }}
-              >
-                Seamless &amp; Fast.
-              </h2>
-            </div>
-            <p className="reveal reveal-delay-1 font-body text-[15px] text-background/30 max-w-[320px] leading-relaxed">
-              We know contractor workflows. We keep it simple so you can focus
-              on building — not managing your visualization vendor.
-            </p>
-          </div>
-
-          {/* Steps */}
-          <div className="relative">
-            {/* Desktop connector line */}
-            <div className="hidden md:block absolute top-[3.25rem] left-0 right-0 h-px bg-[#3D2A1A]" />
-
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-8">
-              {processSteps.map((step, i) => (
-                <div key={step.num} className={`reveal reveal-delay-${Math.min(i + 1, 2)} relative`}>
-                  {/* Step marker */}
-                  <div className="flex items-center gap-4 mb-6 md:mb-8">
-                    <div className="flex items-center justify-center w-6 h-6 border border-[#3D2A1A] bg-[#1A1108] flex-shrink-0 relative z-10">
-                      <div className="w-1.5 h-1.5 rounded-full bg-secondary" />
-                    </div>
-                    <span className="md:hidden font-body text-[12px] tracking-[0.14em] uppercase text-secondary/50">
-                      Step {step.num}
-                    </span>
-                  </div>
-
-                  {/* Ghost number */}
-                  <div
-                    className="font-heading font-light text-background/[0.04] leading-none select-none mb-4"
-                    style={{ fontSize: "clamp(3.5rem, 8vw, 5.5rem)" }}
-                  >
-                    {step.num}
-                  </div>
-
-                  <h3 className="font-body text-[13px] tracking-[0.14em] uppercase text-secondary mb-3">
-                    {step.title}
-                  </h3>
-                  <p className="font-body text-[15px] text-background/38 leading-relaxed mb-5">
-                    {step.body}
-                  </p>
-
-                  {/* Format badges */}
-                  {step.formats.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                      {step.formats.map((f) => (
-                        <span
-                          key={f}
-                          className="font-body text-[11px] tracking-[0.12em] uppercase text-secondary/50 border border-[#3D2A1A] px-2 py-0.5"
-                        >
-                          {f}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* ═══════════════════════════════════════════════════════════════
           SECTION 6 — PAYMENT PROMISE
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-16 md:py-24 px-6 md:px-16 lg:px-24 border-b border-[#3D2A1A]" style={{ background: "#221709" }}>
+      <section className="py-8 px-6 md:px-16 lg:px-24 border-b border-[#3D2A1A]" style={{ background: "#221709" }}>
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-12">
@@ -1436,7 +1371,7 @@ export default function ServicesClient() {
       {/* ═══════════════════════════════════════════════════════════════
           SECTION 7 — FINAL CTA
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="bg-background py-20 md:py-28 px-6 md:px-16 lg:px-24">
+      <section className="bg-background py-10 px-6 md:px-16 lg:px-24">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-12">
             <div className="md:w-3/5">
