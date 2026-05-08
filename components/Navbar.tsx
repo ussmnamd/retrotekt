@@ -143,7 +143,7 @@ export default function Navbar() {
       style={{ left: "var(--frame-strip)", right: "var(--frame-strip)" }}
     >
       {/* Top row */}
-      <div className="flex items-start justify-between pt-11 px-10">
+      <div className="flex items-start justify-between pt-6 md:pt-11 px-5 md:px-10">
         {/* Logo — fades out on scroll */}
         <div
           className={`transition-all duration-700 ease-[cubic-bezier(0.76,0,0.24,1)] ${
@@ -285,7 +285,7 @@ export default function Navbar() {
 
       {/* Mobile drawer */}
       <div
-        className={`md:hidden pointer-events-auto overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] px-10 ${
+        className={`md:hidden pointer-events-auto overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] px-5 ${
           isMenuOpen ? "max-h-72 opacity-100" : "max-h-0 opacity-0"
         }`}
       >

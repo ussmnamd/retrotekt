@@ -464,11 +464,11 @@ export default function HomeClient() {
           <div className="absolute inset-0 z-30 w-full pointer-events-none" aria-hidden="true">
 
             {/* BOTTOM BAR: LOGO (Left) & CTA (Right) */}
-            <div className="absolute bottom-20 md:bottom-28 left-0 w-full px-6 md:px-12 lg:px-16 flex justify-between items-end pointer-events-none">
+            <div className="absolute bottom-8 md:bottom-28 left-0 w-full px-6 md:px-12 lg:px-16 flex flex-col md:flex-row justify-end md:justify-between items-start md:items-end gap-8 md:gap-0 pointer-events-none">
               
               {/* LOGO - Bottom Left (Solid) */}
               <div data-hero-front className="flex flex-col items-start pointer-events-auto">
-                <p className="font-heading font-light text-[clamp(3.5rem,8vw,7rem)] text-primary tracking-[-0.03em] leading-[0.85] mb-4">
+                <p className="font-heading font-light text-[clamp(2.5rem,10vw,7rem)] text-primary tracking-[-0.03em] leading-[0.85] mb-4">
                   retrotekt<span className="text-secondary">.</span>
                 </p>
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
@@ -481,11 +481,11 @@ export default function HomeClient() {
               </div>
 
               {/* TAGLINE + BUTTON - Bottom Right */}
-              <div data-hero-front className="pointer-events-auto flex-shrink-0 flex flex-col items-end gap-4">
-                <h2 className="font-heading font-light text-[clamp(1.6rem,3vw,2.4rem)] leading-[1.1] text-primary tracking-[-0.01em] text-right">
-                  They&apos;re <span className="font-bold">already showing</span><br />
-                  the finished space.<br />
-                  <span className="text-secondary italic font-light mt-2 block">Why aren&apos;t you?</span>
+              <div data-hero-front className="pointer-events-auto flex-shrink-0 flex flex-col items-start md:items-end gap-4 w-full md:w-auto">
+                <h2 className="font-heading font-light text-[clamp(1.6rem,3vw,2.4rem)] leading-[1.1] text-primary tracking-[-0.01em] text-left md:text-right">
+                  Visuals so <span className="font-bold">hyper-real,</span><br />
+                  they sell the unbuilt.<br />
+                  <span className="text-secondary italic font-light mt-2 block">Step into your vision.</span>
                 </h2>
                 <Link href="/consulting" className="group inline-flex items-center gap-4 px-5 py-[10px] rounded-[3px] border border-primary/10 bg-primary/[0.04] hover:bg-primary/[0.09] hover:border-primary/20 transition-colors duration-300">
                   <div className="w-8 h-[1.5px] bg-primary/60 group-hover:w-24 group-hover:bg-primary transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"></div>

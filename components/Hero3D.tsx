@@ -272,6 +272,7 @@ export default function Hero3D() {
       const delta = window.scrollY - lastScrollY;
       scrollVelocity += delta * 0.002;
       lastScrollY = window.scrollY;
+      requestTick();
     };
     window.addEventListener("scroll", scrollHandler, { passive: true });
 
@@ -339,25 +340,19 @@ export default function Hero3D() {
           const std = mat as THREE.MeshStandardMaterial;
 
           if (std.map) std.map.colorSpace = THREE.SRGBColorSpace;
-          if (std.emissiveMap) std.emissiveMap.colorSpace = THREE.SRGBColorSpace;
 
-          if (std.roughness !== undefined && std.roughness > 0.75) {
-            std.roughness = Math.min(std.roughness, 0.72);
-          }
+          // Replace with Basic Material to disable real-time lighting calculation
+          const basicMat = new THREE.MeshBasicMaterial({
+            map: std.map,
+            color: std.color,
+            side: std.side,
+            transparent: std.transparent,
+            opacity: std.opacity,
+            wireframe: std.wireframe,
+          });
 
-          if (std.metalness > 0.8 && !scene.environment) {
-            std.metalness = 0.55;
-          }
-
-          if (std.emissive && !std.emissive.equals(ZERO_COLOR)) {
-            std.emissiveIntensity = (std.emissiveIntensity ?? 1) * 6.0;
-          }
-
-          if (std.metalness === 1 && !std.envMap && !scene.environment) {
-            std.metalness = 0.6;
-          }
-
-          mat.needsUpdate = true;
+          // Hack to overwrite the material on the mesh
+          mesh.material = basicMat;
         };
 
         if (Array.isArray(mesh.material)) mesh.material.forEach(fixMaterial);
@@ -503,6 +498,7 @@ export default function Hero3D() {
                 start: "top top",
                 end: "bottom top",
                 scrub: 1.2,
+                onUpdate: () => requestTick(),
               },
             });
           }
@@ -541,7 +537,10 @@ export default function Hero3D() {
     // ── Viewport pause observer (200 px lookahead for smooth re-entry) ───────
     let heroInViewport = true;
     const viewportObserver = new IntersectionObserver(
-      ([entry]) => { heroInViewport = entry.isIntersecting; },
+      ([entry]) => {
+        heroInViewport = entry.isIntersecting;
+        if (entry.isIntersecting) requestTick();
+      },
       { rootMargin: "200px" }
     );
     viewportObserver.observe(container);
@@ -554,6 +553,7 @@ export default function Hero3D() {
       if (isMobile) return;
       mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
       mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+      requestTick();
     };
     window.addEventListener("mousemove", onMouseMove, { passive: true });
 
@@ -579,6 +579,7 @@ export default function Hero3D() {
       const dy = (e.clientY - dragStartY) * 0.004;
       rotTarget.y = dragStartRotY + dx;
       rotTarget.x = Math.max(-0.7, Math.min(0.1, dragStartRotX + dy));
+      requestTick();
     };
 
     const onPointerUp = () => {
@@ -614,6 +615,7 @@ export default function Hero3D() {
         camera.getWorldDirection(dir);
         camera.position.copy(cameraTarget).addScaledVector(dir.negate(), newDist);
         lastTouchDist = dist;
+        requestTick();
       }
     };
 
@@ -641,6 +643,7 @@ export default function Hero3D() {
         const nextDist = Math.max(minCamDistance, Math.min(maxCamDistance, dist * zoomFactor));
         camera.position.copy(cameraTarget).addScaledVector(dir.negate(), nextDist);
         camera.updateProjectionMatrix();
+        requestTick();
       }
     };
     canvas.addEventListener("wheel", onWheel, { passive: false });
@@ -665,29 +668,47 @@ export default function Hero3D() {
         if (model) frameCamera(modelGroup);
         // Force one frame even if reduced-motion loop is parked
         lastRenderAfterResize = true;
+        requestTick();
       }, 100);
     };
 
     window.addEventListener("resize", onResize, { passive: true });
     window.addEventListener("orientationchange", onResize);
 
+    let isTicking = false;
+    const requestTick = () => {
+      if (!isTicking) {
+        isTicking = true;
+        tick();
+      }
+    };
+
     // ── Render loop ───────────────────────────────────────────────────────────
     const tick = () => {
-      animationId = requestAnimationFrame(tick);
+      // Park only when scroll momentum has decayed AND reduced-motion is preferred.
+      // Normal users keep the auto-rotate loop running continuously.
+      const isStationary =
+        reducedMotion &&
+        Math.abs(scrollVelocity) < 0.001 &&
+        !isDragging &&
+        entranceDone;
 
       const shouldPause =
         isPaused ||
         !heroInViewport ||
-        (reducedMotion && entranceDone && !isDragging && !lastRenderAfterResize);
+        isStationary;
 
       if (shouldPause) {
-        if (lastRenderAfterResize) {
+        if (lastRenderAfterResize || isStationary) {
           // render one final frame then park
           renderer.render(scene, camera);
           lastRenderAfterResize = false;
         }
+        isTicking = false;
         return;
       }
+
+      animationId = requestAnimationFrame(tick);
 
       const now = performance.now();
       const delta = Math.min((now - lastFrameTime) / 1000, 0.1);
@@ -720,7 +741,7 @@ export default function Hero3D() {
 
       renderer.render(scene, camera);
     };
-    tick();
+    requestTick();
 
     const onContextLost = (e: Event) => { e.preventDefault(); cancelAnimationFrame(animationId); };
     const onContextRestored = () => { tick(); };

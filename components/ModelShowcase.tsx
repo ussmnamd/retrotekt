@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { showcase } from "@/lib/showcase-data";
 
 export default function ModelShowcase() {
@@ -79,42 +80,28 @@ export default function ModelShowcase() {
               data-slide={i}
               className="showcase-slide absolute inset-0 flex items-center justify-center"
             >
-              {/* Color image — AVIF/WebP with JPEG fallback.
-                  showcase-img class stays on the <img> so GSAP transforms apply
-                  to the rendered image and HomeClient's img.complete check works. */}
-              <picture>
-                <source
-                  srcSet={s.src.replace(/\.[^.]+$/, ".avif")}
-                  type="image/avif"
-                  sizes="(max-width: 768px) 70vw, 50vw"
-                />
-                <source
-                  srcSet={s.src.replace(/\.[^.]+$/, ".webp")}
-                  type="image/webp"
-                  sizes="(max-width: 768px) 70vw, 50vw"
-                />
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+              <div className="relative w-[70vw] h-[66vh] z-10">
+                <Image
                   src={s.src}
-                  loading={i === 0 ? "eager" : "lazy"}
-                  decoding={i === 0 ? "sync" : "async"}
-                  className="showcase-img w-[70vw] h-[66vh] relative z-10 block object-contain"
-                  style={{ opacity: i === 0 ? 1 : 0 }}
                   alt={s.title}
+                  fill
+                  priority={i === 0}
+                  className="object-contain showcase-img"
+                  sizes="(max-width: 768px) 70vw, 50vw"
+                  style={{ opacity: i === 0 ? 1 : 0 }}
+                />
+              </div>
+
+              {/* Ghost image — desaturated webp, floats above colour img, GSAP-driven */}
+              <div className="absolute inset-0 m-auto w-[70vw] h-[66vh] pointer-events-none z-10 showcase-img-ghost" style={{ opacity: 0 }} aria-hidden="true">
+                <Image
+                  src={s.ghost}
+                  alt=""
+                  fill
+                  className="object-contain"
                   sizes="(max-width: 768px) 70vw, 50vw"
                 />
-              </picture>
-              {/* Ghost image — desaturated webp, floats above colour img, GSAP-driven */}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={s.ghost}
-                loading="lazy"
-                decoding="async"
-                aria-hidden="true"
-                className="showcase-img-ghost w-[70vw] h-[66vh] object-contain absolute inset-0 m-auto pointer-events-none z-10"
-                alt=""
-                style={{ opacity: 0 }}
-              />
+              </div>
               
             </figure>
           ))}

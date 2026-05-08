@@ -97,7 +97,7 @@
   --text-display: clamp(4rem, 9vw, 8rem);
 
   /* Frame */
-  --frame-strip: 24px;
+  --frame-strip: 16px;
 
   /* Section spacing */
   --section-padding-y: clamp(5rem, 10vw, 9rem);
@@ -141,8 +141,10 @@ html {
 body {
   color: var(--color-ink);
   background: var(--color-dark-bg);
-  font-family: var(--font-inter), sans-serif;
+  font-family: var(--font-geist-sans), sans-serif;
+  width: 100%;
   overflow-x: hidden;
+  position: relative;
 }
 
 .frame-strip-left,
@@ -154,7 +156,7 @@ body {
 
 @media (max-width: 640px) {
   :root {
-    --frame-strip: 12px;
+    --frame-strip: 8px;
   }
 }
 
@@ -162,7 +164,7 @@ h1,
 h2,
 h3,
 h4 {
-  font-family: var(--font-inter), sans-serif;
+  font-family: var(--font-geist-sans), sans-serif;
 }
 
 /* ── Focus states (WCAG 2.1 AA) ───────────────────────────────────────────── */
@@ -225,6 +227,7 @@ h4 {
 
 .animate-scroll-drop {
   animation: scroll-drop 2s ease-in-out infinite;
+  will-change: transform, opacity;
 }
 
 /* ── Card hover — premium lift ────────────────────────────────────────────── */
@@ -376,6 +379,19 @@ h4 {
   transform-origin: center center;
   /* Hidden at rest — GSAP sets visibility:visible only during the swap */
   visibility: hidden;
+  /* GPU layer hint — GSAP animates opacity/transform on this */
+  will-change: transform, opacity;
+}
+
+/* Hero canvas — isolated GPU compositing layer */
+.hero-canvas-container {
+  contain: layout style;
+  will-change: transform;
+}
+
+/* Showcase section — pin creates a complex stacking context */
+.showcase-pin {
+  contain: layout style;
 }
 
 /* When the mist overlay is visible, ensure it reads above slides */

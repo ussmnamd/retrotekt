@@ -249,7 +249,7 @@ export default function Footer() {
 
           {/* Bottom bar */}
           <div className="pt-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-6">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-6">
               <p className="font-mono text-[12px] text-[#F7F0E3]/18 tracking-[0.1em]" style={{ fontFamily: "monospace" }}>
                 © 2026 Retrotekt LLC
               </p>

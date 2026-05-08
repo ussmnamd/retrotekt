@@ -1,5 +1,5 @@
 "use client";
-import React, { MouseEvent, useState, useRef } from 'react';
+import React, { memo, MouseEvent, useState, useRef } from 'react';
 
 type IconType = 'box' | 'cylinder' | 'plane' | 'pyramid';
 
@@ -42,7 +42,7 @@ const PyramidIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-export const ServiceCard: React.FC<ServiceCardProps> = ({ title, description, href, icon, index, onHover }) => {
+const ServiceCardBase: React.FC<ServiceCardProps> = ({ title, description, href, icon, index, onHover }) => {
   const cardRef = useRef<HTMLAnchorElement>(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
@@ -119,3 +119,5 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ title, description, hr
     </a>
   );
 };
+
+export const ServiceCard = memo(ServiceCardBase);

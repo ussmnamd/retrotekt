@@ -1,19 +1,14 @@
 import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
-import { Inter } from "next/font/google";
+import { GeistSans } from "geist/font/sans";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
-
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-inter",
-  display: "swap",
-});
 import Footer from "@/components/Footer";
 import { LiveProjectsTicker } from "@/components/LiveProjectsTicker";
+
+
 
 export const metadata: Metadata = {
   title:
@@ -70,7 +65,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className={GeistSans.variable}>
       <body className="font-body bg-[#2C1F14] text-primary antialiased">
         <script
           type="application/ld+json"

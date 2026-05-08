@@ -270,7 +270,7 @@ export default function PortfolioClient() {
         </div>
 
         {/* Client + Contractor logos — right side */}
-        <div className="absolute right-8 md:right-12 lg:right-16 top-1/2 -translate-y-1/2 z-10 flex flex-col items-end gap-6">
+        <div className="hidden md:flex absolute right-8 md:right-12 lg:right-16 top-1/2 -translate-y-1/2 z-10 flex-col items-end gap-6">
 
           {/* Client */}
           <div className="flex flex-col items-end gap-2">

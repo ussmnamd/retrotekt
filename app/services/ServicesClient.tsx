@@ -113,33 +113,6 @@ const solutions = [
   },
 ];
 
-const processSteps = [
-  {
-    num: "01",
-    title: "Send Your Plans",
-    body: "CAD, PDF, rough sketches, or even cell phone photos. We take it from there.",
-    formats: ["CAD", "PDF", "Sketch", "Photo"],
-  },
-  {
-    num: "02",
-    title: "We Build the 3D",
-    body: "Our team models the geometry, establishes camera angles, and sets the lighting for your review.",
-    formats: [],
-  },
-  {
-    num: "03",
-    title: "Review & Refine",
-    body: "Request changes. We iterate and refine every detail until it aligns perfectly with your vision.",
-    formats: [],
-  },
-  {
-    num: "04",
-    title: "Fast Final Delivery",
-    body: "HD, print-ready, and permit-compatible files — ready for proposals, permits, and pitches.",
-    formats: ["HD", "Print", "Permit"],
-  },
-];
-
 const edgePoints = [
   {
     num: "01",

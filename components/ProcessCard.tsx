@@ -1,5 +1,5 @@
 "use client";
-import React, { MouseEvent, useState, useRef } from 'react';
+import React, { memo, MouseEvent, useState, useRef } from 'react';
 
 /* ── Architectural SVG icons — each draws stroke-by-stroke ────────────────── */
 
@@ -92,7 +92,7 @@ export interface ProcessCardProps {
   active: boolean;
 }
 
-export const ProcessCard: React.FC<ProcessCardProps> = ({ phase, title, desc, index, active }) => {
+const ProcessCardBase: React.FC<ProcessCardProps> = ({ phase, title, desc, index, active }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [hovered, setHovered] = useState(false);
@@ -209,3 +209,5 @@ export const ProcessCard: React.FC<ProcessCardProps> = ({ phase, title, desc, in
     </div>
   );
 };
+
+export const ProcessCard = memo(ProcessCardBase);

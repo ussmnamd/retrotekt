@@ -30,8 +30,8 @@ const config: Config = {
         },
       },
       fontFamily: {
-        heading: ["var(--font-inter)", "sans-serif"],
-        body: ["var(--font-inter)", "sans-serif"],
+        heading: ["var(--font-geist-sans)", "sans-serif"],
+        body: ["var(--font-geist-sans)", "sans-serif"],
       },
     },
   },
