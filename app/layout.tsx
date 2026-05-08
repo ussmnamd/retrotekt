@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Suspense } from "react";
+
 import { GeistSans } from "geist/font/sans";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -76,7 +76,7 @@ export default function RootLayout({
         <div className="flex min-h-screen">
           <aside className="frame-strip-left" aria-hidden="true" />
           <div className="flex-1 min-w-0 rounded-xl overflow-hidden">
-            <Suspense fallback={null}>{children}</Suspense>
+            {children}
           </div>
           <aside className="frame-strip-right" aria-hidden="true" />
         </div>
