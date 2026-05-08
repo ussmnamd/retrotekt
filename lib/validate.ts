@@ -26,11 +26,6 @@ export const validators = {
     if (s.length > 5000) return "Message must be under 5,000 characters.";
     return null;
   },
-
-  company(v: string): FieldError {
-    if (v.trim().length > 200) return "Company name must be under 200 characters.";
-    return null;
-  },
 };
 
 // Strip HTML tags and dangerous protocol prefixes before building mailto: URLs.

@@ -167,11 +167,56 @@ const edgePoints = [
   },
 ];
 
+/* ── Hero stats ──────────────────────────────────────────────────────────── */
+const statItems = [
+  { prefix: "", num: 24, suffix: "h", label: "Quote Turnaround" },
+  { prefix: "$", num: 0, suffix: "", label: "Upfront Payment" },
+  { prefix: "", num: 100, suffix: "%", label: "In-House Production" },
+  { prefix: "", num: 4, suffix: "K+", label: "Delivery Resolution" },
+];
+
+function StatCounter({ prefix, num, suffix, active, delay }: {
+  prefix: string; num: number; suffix: string; active: boolean; delay: number;
+}) {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    if (!active) return;
+    if (num === 0) { setCount(0); return; }
+    let raf: number;
+    let start: number | null = null;
+    const duration = 1200;
+    const ease = (t: number) => 1 - Math.pow(1 - t, 3);
+    const tick = (ts: number) => {
+      if (!start) start = ts;
+      const p = Math.min((ts - start) / duration, 1);
+      setCount(Math.round(ease(p) * num));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    const timer = setTimeout(() => { raf = requestAnimationFrame(tick); }, delay);
+    return () => { clearTimeout(timer); cancelAnimationFrame(raf); };
+  }, [active, num, delay]);
+  return <>{prefix}{count}{suffix}</>;
+}
+
 /* ── Main Component ──────────────────────────────────────────────────────── */
 
 export default function ServicesClient() {
   const pageRef = useRef<HTMLDivElement>(null);
+  const statsRef = useRef<HTMLDivElement>(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [statsActive, setStatsActive] = useState(false);
+
+  // Stats count-up trigger
+  useEffect(() => {
+    const el = statsRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) { setStatsActive(true); obs.disconnect(); } },
+      { threshold: 0.2 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
 
   // Cursor tracking for dynamic flashlight glow
   useEffect(() => {
@@ -224,7 +269,7 @@ export default function ServicesClient() {
       {/* ═══════════════════════════════════════════════════════════════
           SECTION 1 — HERO
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="relative min-h-[70vh] flex flex-col justify-center px-6 md:px-16 lg:px-24 pt-24 pb-20">
+      <section className="relative min-h-[70vh] flex flex-col justify-center px-6 md:px-12 lg:px-16 pt-24 pb-10">
         {/* Architectural blueprint grid */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none select-none">
           <HeroGrid />
@@ -234,64 +279,82 @@ export default function ServicesClient() {
         <div className="absolute bottom-0 left-6 md:left-16 lg:left-24 right-6 md:right-16 lg:right-24 h-px bg-[#3D2A1A]" />
 
         <div className="relative max-w-7xl mx-auto w-full">
-          {/* Section label row */}
-          <div className="flex items-center gap-4 mb-12">
+          {/* Section label — pulled down */}
+          <div className="flex items-center gap-4 mb-12 mt-6">
             <span className="font-body text-[12px] tracking-[0.22em] uppercase text-secondary/60">Services</span>
             <div className="h-px bg-secondary/20 w-10 flex-shrink-0" />
             <span className="font-body text-[12px] tracking-[0.14em] uppercase text-background/20">Retrotekt Studio</span>
           </div>
 
-          {/* Main headline — masked line-by-line reveal */}
-          <h1
-            className="font-heading font-bold text-background leading-[0.93] tracking-[-0.03em] mb-10 relative z-10"
-            style={{ fontSize: "clamp(1rem, 7vw, 4rem)" }}
-          >
-            <span className="block overflow-hidden"><span className="block reveal">We Don&apos;t Just</span></span>
-            <span className="block overflow-hidden"><span className="block reveal reveal-delay-1 text-secondary">Render Spaces.</span></span>
-            <span className="block overflow-hidden"><span className="block reveal reveal-delay-2">We Help You</span></span>
-            <span className="block overflow-hidden"><span className="block reveal reveal-delay-3">Win Projects.</span></span>
-          </h1>
+          {/* Two-column: text left, animated stats right */}
+          <div className="flex flex-col lg:flex-row lg:items-start gap-12 lg:gap-16">
+            {/* Left */}
+            <div className="flex-1">
+              <h1
+                className="font-heading font-light text-background leading-[0.93] tracking-[-0.03em] mb-10 relative z-10"
+                style={{ fontSize: "clamp(1rem, 7vw, 4rem)" }}
+              >
+                <span className="block overflow-hidden"><span className="block reveal">We Don&apos;t Just</span></span>
+                <span className="block overflow-hidden"><span className="block reveal reveal-delay-1 text-secondary">Render Spaces.</span></span>
+                <span className="block overflow-hidden"><span className="block reveal reveal-delay-2">We Help You</span></span>
+                <span className="block overflow-hidden"><span className="block reveal reveal-delay-3">Win Projects.</span></span>
+              </h1>
 
-          {/* Subheadline */}
-          <p className="reveal reveal-delay-3 font-body text-[16px] text-background/55 leading-[1.75] max-w-[520px] mb-14 relative z-10" style={{ transitionDelay: '0.5s' }}>
-            Boutique 3D Visualization &amp; Design Solutions for Elite Builders,
-            Developers, and Designers. Award-winning, agency-grade visuals
-            engineered for the high-velocity world of modern construction.
-          </p>
+              <p className="reveal reveal-delay-3 font-body text-[16px] text-background/55 leading-[1.75] max-w-[520px] mb-14 relative z-10" style={{ transitionDelay: '0.5s' }}>
+                Boutique 3D Visualization &amp; Design Solutions for Elite Builders,
+                Developers, and Designers. Award-winning, agency-grade visuals
+                engineered for the high-velocity world of modern construction.
+              </p>
 
-          {/* CTA row */}
-          <div className="reveal reveal-delay-3 flex flex-wrap items-center gap-5 mb-20 relative z-10" style={{ transitionDelay: '0.6s' }}>
-            <Link href="/contact" className="group inline-flex items-center gap-4 px-5 py-[10px] rounded-[3px] border border-[#C4A882]/20 bg-[#F7F0E3]/[0.05] hover:bg-[#F7F0E3]/10 hover:border-[#C4A882]/35 transition-colors duration-300">
-              <div className="w-8 h-[1.5px] bg-secondary/60 group-hover:w-24 group-hover:bg-secondary transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"></div>
-              <span className="font-body font-medium text-[11px] tracking-[0.3em] uppercase text-secondary group-hover:text-secondary transition-colors duration-300">Request Your Custom Project Blueprint</span>
-            </Link>
-            <div className="flex flex-col gap-1">
-              <span className="font-body text-[12px] tracking-[0.1em] uppercase text-background/25">
-                Custom quotes in 24 hours
-              </span>
-              <span className="font-body text-[12px] tracking-[0.1em] uppercase text-background/25">
-                Zero upfront payment required
-              </span>
-            </div>
-          </div>
-
-          {/* Trust stat row */}
-          <div className="reveal flex flex-wrap gap-x-12 gap-y-6 pt-10 border-t border-[#3D2A1A]">
-            {[
-              { val: "24h", label: "Quote Turnaround" },
-              { val: "$0", label: "Upfront Payment" },
-              { val: "100%", label: "In-House Production" },
-              { val: "4K+", label: "Delivery Resolution" },
-            ].map((s) => (
-              <div key={s.label}>
-                <div className="font-heading font-light text-secondary tabular-nums" style={{ fontSize: "clamp(1.6rem,3vw,2.2rem)" }}>
-                  {s.val}
-                </div>
-                <div className="font-body text-[11px] tracking-[0.14em] uppercase text-background/30 mt-0.5">
-                  {s.label}
+              <div className="reveal reveal-delay-3 flex flex-wrap items-center gap-5 relative z-10" style={{ transitionDelay: '0.6s' }}>
+                <Link href="/contact" className="group inline-flex items-center gap-4 px-5 py-[10px] rounded-[3px] border border-[#C4A882]/20 bg-[#F7F0E3]/[0.05] hover:bg-[#F7F0E3]/10 hover:border-[#C4A882]/35 transition-colors duration-300">
+                  <div className="w-8 h-[1.5px] bg-secondary/60 group-hover:w-24 group-hover:bg-secondary transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"></div>
+                  <span className="font-body font-medium text-[11px] tracking-[0.3em] uppercase text-secondary group-hover:text-secondary transition-colors duration-300">Request Your Custom Project Blueprint</span>
+                </Link>
+                <div className="flex flex-col gap-1">
+                  <span className="font-body text-[12px] tracking-[0.1em] uppercase text-background/25">Custom quotes in 24 hours</span>
+                  <span className="font-body text-[12px] tracking-[0.1em] uppercase text-background/25">Zero upfront payment required</span>
                 </div>
               </div>
-            ))}
+            </div>
+
+            {/* Right: animated stat stack */}
+            <div ref={statsRef} className="lg:w-[260px] xl:w-[280px] flex-shrink-0 self-start">
+              {statItems.map((s, i) => (
+                <div
+                  key={s.label}
+                  className="relative py-5"
+                  style={{
+                    opacity: statsActive ? 1 : 0,
+                    transform: statsActive ? "translateY(0)" : "translateY(18px)",
+                    transition: "opacity 0.55s ease, transform 0.55s ease",
+                    transitionDelay: `${i * 110}ms`,
+                  }}
+                >
+                  <div
+                    className="absolute top-0 left-0 h-px bg-secondary/25 origin-left"
+                    style={{
+                      width: "100%",
+                      transform: statsActive ? "scaleX(1)" : "scaleX(0)",
+                      transition: "transform 0.75s cubic-bezier(0.76,0,0.24,1)",
+                      transitionDelay: `${i * 110}ms`,
+                    }}
+                  />
+                  <div className="font-heading font-light text-secondary tabular-nums leading-none" style={{ fontSize: "clamp(2rem, 3.2vw, 2.6rem)" }}>
+                    <StatCounter prefix={s.prefix} num={s.num} suffix={s.suffix} active={statsActive} delay={i * 130} />
+                  </div>
+                  <div className="font-body text-[10px] tracking-[0.2em] uppercase text-background/35 mt-1.5">{s.label}</div>
+                </div>
+              ))}
+              <div
+                className="h-px bg-secondary/25 origin-left"
+                style={{
+                  transform: statsActive ? "scaleX(1)" : "scaleX(0)",
+                  transition: "transform 0.75s cubic-bezier(0.76,0,0.24,1)",
+                  transitionDelay: `${statItems.length * 110}ms`,
+                }}
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -303,16 +366,16 @@ export default function ServicesClient() {
         <div className="max-w-7xl mx-auto">
 
           {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12 pb-12 border-b border-[#3D2A1A]">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-5 mb-6 pb-6 border-b border-[#3D2A1A]">
             <div>
-              <p className="font-body text-[12px] tracking-[0.22em] uppercase text-secondary/50 mb-5">
+              <p className="font-body text-[12px] tracking-[0.22em] uppercase text-secondary/50 mb-3">
                 What We Deliver
               </p>
               <h2
-                className="reveal font-heading font-bold text-background leading-[0.95] tracking-[-0.025em]"
+                className="reveal font-heading font-light text-background leading-[0.95] tracking-[-0.025em]"
                 style={{ fontSize: "clamp(2.2rem, 5vw, 4rem)" }}
               >
-                The Toolkit: Every Visual Asset<br />You Need to Close
+                Every Visual Asset<br />You Need to Close
               </h2>
             </div>
             <p className="reveal reveal-delay-1 font-body text-[15px] text-background/35 max-w-[360px] leading-relaxed">
@@ -322,8 +385,8 @@ export default function ServicesClient() {
           </div>
 
           {/* ── SERVICE 01: Hyper-Realistic Still Renders ── */}
-          <div id="renders" className="reveal group border-b border-[#3D2A1A] pb-20 mb-20" style={{ scrollMarginTop: "80px" }}>
-            <div className="flex flex-col lg:flex-row gap-12 lg:gap-20">
+          <div id="renders" className="reveal group border-b border-[#3D2A1A] pb-10 mb-10" style={{ scrollMarginTop: "80px" }}>
+            <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
               {/* Left: Visual placeholder + meta */}
               <div className="lg:w-[45%] flex flex-col gap-6">
                 {/* Render preview block */}
@@ -408,7 +471,7 @@ export default function ServicesClient() {
                 </div>
 
                 <h3
-                  className="font-heading font-bold text-background leading-[0.95] tracking-[-0.02em] mb-6"
+                  className="font-heading font-light text-background leading-[0.95] tracking-[-0.02em] mb-6"
                   style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)" }}
                 >
                   Still Renders<br /><span className="text-secondary/70">The &ldquo;Indistinguishable&rdquo;<br />Standard</span>
@@ -449,8 +512,8 @@ export default function ServicesClient() {
           </div>
 
           {/* ── SERVICE 02: Cinematic Walkthroughs ── */}
-          <div id="walkthroughs" className="reveal group border-b border-[#3D2A1A] pb-20 mb-20" style={{ scrollMarginTop: "80px" }}>
-            <div className="flex flex-col lg:flex-row-reverse gap-12 lg:gap-20">
+          <div id="walkthroughs" className="reveal group border-b border-[#3D2A1A] pb-10 mb-10" style={{ scrollMarginTop: "80px" }}>
+            <div className="flex flex-col lg:flex-row-reverse gap-8 lg:gap-12">
               {/* Right side: Visual */}
               <div className="lg:w-[45%] flex flex-col gap-6">
                 <div className="relative aspect-[4/3] bg-[#241A0F] border border-[#3D2A1A] overflow-hidden">
@@ -532,7 +595,7 @@ export default function ServicesClient() {
                 </div>
 
                 <h3
-                  className="font-heading font-bold text-background leading-[0.95] tracking-[-0.02em] mb-6"
+                  className="font-heading font-light text-background leading-[0.95] tracking-[-0.02em] mb-6"
                   style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)" }}
                 >
                   Cinematic Walkthroughs<br /><span className="text-secondary/70">Motion That Sells</span>
@@ -571,8 +634,8 @@ export default function ServicesClient() {
           </div>
 
           {/* ── SERVICE 03: Aerial & Bird's-Eye Views ── */}
-          <div id="aerial" className="reveal group border-b border-[#3D2A1A] pb-20 mb-20" style={{ scrollMarginTop: "80px" }}>
-            <div className="flex flex-col lg:flex-row gap-12 lg:gap-20">
+          <div id="aerial" className="reveal group border-b border-[#3D2A1A] pb-10 mb-10" style={{ scrollMarginTop: "80px" }}>
+            <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
               {/* Left: Visual */}
               <div className="lg:w-[45%] flex flex-col gap-6">
                 <div className="relative aspect-[4/3] bg-[#241A0F] border border-[#3D2A1A] overflow-hidden">
@@ -650,7 +713,7 @@ export default function ServicesClient() {
                 </div>
 
                 <h3
-                  className="font-heading font-bold text-background leading-[0.95] tracking-[-0.02em] mb-6"
+                  className="font-heading font-light text-background leading-[0.95] tracking-[-0.02em] mb-6"
                   style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)" }}
                 >
                   Aerial &amp; Bird&apos;s-Eye Views<br /><span className="text-secondary/70">The Big Picture</span>
@@ -689,8 +752,8 @@ export default function ServicesClient() {
           </div>
 
           {/* ── SERVICE 04: 360° Panoramas ── */}
-          <div className="reveal group border-b border-[#3D2A1A] pb-20 mb-20">
-            <div className="flex flex-col lg:flex-row-reverse gap-12 lg:gap-20">
+          <div className="reveal group border-b border-[#3D2A1A] pb-10 mb-10">
+            <div className="flex flex-col lg:flex-row-reverse gap-8 lg:gap-12">
               {/* Right: Visual */}
               <div className="lg:w-[45%] flex flex-col gap-6">
                 <div className="relative aspect-[4/3] bg-[#241A0F] border border-[#3D2A1A] overflow-hidden">
@@ -766,7 +829,7 @@ export default function ServicesClient() {
                 </div>
 
                 <h3
-                  className="font-heading font-bold text-background leading-[0.95] tracking-[-0.02em] mb-6"
+                  className="font-heading font-light text-background leading-[0.95] tracking-[-0.02em] mb-6"
                   style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)" }}
                 >
                   360° Panoramas &amp; VR<br /><span className="text-secondary/70">Total Immersion</span>
@@ -805,8 +868,8 @@ export default function ServicesClient() {
           </div>
 
           {/* ── SERVICE 05: Floor Plan Renders ── */}
-          <div id="floor-plans" className="reveal group border-b border-[#3D2A1A] pb-20 mb-20" style={{ scrollMarginTop: "80px" }}>
-            <div className="flex flex-col lg:flex-row gap-12 lg:gap-20">
+          <div id="floor-plans" className="reveal group border-b border-[#3D2A1A] pb-10 mb-10" style={{ scrollMarginTop: "80px" }}>
+            <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
               {/* Left: Visual */}
               <div className="lg:w-[45%] flex flex-col gap-6">
                 <div className="relative aspect-[4/3] bg-[#241A0F] border border-[#3D2A1A] overflow-hidden">
@@ -884,7 +947,7 @@ export default function ServicesClient() {
                 </div>
 
                 <h3
-                  className="font-heading font-bold text-background leading-[0.95] tracking-[-0.02em] mb-6"
+                  className="font-heading font-light text-background leading-[0.95] tracking-[-0.02em] mb-6"
                   style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)" }}
                 >
                   Architectural Floor Plans<br /><span className="text-secondary/70">Precision Meets Clarity</span>
@@ -924,7 +987,7 @@ export default function ServicesClient() {
 
           {/* ── SERVICE 06: Pre-Sale Concepts ── */}
           <div className="reveal group">
-            <div className="flex flex-col lg:flex-row-reverse gap-12 lg:gap-20">
+            <div className="flex flex-col lg:flex-row-reverse gap-8 lg:gap-12">
               {/* Right: Visual */}
               <div className="lg:w-[45%] flex flex-col gap-6">
                 <div className="relative aspect-[4/3] bg-[#241A0F] border border-[#3D2A1A] overflow-hidden">
@@ -991,7 +1054,7 @@ export default function ServicesClient() {
                 </div>
 
                 <h3
-                  className="font-heading font-bold text-background leading-[0.95] tracking-[-0.02em] mb-6"
+                  className="font-heading font-light text-background leading-[0.95] tracking-[-0.02em] mb-6"
                   style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)" }}
                 >
                   Pre-Sale Concepts<br /><span className="text-secondary/70">The 48-Hour Closer</span>
@@ -1039,13 +1102,13 @@ export default function ServicesClient() {
       <section className="py-16 md:py-24 px-6 md:px-16 lg:px-24 border-b border-[#3D2A1A]">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-4">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-2">
             <div>
               <p className="font-body text-[12px] tracking-[0.22em] uppercase text-secondary/50 mb-5">
                 Our Solutions
               </p>
               <h2
-                className="reveal font-heading font-bold text-background leading-[0.95] tracking-[-0.025em]"
+                className="reveal font-heading font-light text-background leading-[0.95] tracking-[-0.025em]"
                 style={{ fontSize: "clamp(2.2rem, 5vw, 4rem)" }}
               >
                 Engineered to<br />Close Deals.
@@ -1061,15 +1124,15 @@ export default function ServicesClient() {
           {solutions.map((sol, i) => (
             <div
               key={sol.num}
-              className={`reveal group border-t border-[#3D2A1A] py-12 md:py-16 flex flex-col md:flex-row gap-8 md:gap-12 ${i % 2 === 1 ? "md:flex-row-reverse" : ""}`}
+              className={`reveal group border-t border-[#3D2A1A] py-8 md:py-10 flex flex-col md:flex-row gap-8 md:gap-12 ${i % 2 === 1 ? "md:flex-row-reverse" : ""}`}
             >
               {/* Left col: Ghost number + label + title + stats */}
               <div className="md:w-[42%] flex flex-col justify-between gap-8">
                 <div>
                   {/* Ghost number */}
                   <div
-                    className="font-heading font-bold text-background/[0.04] leading-none select-none"
-                    style={{ fontSize: "clamp(5rem, 14vw, 11rem)", letterSpacing: "-0.04em" }}
+                    className="font-heading font-light text-background/[0.04] leading-none select-none"
+                    style={{ fontSize: "clamp(4rem, 10vw, 7rem)", letterSpacing: "-0.04em" }}
                   >
                     {sol.num}
                   </div>
@@ -1077,7 +1140,7 @@ export default function ServicesClient() {
                     {sol.tag}
                   </div>
                   <h3
-                    className="font-heading font-bold text-background tracking-[-0.02em] leading-[0.97]"
+                    className="font-heading font-light text-background tracking-[-0.02em] leading-[0.97]"
                     style={{ fontSize: "clamp(1.7rem, 3.5vw, 2.8rem)" }}
                   >
                     {sol.title}
@@ -1101,11 +1164,11 @@ export default function ServicesClient() {
 
               {/* Right col: Description + bullets + outcome quote */}
               <div className="md:w-[58%] flex flex-col justify-center">
-                <p className="font-body text-[15px] text-background/55 leading-[1.8] max-w-[520px] mb-8">
+                <p className="font-body text-[15px] text-background/55 leading-[1.8] max-w-[520px] mb-5">
                   {sol.desc}
                 </p>
 
-                <ul className="flex flex-col gap-3.5 mb-10">
+                <ul className="flex flex-col gap-3 mb-6">
                   {sol.bullets.map((b) => (
                     <li key={b} className="flex items-start gap-3 font-body text-[15px] text-background/45">
                       <span className="text-secondary flex-shrink-0 mt-0.5">→</span>
@@ -1213,7 +1276,7 @@ export default function ServicesClient() {
                 Our Process
               </p>
               <h2
-                className="reveal font-heading font-bold text-background leading-[0.95] tracking-[-0.025em]"
+                className="reveal font-heading font-light text-background leading-[0.95] tracking-[-0.025em]"
                 style={{ fontSize: "clamp(2.2rem, 5vw, 4rem)" }}
               >
                 Seamless &amp; Fast.
@@ -1245,7 +1308,7 @@ export default function ServicesClient() {
 
                   {/* Ghost number */}
                   <div
-                    className="font-heading font-bold text-background/[0.04] leading-none select-none mb-4"
+                    className="font-heading font-light text-background/[0.04] leading-none select-none mb-4"
                     style={{ fontSize: "clamp(3.5rem, 8vw, 5.5rem)" }}
                   >
                     {step.num}
@@ -1290,7 +1353,7 @@ export default function ServicesClient() {
                 Our Payment Promise
               </p>
               <h2
-                className="reveal font-heading font-bold text-background leading-[0.95] tracking-[-0.025em]"
+                className="reveal font-heading font-light text-background leading-[0.95] tracking-[-0.025em]"
                 style={{ fontSize: "clamp(2.2rem, 5vw, 4rem)" }}
               >
                 Zero-Risk<br />Partnership.
@@ -1381,7 +1444,7 @@ export default function ServicesClient() {
                 Ready to Win?
               </p>
               <h2
-                className="reveal font-heading font-bold text-primary leading-[0.93] tracking-[-0.03em] mb-0"
+                className="reveal font-heading font-light text-primary leading-[0.93] tracking-[-0.03em] mb-0"
                 style={{ fontSize: "clamp(2.8rem, 7vw, 6rem)" }}
               >
                 Stop Losing Bids<br />to &ldquo;Lack of<br />

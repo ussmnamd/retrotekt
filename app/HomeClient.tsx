@@ -631,8 +631,10 @@ export default function HomeClient() {
                     <div style={{
                       width: '1px',
                       background: 'rgba(247,240,227,0.2)',
-                      height: processActivePhase >= i ? '14px' : '0px',
-                      transition: `height 0.35s ease ${i * 0.7 + 0.45}s`,
+                      height: '14px',
+                      transformOrigin: 'bottom center',
+                      transform: processActivePhase >= i ? 'scaleY(1)' : 'scaleY(0)',
+                      transition: `transform 0.35s ease ${i * 0.7 + 0.45}s`,
                     }} />
                     {/* Station circle */}
                     <div style={{

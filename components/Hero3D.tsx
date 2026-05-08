@@ -121,7 +121,6 @@ const ZERO_COLOR = new THREE.Color(0, 0, 0);
 export default function Hero3D() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [progress, setProgress] = useState(0);
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [placeholderMounted, setPlaceholderMounted] = useState(true);
 
@@ -494,13 +493,7 @@ export default function Hero3D() {
             });
           }
         },
-        (e) => {
-          if (e.lengthComputable && e.total > 0) {
-            setProgress(Math.min(100, Math.round((e.loaded / e.total) * 100)));
-          } else {
-            setProgress(Math.min(99, Math.round((e.loaded / 1024 / 1024) * 6)));
-          }
-        },
+        undefined,
         (err) => {
           window.clearTimeout(loadTimeout);
           console.error("[Hero3D] GLB load failed:", err);

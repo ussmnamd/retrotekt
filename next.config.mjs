@@ -116,7 +116,7 @@ const nextConfig = {
 
   async redirects() {
     return [
-      { source: '/pricing', destination: '/contact', permanent: true },
+      { source: '/pricing', destination: '/consulting', permanent: true },
       { source: '/about', destination: '/consulting', permanent: true },
     ];
   },
