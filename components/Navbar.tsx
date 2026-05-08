@@ -16,6 +16,49 @@ const MENU_LINKS = [
   ...NAV_LINKS,
 ] as const;
 
+const DARK_BG_CLASSES = new Set([
+  "bg-primary", "bg-[#2C1F14]", "bg-[#0A0A0A]", "bg-[#0F0A06]", "bg-[#1C1309]",
+]);
+const LIGHT_BG_CLASSES = new Set([
+  "bg-background", "bg-surface", "bg-[#F7F0E3]", "bg-[#EDE3CF]", "bg-[#ECE3CF]",
+  "bg-[#EDE3CE]", "bg-[#E2D5BC]",
+]);
+const DARK_BG_COLORS = ["#1c1309", "#2c1f14", "#0a0a0a", "#0f0a06", "rgb(28,19,9)", "rgb(44,31,20)"];
+const LIGHT_BG_COLORS = ["#f7f0e3", "#ede3cf", "#ece3cf", "#ede3ce", "rgb(247,240,227)", "rgb(237,227,207)"];
+
+function classifyEl(el: HTMLElement): "dark" | "light" | null {
+  const classes = Array.from(el.classList);
+  if (classes.some(c => DARK_BG_CLASSES.has(c))) return "dark";
+  if (classes.some(c => LIGHT_BG_CLASSES.has(c))) return "light";
+  const bg = (el.style.background || el.style.backgroundColor || "").toLowerCase().replace(/\s/g, "");
+  if (DARK_BG_COLORS.some(c => bg.includes(c.replace(/\s/g, "")))) return "dark";
+  if (LIGHT_BG_COLORS.some(c => bg.includes(c.replace(/\s/g, "")))) return "light";
+  return null;
+}
+
+function detectIsDark(): boolean {
+  const navY = 50;
+  const sections = Array.from(document.querySelectorAll("section"));
+  const activeSec = [...sections].reverse().find(s => s.getBoundingClientRect().top <= navY + 20);
+
+  if (activeSec) {
+    let el: HTMLElement | null = activeSec;
+    while (el && el !== document.body) {
+      const result = classifyEl(el);
+      if (result) return result === "dark";
+      el = el.parentElement;
+    }
+  }
+
+  const container = document.querySelector<HTMLElement>("main");
+  if (container) {
+    const result = classifyEl(container);
+    if (result) return result === "dark";
+  }
+
+  return true;
+}
+
 export default function Navbar() {
   const pathname = usePathname();
   const [isDarkBg, setIsDarkBg] = useState(true);
@@ -41,45 +84,7 @@ export default function Navbar() {
 
   const detectBg = useCallback(() => {
     setIsScrolled(window.scrollY > 80);
-
-    const sections = Array.from(document.querySelectorAll("section"));
-    const navY = 50;
-    const activeSec = sections.reverse().find(
-      (sec) => sec.getBoundingClientRect().top <= navY + 20
-    );
-
-    let isDark = false;
-    const darkClasses = ["bg-primary", "bg-[#2C1F14]", "bg-[#0A0A0A]", "bg-[#0F0A06]"];
-    const lightClasses = ["bg-background", "bg-surface", "bg-[#F7F0E3]", "bg-[#EDE3CF]", "bg-[#ECE3CF]"];
-
-    const walkUp = (start: HTMLElement | null) => {
-      let el = start;
-      while (el && el !== document.body) {
-        const cls = Array.from(el.classList);
-        if (darkClasses.some((c) => cls.includes(c))) return true;
-        if (lightClasses.some((c) => cls.includes(c))) return false;
-        const bg = el.style.background || el.style.backgroundColor || "";
-        if (bg.includes("#1C1309") || bg.includes("rgb(28, 19, 9)") || bg.includes("#0A0A0A") || bg.includes("#0F0A06")) return true;
-        if (bg.includes("#ECE3CF") || bg.includes("rgb(236, 227, 207)") || bg.includes("#EDE3CE") || bg.includes("rgb(237, 227, 206)")) return false;
-        el = el.parentElement;
-      }
-      return null;
-    };
-
-    if (activeSec) {
-      const result = walkUp(activeSec);
-      isDark = result ?? false;
-    } else {
-      const container = document.querySelector("main") || document.querySelector('div[class*="min-h-screen"]');
-      if (container) {
-        const result = walkUp(container as HTMLElement);
-        isDark = result ?? true;
-      } else {
-        isDark = true;
-      }
-    }
-
-    setIsDarkBg(isDark);
+    setIsDarkBg(detectIsDark());
   }, []);
 
   useEffect(() => {
