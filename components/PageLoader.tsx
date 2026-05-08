@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 
-const DRAW_MS = 2800;
-const EXIT_MS = 900;
+const DRAW_MS = 800;
+const EXIT_MS = 400;
 
 function Line({ x1, y1, x2, y2, delay = 0, dur = 600, stroke = "#C4A882", sw = 1.2, op = 1 }: {
   x1: number; y1: number; x2: number; y2: number;
@@ -39,7 +39,7 @@ function Label({ x, y, text, delay = 0, size = 9, color = "#C4A882", tracking = 
   return (
     <text
       x={x} y={y} fill={color} fontSize={size}
-      fontFamily="Inter, sans-serif"
+      fontFamily="var(--font-geist-sans), sans-serif"
       letterSpacing={tracking} textAnchor={anchor as "middle" | "start" | "end"}
       opacity={op}
       style={{ animation: `arch-fade ${400}ms ease forwards ${delay}ms` }}
@@ -76,7 +76,7 @@ export default function PageLoader({ onComplete }: { onComplete: () => void }) {
       {/* Brand — top left */}
       <div style={{
         position: "absolute", top: 28, left: 40,
-        fontFamily: "Inter, sans-serif",
+        fontFamily: "var(--font-geist-sans), sans-serif",
         fontSize: "clamp(1.1rem, 2vw, 1.4rem)",
         color: "#F7F0E3", letterSpacing: "0.04em",
         opacity: 0,
@@ -88,7 +88,7 @@ export default function PageLoader({ onComplete }: { onComplete: () => void }) {
       {/* Subtitle — top right */}
       <div style={{
         position: "absolute", top: 32, right: 40,
-        fontFamily: "Inter, sans-serif",
+        fontFamily: "var(--font-geist-sans), sans-serif",
         fontSize: "9px", letterSpacing: "0.25em",
         color: "#C4A882", textTransform: "uppercase",
         opacity: 0,
@@ -202,7 +202,7 @@ export default function PageLoader({ onComplete }: { onComplete: () => void }) {
       {/* Bottom status */}
       <div style={{
         position: "absolute", bottom: 18, left: 40,
-        fontFamily: "Inter, sans-serif",
+        fontFamily: "var(--font-geist-sans), sans-serif",
         fontSize: "8px", letterSpacing: "0.3em",
         color: "#C4A882", textTransform: "uppercase", opacity: 0.5,
         animation: "arch-fade 500ms ease forwards 300ms",

@@ -42,12 +42,13 @@ export default function HomeClient() {
 
   /* ── Single unified GSAP context, created after the page loader exits ── */
   const onLoaderComplete = useCallback(() => {
-    (async () => {
-      const gsapMod = (await import("gsap")).default;
-      const { ScrollTrigger } = await import("gsap/ScrollTrigger");
-      gsapMod.registerPlugin(ScrollTrigger);
-
-      ctxRef.current = gsapMod.context(() => {
+    setTimeout(() => {
+      (async () => {
+        const gsapMod = (await import("gsap")).default;
+        const { ScrollTrigger } = await import("gsap/ScrollTrigger");
+        gsapMod.registerPlugin(ScrollTrigger);
+  
+        ctxRef.current = gsapMod.context(() => {
         const mm = gsapMod.matchMedia();
 
         // ── Full-motion variant ──────────────────────────────────────────────
@@ -435,6 +436,7 @@ export default function HomeClient() {
       // Refresh once after dynamic content settles
       requestAnimationFrame(() => ScrollTrigger.refresh());
     })();
+    }, 150); // Yield to main thread to fix INP delay
   }, []);
 
   // Revert the entire context on unmount
