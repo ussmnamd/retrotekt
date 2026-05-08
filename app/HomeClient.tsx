@@ -25,7 +25,10 @@ import DebugPanel from "@/components/DebugPanel";
 import { portfolioAssets } from "@/app/portfolio/assets";
 import CTASection from "@/components/CTASection";
 
-const ModelShowcase = dynamic(() => import("@/components/ModelShowcase"), { ssr: false });
+const ModelShowcase = dynamic(() => import("@/components/ModelShowcase"), { 
+  ssr: false,
+  loading: () => <div className="w-full h-screen bg-background" />
+});
 
 const Hero3D = dynamic(() => import("@/components/Hero3D"), {
   ssr: false,
