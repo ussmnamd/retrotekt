@@ -1,26 +1,7 @@
-"use client";
-
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useRef } from "react";
 
 export default function Footer() {
-  const scanRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const el = scanRef.current;
-    if (!el) return;
-    let raf: number;
-    let pos = 0;
-    const speed = 0.15;
-    const animate = () => {
-      pos = (pos + speed) % 100;
-      el.style.transform = `translateY(${pos}%)`;
-      raf = requestAnimationFrame(animate);
-    };
-    raf = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(raf);
-  }, []);
 
   return (
     <footer
@@ -35,14 +16,20 @@ export default function Footer() {
     >
       {/* ── Running marquee — outside dark container so curves are visible ── */}
       <Link
-        href="/contact"
+        href="/consulting"
         className="group relative z-10 block overflow-hidden cursor-pointer"
-        style={{ background: "#D9CCBA", paddingTop: "1.5rem", paddingBottom: "1.5rem" }}
+        style={{
+          background: "#D9CCBA",
+          paddingTop: "1.5rem",
+          paddingBottom: "1.5rem",
+          maskImage: "linear-gradient(to right, transparent 0%, black 3%, black 97%, transparent 100%)",
+          WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 3%, black 97%, transparent 100%)",
+        }}
         aria-label="Ready to move faster — go to contact"
       >
         <div
           className="flex group-hover:[animation-play-state:paused]"
-          style={{ animation: "footer-marquee 30s linear infinite" }}
+          style={{ animation: "footer-marquee 10s linear infinite" }}
         >
           {Array.from({ length: 8 }).map((_, i) => (
             <span
@@ -50,9 +37,10 @@ export default function Footer() {
               className="whitespace-nowrap flex-shrink-0 flex items-center"
               style={{
                 fontFamily: "'Inter', sans-serif",
-                fontWeight: 400,
+                fontWeight: 300,
                 fontSize: "clamp(1.8rem, 4vw, 3.4rem)",
-                letterSpacing: "0.01em",
+                letterSpacing: "-0.01em",
+                wordSpacing: "-0.05em",
                 color: "#1A1008",
                 paddingRight: "clamp(1rem, 2.5vw, 2.5rem)",
               }}
@@ -95,12 +83,11 @@ export default function Footer() {
         {/* Animated scan line */}
         <div className="absolute inset-x-0 top-0 h-full pointer-events-none overflow-hidden" aria-hidden="true">
           <div
-            ref={scanRef}
             className="absolute inset-x-0"
             style={{
               height: "120px",
               background: "linear-gradient(180deg, transparent 0%, rgba(196,168,130,0.025) 50%, transparent 100%)",
-              willChange: "transform",
+              animation: "footer-scan 11s linear infinite",
             }}
           />
         </div>
@@ -134,7 +121,7 @@ export default function Footer() {
         </div>
 
         {/* ── Main content ─────────────────────────────────────────────────── */}
-        <div className="relative z-10 max-w-screen-2xl mx-auto px-8 md:px-14 lg:px-20 pt-8 pb-6">
+        <div className="relative z-10 max-w-screen-2xl mx-auto px-6 md:px-12 lg:px-16 pt-8 pb-6">
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 pb-8">
 
@@ -152,12 +139,12 @@ export default function Footer() {
 
               <div className="flex items-center gap-2.5 mb-5">
                 <div className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_2px_rgba(52,211,153,0.45)]" />
-                <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-emerald-400/80" style={{ fontFamily: "monospace" }}>
+                <span className="font-mono text-[12px] tracking-[0.22em] uppercase text-emerald-400/80" style={{ fontFamily: "monospace" }}>
                   Active for Q2 2026
                 </span>
               </div>
 
-              <p className="font-body text-[13px] leading-[1.9] text-[#F7F0E3]/40 max-w-[300px] mb-6">
+              <p className="font-body text-[15px] leading-[1.9] text-[#F7F0E3]/40 max-w-[300px] mb-6">
                 Photorealistic 3D architectural visualizations built for the contractors and remodelers who refuse to sell blind.
               </p>
 
@@ -194,7 +181,7 @@ export default function Footer() {
             <div className="lg:col-span-3 lg:col-start-7">
               <div className="flex items-center gap-3 mb-6">
                 <div className="h-px w-6 bg-[#C4A882]/30" />
-                <p className="font-mono text-[9px] tracking-[0.3em] uppercase text-[#C4A882]/40" style={{ fontFamily: "monospace" }}>
+                <p className="font-mono text-[11px] tracking-[0.3em] uppercase text-[#C4A882]/40" style={{ fontFamily: "monospace" }}>
                   Drawing Index
                 </p>
               </div>
@@ -203,12 +190,11 @@ export default function Footer() {
                   { label: "Services", href: "/services", num: "DWG-01" },
                   { label: "Portfolio", href: "/portfolio", num: "DWG-02" },
                   { label: "Consulting", href: "/consulting", num: "DWG-03" },
-                  { label: "Contact", href: "/contact", num: "DWG-04" },
                 ].map(({ label, href, num }) => (
                   <li key={href}>
                     <Link href={href} className="group flex items-center justify-between py-2.5 hover:pl-2 transition-all duration-300">
                       <div className="flex items-center gap-3">
-                        <span className="font-mono text-[9px] text-[#C4A882]/25 group-hover:text-[#C4A882]/50 transition-colors duration-300 w-14 flex-shrink-0" style={{ fontFamily: "monospace" }}>
+                        <span className="font-mono text-[11px] text-[#C4A882]/25 group-hover:text-[#C4A882]/50 transition-colors duration-300 w-14 flex-shrink-0" style={{ fontFamily: "monospace" }}>
                           {num}
                         </span>
                         <span className="font-body text-[13px] text-[#F7F0E3]/50 group-hover:text-[#F7F0E3] transition-colors duration-300">
@@ -228,7 +214,7 @@ export default function Footer() {
             <div className="lg:col-span-2 lg:col-start-11 flex flex-col items-start lg:items-end">
               <div className="flex items-center gap-3 mb-6">
                 <div className="h-px w-6 bg-[#C4A882]/30" />
-                <p className="font-mono text-[9px] tracking-[0.3em] uppercase text-[#C4A882]/40" style={{ fontFamily: "monospace" }}>
+                <p className="font-mono text-[11px] tracking-[0.3em] uppercase text-[#C4A882]/40" style={{ fontFamily: "monospace" }}>
                   Studio
                 </p>
               </div>
@@ -243,17 +229,17 @@ export default function Footer() {
                   <line x1="74" y1="48" x2="84" y2="48" stroke="#C4A882" strokeWidth="0.8" />
                   <path id="stamp-arc-top" d="M 10,48 A 38,38 0 0,1 86,48" fill="none" />
                   <path id="stamp-arc-bot" d="M 86,48 A 38,38 0 0,1 10,48" fill="none" />
-                  <text fontSize="7" fill="#C4A882" letterSpacing="3" fontFamily="monospace">
+                  <text fontSize="9" fill="#C4A882" letterSpacing="3" fontFamily="monospace">
                     <textPath href="#stamp-arc-top" startOffset="12%">RETROTEKT · STUDIO</textPath>
                   </text>
-                  <text fontSize="7" fill="#C4A882" letterSpacing="3" fontFamily="monospace">
+                  <text fontSize="9" fill="#C4A882" letterSpacing="3" fontFamily="monospace">
                     <textPath href="#stamp-arc-bot" startOffset="15%">ESTABLISHED 2024</textPath>
                   </text>
                   <circle cx="48" cy="48" r="2.5" fill="#C4A882" />
                 </svg>
               </div>
 
-              <p className="mt-4 font-mono text-[9px] text-[#C4A882]/30 tracking-[0.2em] uppercase leading-loose text-left lg:text-right" style={{ fontFamily: "monospace" }}>
+              <p className="mt-4 font-mono text-[11px] text-[#C4A882]/30 tracking-[0.2em] uppercase leading-loose text-left lg:text-right" style={{ fontFamily: "monospace" }}>
                 3D Visualization
                 <br />
                 Studio · USA
@@ -264,15 +250,15 @@ export default function Footer() {
           {/* Bottom bar */}
           <div className="pt-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div className="flex items-center gap-6">
-              <p className="font-mono text-[10px] text-[#F7F0E3]/18 tracking-[0.1em]" style={{ fontFamily: "monospace" }}>
+              <p className="font-mono text-[12px] text-[#F7F0E3]/18 tracking-[0.1em]" style={{ fontFamily: "monospace" }}>
                 © 2026 Retrotekt LLC
               </p>
-              <span className="text-[#C4A882]/15 text-[10px]">·</span>
-              <p className="font-mono text-[10px] text-[#F7F0E3]/15 tracking-[0.1em]" style={{ fontFamily: "monospace" }}>
+              <span className="text-[#C4A882]/15 text-[12px]">·</span>
+              <p className="font-mono text-[12px] text-[#F7F0E3]/15 tracking-[0.1em]" style={{ fontFamily: "monospace" }}>
                 All prices USD · Subject to project scope
               </p>
             </div>
-            <p className="font-mono text-[10px] text-[#F7F0E3]/12 tracking-[0.1em]" style={{ fontFamily: "monospace" }}>
+            <p className="font-mono text-[12px] text-[#F7F0E3]/12 tracking-[0.1em]" style={{ fontFamily: "monospace" }}>
               Contractor &amp; Remodeler Market · USA
             </p>
           </div>

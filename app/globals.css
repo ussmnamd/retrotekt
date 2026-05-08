@@ -313,6 +313,12 @@ h4 {
   }
 }
 
+/* ── Footer scan line ───────────────────────────────────────────────────────── */
+@keyframes footer-scan {
+  from { transform: translateY(0); }
+  to   { transform: translateY(100%); }
+}
+
 /* ── Live Projects Ticker ───────────────────────────────────────────────────── */
 @keyframes ticker-scroll {
   0% {

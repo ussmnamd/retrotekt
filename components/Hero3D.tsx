@@ -123,8 +123,16 @@ export default function Hero3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
+  const [placeholderMounted, setPlaceholderMounted] = useState(true);
 
   const rotTargetRef = useRef({ x: CONFIG.startRotationX, y: CONFIG.startRotationY });
+
+  // Fade the placeholder out, then unmount it after the transition finishes
+  useEffect(() => {
+    if (status !== "ready") return;
+    const t = setTimeout(() => setPlaceholderMounted(false), 700);
+    return () => clearTimeout(t);
+  }, [status]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -772,14 +780,15 @@ export default function Hero3D() {
     <div ref={containerRef} className="hero-canvas-container relative w-full h-full">
       <canvas ref={canvasRef} className="w-full h-full block" style={{ touchAction: "none" }} />
 
-      {status === "loading" && (
-        <div className="absolute inset-0 z-50 pointer-events-none">
+      {placeholderMounted && (
+        <div
+          className="absolute inset-0 z-50 pointer-events-none"
+          style={{
+            opacity: status === "loading" ? 1 : 0,
+            transition: "opacity 0.6s ease",
+          }}
+        >
           <Hero3DPlaceholder />
-          {progress > 0 && (
-            <div className="absolute bottom-12 left-1/2 -translate-x-1/2 font-body text-[10px] tracking-[0.2em] text-[#C4A882] uppercase opacity-60">
-              Initializing Model: {progress}%
-            </div>
-          )}
         </div>
       )}
 

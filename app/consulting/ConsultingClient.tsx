@@ -7,17 +7,8 @@ import { validators, sanitize, hasErrors, type FieldError } from "@/lib/validate
 
 function IconWhatsApp() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
       <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z" />
-    </svg>
-  );
-}
-
-function IconEmail() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <rect x="2" y="4" width="20" height="16" rx="2" />
-      <path d="M2 7l10 7 10-7" />
     </svg>
   );
 }
@@ -25,7 +16,7 @@ function IconEmail() {
 function SelectChevron() {
   return (
     <svg width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
-      <path d="M1 1l4 4 4-4" stroke="#8C6E4B" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -33,7 +24,7 @@ function SelectChevron() {
 function FieldErrorMsg({ error }: { error: FieldError }) {
   if (!error) return null;
   return (
-    <p role="alert" className="font-body text-[11px] text-red-600 mt-1.5">
+    <p role="alert" className="font-body text-[11px] text-red-400 mt-1.5">
       {error}
     </p>
   );
@@ -41,32 +32,23 @@ function FieldErrorMsg({ error }: { error: FieldError }) {
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 
-const WHO_WE_WORK_WITH = [
-  "General Contractors & Remodelers",
-  "Custom Home Builders",
-  "Real Estate Developers",
-  "Interior Designers",
-  "Architects",
-  "Property Marketers",
-  "Luxury Real Estate Agents",
-  "Hospitality & Commercial Brands",
+const PROJECT_TYPES = [
+  "Still Renders — Starter (1–2 images)",
+  "Still Renders — Deal Closer (3–5 images)",
+  "Still Renders — Full Project (6–10 images)",
+  "Walkthrough Animation",
+  "Floor Plan Render",
+  "Aerial View",
+  "Full Package (Renders + Animation)",
+  "Not sure yet",
 ];
 
-const TURNAROUND = [
-  { label: "Custom Quote", time: "Within 24 hours" },
-  { label: "Still Renders", time: "3–5 business days" },
-  { label: "Rush Delivery", time: "24–48 hrs  (+50%)" },
-  { label: "Walkthroughs", time: "5–7 business days" },
-];
-
-const INDUSTRIES = [
-  "Real Estate Developer",
-  "Contractor / Remodeler",
-  "Interior Design",
-  "Architecture",
-  "Property Marketing",
-  "Hospitality",
-  "Other",
+const BUDGETS = [
+  "Under $500",
+  "$500 – $1,000",
+  "$1,000 – $2,500",
+  "$2,500 – $5,000",
+  "$5,000+",
 ];
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -75,14 +57,14 @@ type MessageForm = {
   name: string;
   email: string;
   company: string;
-  industry: string;
+  projectType: string;
+  budget: string;
   message: string;
 };
 
 type FormErrors = {
   name: FieldError;
   email: FieldError;
-  company: FieldError;
   message: FieldError;
 };
 
@@ -103,7 +85,7 @@ export default function ConsultingClient() {
           }
         });
       },
-      { threshold: 0.07, rootMargin: "0px 0px -40px 0px" }
+      { threshold: 0.05, rootMargin: "0px 0px -20px 0px" }
     );
     elements.forEach((el) => obs.observe(el));
     return () => obs.disconnect();
@@ -113,16 +95,19 @@ export default function ConsultingClient() {
     name: "",
     email: "",
     company: "",
-    industry: "",
+    projectType: "",
+    budget: "",
     message: "",
   });
 
   const [errors, setErrors] = useState<FormErrors>({
     name: null,
     email: null,
-    company: null,
     message: null,
   });
+
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
 
   const update = (field: keyof MessageForm, value: string) =>
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -132,290 +117,320 @@ export default function ConsultingClient() {
     const newErrors: FormErrors = {
       name: validators.name(form.name),
       email: validators.email(form.email),
-      company: validators.company(form.company),
       message: validators.message(form.message),
     };
     setErrors(newErrors);
     if (hasErrors(newErrors)) return;
+    
+    setSending(true);
+
     const safeName = sanitize(form.name);
     const safeCompany = sanitize(form.company);
-    const subject = `Consulting Inquiry from ${safeName}${safeCompany ? ` — ${safeCompany}` : ""}`;
+    const safeProjectType = sanitize(form.projectType);
+    const subject = `Inquiry from ${safeName}${safeCompany ? ` — ${safeCompany}` : ""} — ${safeProjectType || "Consulting"}`;
     const body = [
       `Name: ${safeName}`,
       `Email: ${sanitize(form.email)}`,
       safeCompany ? `Company: ${safeCompany}` : "",
-      form.industry ? `Industry: ${sanitize(form.industry)}` : "",
+      `Project Type: ${safeProjectType || "Not specified"}`,
+      `Budget: ${sanitize(form.budget) || "Not specified"}`,
       ``,
       `Message:`,
       sanitize(form.message),
     ]
       .filter(Boolean)
       .join("\n");
+      
     window.location.href = `mailto:shahan@retrotekt.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    
+    setTimeout(() => {
+      setSending(false);
+      setSent(true);
+    }, 800);
   };
 
+  if (sent) {
+    return (
+      <main className="bg-primary pt-24 md:pt-32 min-h-screen flex items-center justify-center px-6">
+        <div className="text-center max-w-lg">
+          <div className="w-20 h-20 border border-[#C4A882]/40 rounded-full flex items-center justify-center mx-auto mb-10">
+            <span className="text-[#C4A882] text-3xl">✓</span>
+          </div>
+          <h2 className="font-heading text-[clamp(2rem,5vw,3.5rem)] leading-[1.05] text-[#F7F0E3] mb-6">
+            Message Prepared.
+          </h2>
+          <p className="font-body text-[16px] text-[#F7F0E3]/60 leading-relaxed mb-10">
+            Complete and send the pre-filled email from your client. We aim to respond with a custom quote within 24 hours.
+          </p>
+          <button
+            onClick={() => setSent(false)}
+            className="group inline-flex items-center gap-4 px-6 py-[14px] rounded-[3px] border border-[#C4A882]/20 bg-[#F7F0E3]/[0.05] hover:bg-[#F7F0E3]/10 hover:border-[#C4A882]/35 transition-colors duration-300"
+          >
+            <div className="w-8 h-[1.5px] bg-[#C4A882]/60 group-hover:w-16 group-hover:bg-[#C4A882] transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]" />
+            <span className="font-body font-medium text-[12px] tracking-[0.3em] uppercase text-[#F7F0E3]/70 group-hover:text-[#F7F0E3] transition-colors duration-300">Submit Another</span>
+          </button>
+        </div>
+      </main>
+    );
+  }
+
   const inputCls =
-    "w-full bg-transparent border border-[#D4C5A9] px-4 py-3.5 font-body text-[14px] text-primary placeholder:text-primary/25 focus:border-[#8C6E4B]/60 focus:outline-none transition-colors duration-200";
+    "w-full bg-transparent border-b border-[#F7F0E3]/15 px-2 py-4 font-body text-[16px] text-[#F7F0E3] placeholder:text-[#F7F0E3]/25 focus:border-[#C4A882] focus:outline-none transition-colors duration-300";
 
   const labelCls =
-    "block font-body text-[10px] tracking-[0.3em] uppercase text-primary/40 mb-2";
+    "block font-body text-[11px] tracking-[0.3em] uppercase text-[#F7F0E3]/50 mb-1";
 
   return (
-    <main ref={pageRef} className="bg-background">
-
-      {/* ── Hero ─────────────────────────────────────────────────────────────── */}
-      <section className="pt-28 md:pt-36 pb-20 md:pb-24 border-b border-[#D4C5A9]">
-        <div className="px-6 md:px-10 lg:px-16 max-w-7xl mx-auto">
-
-          {/* Section index */}
-          <div className="flex items-center gap-3 mb-10">
-            <span className="font-body text-[10px] tracking-[0.4em] uppercase text-primary/25">04</span>
-            <div className="w-8 h-px bg-[#D4C5A9]" />
-            <span className="section-label">Consulting &amp; Contact</span>
-          </div>
-
-          {/* Display heading */}
-          <h1 className="reveal font-heading text-[clamp(3.6rem,9vw,8.5rem)] leading-[0.88] tracking-[-0.03em] text-primary mb-10 max-w-4xl">
-            Let&apos;s work<br />together.
-          </h1>
-
-          {/* Tagline + stats row */}
-          <div className="reveal reveal-delay-1 flex flex-col sm:flex-row sm:items-end gap-10 sm:gap-20">
-            <p className="font-body text-[15px] text-deep/60 max-w-xs leading-relaxed">
-              We partner with contractors, developers, and designers who rely on speed, precision, and visualization to close more deals.
-            </p>
-
-            <div className="flex gap-8 sm:gap-12 flex-wrap">
-              {[
-                { num: "3×",   label: "Faster approvals" },
-                { num: "40%",  label: "More bids won"    },
-                { num: "5–7×", label: "ROI per render"   },
-              ].map((s) => (
-                <div key={s.label}>
-                  <p className="font-heading text-[2.4rem] leading-none tracking-[-0.025em] text-primary">
-                    {s.num}
-                  </p>
-                  <p className="section-label mt-1.5">{s.label}</p>
+    <main ref={pageRef} className="bg-primary text-[#F7F0E3] min-h-screen">
+      {/* ── Hero & Intro ──────────────────────────────────────────────────────── */}
+      <section className="relative pt-32 pb-24 md:pt-48 md:pb-32 overflow-hidden border-b border-[#F7F0E3]/10">
+        <div className="absolute inset-0 pointer-events-none opacity-5">
+            <svg width="100%" height="100%" className="mix-blend-overlay">
+                <filter id="noise">
+                    <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" stitchTiles="stitch" />
+                </filter>
+                <rect width="100%" height="100%" filter="url(#noise)" />
+            </svg>
+        </div>
+        
+        <div className="px-6 md:px-12 lg:px-16 max-w-[1600px] mx-auto relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8">
+            <div className="lg:col-span-7 xl:col-span-8 flex flex-col justify-center">
+                <div className="flex items-center gap-4 mb-8 md:mb-12">
+                    <div className="h-px w-12 bg-[#C4A882]/50" />
+                    <span className="font-body text-[11px] tracking-[0.4em] uppercase text-[#C4A882]">Start a Project</span>
                 </div>
-              ))}
+                <h1 className="reveal font-heading text-[clamp(4rem,10vw,9rem)] leading-[0.85] tracking-[-0.03em] text-[#F7F0E3]">
+                    Pre-Sell<br/>
+                    <span className="text-[#C4A882] italic font-serif opacity-90 pr-2">the</span>Unbuilt.
+                </h1>
+                <p className="reveal reveal-delay-1 font-body text-[clamp(1.1rem,2vw,1.4rem)] text-[#F7F0E3]/60 max-w-2xl mt-10 leading-[1.6]">
+                    Next-Level Architectural Visualization Consulting for Developers & Contractors. 
+                    We operate globally to give you an unfair advantage. 
+                </p>
+            </div>
+            
+            <div className="lg:col-span-5 xl:col-span-4 flex flex-col justify-end lg:pl-10 lg:border-l border-[#F7F0E3]/10">
+                 <div className="reveal reveal-delay-2 p-8 md:p-10 bg-[#F7F0E3]/[0.03] border border-[#F7F0E3]/10 rounded-sm">
+                    <p className="font-heading text-2xl text-[#C4A882] mb-6">The Retrotekt Advantage</p>
+                    <ul className="flex flex-col gap-5">
+                        <li className="flex items-start gap-4">
+                            <span className="text-[#C4A882] mt-1">✦</span>
+                            <p className="font-body text-[14px] text-[#F7F0E3]/70 leading-relaxed">
+                                Up to <strong className="text-[#F7F0E3] font-medium">60% leaner</strong> than comparable US rates
+                            </p>
+                        </li>
+                        <li className="flex items-start gap-4">
+                            <span className="text-[#C4A882] mt-1">✦</span>
+                            <p className="font-body text-[14px] text-[#F7F0E3]/70 leading-relaxed">
+                                Lightning-fast <strong className="text-[#F7F0E3] font-medium">3–5 day</strong> standard delivery
+                            </p>
+                        </li>
+                        <li className="flex items-start gap-4">
+                            <span className="text-[#C4A882] mt-1">✦</span>
+                            <p className="font-body text-[14px] text-[#F7F0E3]/70 leading-relaxed">
+                                Generous revision rounds included out of the box
+                            </p>
+                        </li>
+                        <li className="flex items-start gap-4">
+                            <span className="text-[#C4A882] mt-1">✦</span>
+                            <p className="font-body text-[14px] text-[#F7F0E3]/70 leading-relaxed">
+                                100% custom-scoped for your exact blueprint
+                            </p>
+                        </li>
+                    </ul>
+                 </div>
             </div>
           </div>
-
         </div>
       </section>
 
-      {/* ── Body: sidebar + form ──────────────────────────────────────────────── */}
-      <section className="py-20 md:py-28">
-        <div className="px-6 md:px-10 lg:px-16 max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-14 lg:gap-20">
-
-            {/* ── LEFT: context sidebar ────────────────────────────────────── */}
-            <aside className="lg:col-span-4 flex flex-col gap-10 reveal">
-
-              {/* Who we work with */}
-              <div>
-                <p className="section-label mb-6">Who We Work With</p>
-                <ul className="flex flex-col gap-2.5">
-                  {WHO_WE_WORK_WITH.map((w) => (
-                    <li key={w} className="flex items-start gap-3">
-                      <span className="w-4 h-px bg-[#C4A882] flex-shrink-0 mt-[9px]" aria-hidden="true" />
-                      <span className="font-body text-[13px] text-deep/65 leading-snug">{w}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="h-px bg-[#D4C5A9]" aria-hidden="true" />
-
-              {/* Turnaround */}
-              <div>
-                <p className="section-label mb-6">Turnaround</p>
-                <div className="flex flex-col gap-3.5">
-                  {TURNAROUND.map((t) => (
-                    <div key={t.label} className="flex justify-between items-baseline gap-4">
-                      <span className="font-body text-[13px] text-primary/45">{t.label}</span>
-                      <span className="font-body text-[12px] text-primary/70 tabular-nums shrink-0">
-                        {t.time}
-                      </span>
+      {/* ── Stats Marquee ──────────────────────────────────────────────────────── */}
+      <section className="border-b border-[#F7F0E3]/10 py-10 overflow-hidden bg-[#F7F0E3]/[0.02]">
+        <div className="flex gap-16 md:gap-32 w-max px-6 animate-[ticker-scroll_40s_linear_infinite] hover:[animation-play-state:paused]">
+            {[...Array(4)].map((_, i) => (
+                <div key={i} className="flex gap-16 md:gap-32 flex-nowrap shrink-0">
+                    <div className="flex items-baseline gap-4">
+                        <span className="font-heading text-4xl md:text-5xl text-[#C4A882]">3×</span>
+                        <span className="font-body text-[12px] uppercase tracking-[0.2em] text-[#F7F0E3]/50">Faster Approvals</span>
                     </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="h-px bg-[#D4C5A9]" aria-hidden="true" />
-
-              {/* Direct contact */}
-              <div>
-                <p className="section-label mb-5">Direct Contact</p>
-                <a
-                  href="mailto:shahan@retrotekt.com"
-                  className="font-body text-[13px] text-primary hover:text-secondary transition-colors duration-200 border-b border-[#D4C5A9] hover:border-secondary/40 pb-0.5 inline-block mb-6"
-                >
-                  shahan@retrotekt.com
-                </a>
-                <div className="flex gap-3">
-                  <a
-                    href="https://wa.me/NUMBER_TBD"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="Contact via WhatsApp"
-                    className="w-10 h-10 border border-[#D4C5A9] hover:border-secondary/50 flex items-center justify-center text-primary/35 hover:text-secondary transition-all duration-200"
-                  >
-                    <IconWhatsApp />
-                  </a>
-                  <a
-                    href="mailto:shahan@retrotekt.com"
-                    aria-label="Send an email directly"
-                    className="w-10 h-10 border border-[#D4C5A9] hover:border-secondary/50 flex items-center justify-center text-primary/35 hover:text-secondary transition-all duration-200"
-                  >
-                    <IconEmail />
-                  </a>
-                </div>
-              </div>
-
-              {/* Book a call — dark card */}
-              <div className="bg-primary p-7">
-                <p className="section-label text-[#C4A882]/70 mb-3">Book a Call</p>
-                <p className="font-heading text-[1.1rem] text-background leading-snug mb-4">
-                  Free 30-min consultation
-                </p>
-                <p className="font-body text-[13px] text-background/45 leading-relaxed mb-6">
-                  Prefer to talk first? Schedule a call and we&apos;ll walk through your project scope, timeline, and pricing together.
-                </p>
-                <a href="#" className="group inline-flex items-center gap-4 px-5 py-[10px] rounded-[3px] border border-[#C4A882]/20 bg-[#F7F0E3]/[0.05] hover:bg-[#F7F0E3]/10 hover:border-[#C4A882]/35 transition-colors duration-300">
-                  <div className="w-8 h-[1.5px] bg-background/50 group-hover:w-24 group-hover:bg-background transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]" />
-                  <span className="font-body font-medium text-[11px] tracking-[0.3em] uppercase text-background/70 group-hover:text-background transition-colors duration-300">Schedule a Call</span>
-                </a>
-              </div>
-
-            </aside>
-
-            {/* ── RIGHT: form ──────────────────────────────────────────────── */}
-            <div className="lg:col-span-8 lg:border-l lg:border-[#D4C5A9] lg:pl-16 xl:pl-20 reveal reveal-delay-1">
-
-              <div className="mb-10">
-                <p className="section-label mb-4">Send a Message</p>
-                <h2 className="font-heading text-[clamp(2rem,4vw,3.2rem)] leading-[0.93] tracking-[-0.025em] text-primary">
-                  Tell us about<br />your project.
-                </h2>
-              </div>
-
-              <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
-
-                {/* Name + Email */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <div>
-                    <label htmlFor="c-name" className={labelCls}>Name *</label>
-                    <input
-                      id="c-name"
-                      type="text"
-                      autoComplete="name"
-                      placeholder="John Smith"
-                      value={form.name}
-                      maxLength={100}
-                      onChange={(e) => update("name", e.target.value)}
-                      onBlur={() => setErrors((p) => ({ ...p, name: validators.name(form.name) }))}
-                      aria-invalid={!!errors.name}
-                      className={`${inputCls} ${errors.name ? "border-red-400 focus:border-red-500" : ""}`}
-                    />
-                    <FieldErrorMsg error={errors.name} />
-                  </div>
-                  <div>
-                    <label htmlFor="c-email" className={labelCls}>Email *</label>
-                    <input
-                      id="c-email"
-                      type="email"
-                      autoComplete="email"
-                      placeholder="john@company.com"
-                      value={form.email}
-                      maxLength={255}
-                      onChange={(e) => update("email", e.target.value)}
-                      onBlur={() => setErrors((p) => ({ ...p, email: validators.email(form.email) }))}
-                      aria-invalid={!!errors.email}
-                      className={`${inputCls} ${errors.email ? "border-red-400 focus:border-red-500" : ""}`}
-                    />
-                    <FieldErrorMsg error={errors.email} />
-                  </div>
-                </div>
-
-                {/* Company + Industry */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <div>
-                    <label htmlFor="c-company" className={labelCls}>Company</label>
-                    <input
-                      id="c-company"
-                      type="text"
-                      autoComplete="organization"
-                      placeholder="Your firm or company"
-                      value={form.company}
-                      maxLength={200}
-                      onChange={(e) => update("company", e.target.value)}
-                      className={`${inputCls} ${errors.company ? "border-red-400" : ""}`}
-                    />
-                    <FieldErrorMsg error={errors.company} />
-                  </div>
-                  <div>
-                    <label htmlFor="c-industry" className={labelCls}>Industry</label>
-                    <div className="relative">
-                      <select
-                        id="c-industry"
-                        value={form.industry}
-                        onChange={(e) => update("industry", e.target.value)}
-                        className={`${inputCls} appearance-none cursor-pointer bg-background pr-10`}
-                      >
-                        <option value="" disabled className="text-primary/30">
-                          Select your industry
-                        </option>
-                        {INDUSTRIES.map((ind) => (
-                          <option key={ind} value={ind} className="bg-background text-primary">
-                            {ind}
-                          </option>
-                        ))}
-                      </select>
-                      <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2">
-                        <SelectChevron />
-                      </div>
+                    <div className="flex items-baseline gap-4">
+                        <span className="font-heading text-4xl md:text-5xl text-[#C4A882]">40%</span>
+                        <span className="font-body text-[12px] uppercase tracking-[0.2em] text-[#F7F0E3]/50">More Bids Won</span>
                     </div>
-                  </div>
+                    <div className="flex items-baseline gap-4">
+                        <span className="font-heading text-4xl md:text-5xl text-[#C4A882]">5–7×</span>
+                        <span className="font-body text-[12px] uppercase tracking-[0.2em] text-[#F7F0E3]/50">ROI Per Render</span>
+                    </div>
                 </div>
+            ))}
+        </div>
+      </section>
 
-                {/* Message */}
+      {/* ── Form Section ──────────────────────────────────────────────────────── */}
+      <section className="py-24 md:py-32 relative">
+        <div className="px-6 md:px-12 lg:px-16 max-w-[1600px] mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24">
+            
+            {/* LEFT: Context */}
+            <div className="lg:col-span-5 flex flex-col gap-12 reveal">
                 <div>
-                  <label htmlFor="c-message" className={labelCls}>Project Details *</label>
-                  <textarea
-                    id="c-message"
-                    rows={6}
-                    placeholder="Describe your project — space type, style, reference images, timeline…"
-                    value={form.message}
-                    maxLength={5000}
-                    onChange={(e) => update("message", e.target.value)}
-                    onBlur={() => setErrors((p) => ({ ...p, message: validators.message(form.message) }))}
-                    aria-invalid={!!errors.message}
-                    className={`${inputCls} resize-none ${errors.message ? "border-red-400 focus:border-red-500" : ""}`}
-                  />
-                  <div className="flex items-start justify-between gap-4 mt-1.5">
-                    <FieldErrorMsg error={errors.message} />
-                    <p className="font-body text-[10px] text-primary/25 shrink-0 ml-auto">
-                      {form.message.length}/5000
+                    <h2 className="font-heading text-[clamp(2.5rem,5vw,4rem)] leading-[0.9] tracking-[-0.02em] text-[#F7F0E3] mb-6">
+                        Stop Leaving<br/>Money on<br/>The Table.
+                    </h2>
+                    <p className="font-body text-[15px] text-[#F7F0E3]/60 leading-relaxed max-w-md">
+                        We turn blueprints into your most powerful sales asset. Tell us what you&apos;re building, and we&apos;ll engineer the visuals that close the deal.
                     </p>
-                  </div>
                 </div>
 
-                {/* Submit row */}
-                <div className="flex flex-col sm:flex-row sm:items-center gap-5 pt-2">
-                  <button
-                    type="submit"
-                    className="group inline-flex items-center gap-4 self-start px-5 py-[10px] rounded-[3px] border border-primary/10 bg-primary/[0.04] hover:bg-primary/[0.09] hover:border-primary/20 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <div className="w-8 h-[1.5px] bg-primary/60 group-hover:w-24 group-hover:bg-primary transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]" />
-                    <span className="font-body font-medium text-[11px] tracking-[0.3em] uppercase text-primary group-hover:text-primary transition-colors duration-300">Send Message</span>
-                  </button>
-                  <p className="font-body text-[11px] text-primary/30">
-                    We reply within a few hours.
-                  </p>
-                </div>
+                <div className="h-px bg-[#F7F0E3]/10 w-full" />
 
-              </form>
+                <div>
+                    <p className="font-body text-[11px] tracking-[0.3em] uppercase text-[#C4A882] mb-6">Direct Connect</p>
+                    <div className="flex flex-col gap-6">
+                        <a href="mailto:shahan@retrotekt.com" className="group flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-full border border-[#F7F0E3]/15 flex items-center justify-center group-hover:border-[#C4A882] group-hover:bg-[#C4A882]/10 transition-all duration-300">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#F7F0E3]/50 group-hover:text-[#C4A882] transition-colors">
+                                    <rect x="2" y="4" width="20" height="16" rx="2" />
+                                    <path d="M2 7l10 7 10-7" />
+                                </svg>
+                            </div>
+                            <span className="font-body text-[15px] text-[#F7F0E3]/70 group-hover:text-[#F7F0E3] transition-colors">shahan@retrotekt.com</span>
+                        </a>
+                        <a href="https://wa.me/NUMBER_TBD" target="_blank" rel="noopener noreferrer" className="group flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-full border border-[#F7F0E3]/15 flex items-center justify-center group-hover:border-[#C4A882] group-hover:bg-[#C4A882]/10 transition-all duration-300">
+                                <span className="text-[#F7F0E3]/50 group-hover:text-[#C4A882] transition-colors">
+                                    <IconWhatsApp />
+                                </span>
+                            </div>
+                            <span className="font-body text-[15px] text-[#F7F0E3]/70 group-hover:text-[#F7F0E3] transition-colors">WhatsApp Direct Line</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            {/* RIGHT: Form */}
+            <div className="lg:col-span-7 reveal reveal-delay-1">
+                <div className="bg-[#F7F0E3]/[0.02] border border-[#F7F0E3]/10 p-8 md:p-14 lg:p-16 rounded-md shadow-2xl">
+                    <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-10">
+                        
+                        {/* Intro Row */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                            <div className="flex flex-col">
+                                <label htmlFor="name" className={labelCls}>Your Name *</label>
+                                <input
+                                    id="name"
+                                    type="text"
+                                    value={form.name}
+                                    onChange={(e) => update("name", e.target.value)}
+                                    onBlur={() => setErrors((prev) => ({ ...prev, name: validators.name(form.name) }))}
+                                    className={`${inputCls} ${errors.name ? "border-red-400 focus:border-red-500" : ""}`}
+                                    placeholder="John Smith"
+                                />
+                                <FieldErrorMsg error={errors.name} />
+                            </div>
+                            <div className="flex flex-col">
+                                <label htmlFor="email" className={labelCls}>Email Address *</label>
+                                <input
+                                    id="email"
+                                    type="email"
+                                    value={form.email}
+                                    onChange={(e) => update("email", e.target.value)}
+                                    onBlur={() => setErrors((prev) => ({ ...prev, email: validators.email(form.email) }))}
+                                    className={`${inputCls} ${errors.email ? "border-red-400 focus:border-red-500" : ""}`}
+                                    placeholder="john@company.com"
+                                />
+                                <FieldErrorMsg error={errors.email} />
+                            </div>
+                        </div>
+
+                        {/* Detail Row */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                            <div className="flex flex-col">
+                                <label htmlFor="company" className={labelCls}>Company</label>
+                                <input
+                                    id="company"
+                                    type="text"
+                                    value={form.company}
+                                    onChange={(e) => update("company", e.target.value)}
+                                    className={inputCls}
+                                    placeholder="Your firm or company"
+                                />
+                            </div>
+                            <div className="flex flex-col">
+                                <label htmlFor="projectType" className={labelCls}>Project Type</label>
+                                <div className="relative">
+                                    <select
+                                        id="projectType"
+                                        value={form.projectType}
+                                        onChange={(e) => update("projectType", e.target.value)}
+                                        className={`${inputCls} appearance-none cursor-pointer pr-10`}
+                                        style={{ backgroundColor: "transparent" }}
+                                    >
+                                        <option value="" disabled className="text-primary bg-primary">Select a package…</option>
+                                        {PROJECT_TYPES.map((t) => (
+                                            <option key={t} value={t} className="text-primary bg-primary">{t}</option>
+                                        ))}
+                                    </select>
+                                    <div className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[#C4A882]">
+                                        <SelectChevron />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Budget */}
+                        <div className="flex flex-col gap-4">
+                            <p className={labelCls}>Budget Range</p>
+                            <div className="flex flex-wrap gap-x-6 gap-y-4">
+                                {BUDGETS.map((b) => (
+                                    <button
+                                        key={b}
+                                        type="button"
+                                        onClick={() => update("budget", b)}
+                                        className="group flex items-center gap-3"
+                                    >
+                                        <div className={`h-[2px] transition-all duration-300 ${form.budget === b ? "w-6 bg-[#C4A882]" : "w-3 bg-[#F7F0E3]/20 group-hover:w-6 group-hover:bg-[#C4A882]/60"}`} />
+                                        <span className={`font-body text-[12px] tracking-[0.1em] uppercase transition-colors duration-300 ${form.budget === b ? "text-[#C4A882]" : "text-[#F7F0E3]/40 group-hover:text-[#F7F0E3]/80"}`}>{b}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Message */}
+                        <div className="flex flex-col">
+                            <label htmlFor="message" className={labelCls}>Project Details *</label>
+                            <textarea
+                                id="message"
+                                rows={4}
+                                value={form.message}
+                                onChange={(e) => update("message", e.target.value)}
+                                onBlur={() => setErrors((prev) => ({ ...prev, message: validators.message(form.message) }))}
+                                className={`${inputCls} resize-none pt-4 pb-2 ${errors.message ? "border-red-400 focus:border-red-500" : ""}`}
+                                placeholder="Describe your project — space type, style, references, timeline…"
+                            />
+                            <div className="flex items-start justify-between gap-4 mt-2">
+                                <FieldErrorMsg error={errors.message} />
+                                <p className="font-body text-[11px] text-[#F7F0E3]/30 shrink-0 ml-auto">{form.message.length}/5000</p>
+                            </div>
+                        </div>
+
+                        <div className="pt-6 border-t border-[#F7F0E3]/10 flex flex-col sm:flex-row items-center justify-between gap-6">
+                            <button
+                                type="submit"
+                                disabled={sending}
+                                className="group w-full sm:w-auto inline-flex justify-center items-center gap-4 px-8 py-4 bg-[#C4A882] hover:bg-[#b39771] text-primary transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                <span className="font-body font-bold text-[12px] tracking-[0.3em] uppercase">
+                                    {sending ? "Opening Email…" : "Submit Inquiry"}
+                                </span>
+                            </button>
+                            <p className="font-body text-[12px] text-[#F7F0E3]/40 text-center sm:text-right max-w-[200px]">
+                                We hit the ground running and respond within hours.
+                            </p>
+                        </div>
+                    </form>
+                </div>
             </div>
 
           </div>

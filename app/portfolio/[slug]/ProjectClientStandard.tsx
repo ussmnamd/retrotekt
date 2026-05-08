@@ -160,7 +160,7 @@ export default function ProjectClientStandard({ project }: { project: Project })
 
         {/* Editorial overlay — bottom left */}
         <div
-          className="absolute bottom-0 left-0 right-0 z-10 px-6 md:px-12 lg:px-20 pb-14 pt-32 max-w-[1400px]"
+          className="absolute bottom-0 left-0 right-0 z-10 px-6 md:px-12 lg:px-16 pb-14 pt-32 max-w-[1400px]"
           style={{ animationName: 'hero-fadein', animationDuration: '1.2s', animationFillMode: 'both' }}
         >
           {/* Eyebrow tags */}
@@ -194,7 +194,7 @@ export default function ProjectClientStandard({ project }: { project: Project })
       </section>
 
       {/* ── 2. THE BRIEF ─────────────────────────────────────────────────── */}
-      <section className="py-20 md:py-28 px-6 md:px-12 lg:px-20 border-t border-primary/15">
+      <section className="py-20 md:py-28 px-6 md:px-12 lg:px-16 border-t border-primary/15">
         <div className="max-w-[1400px] mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-20">
             <div className="lg:col-span-2" data-anim="brief-text">
@@ -238,7 +238,7 @@ export default function ProjectClientStandard({ project }: { project: Project })
                   </dd>
                 </div>
                 <div className="pt-2">
-                  <StartLink href="/contact" label="Get in Touch" tone="primary" />
+                  <StartLink href="/consulting" label="Get in Touch" tone="primary" />
                 </div>
               </dl>
             </div>
@@ -248,7 +248,7 @@ export default function ProjectClientStandard({ project }: { project: Project })
 
       {/* ── 3. RENDERS GALLERY ───────────────────────────────────────────── */}
       {renders.length > 0 && (
-        <section id="renders" className="py-16 md:py-24 px-6 md:px-12 lg:px-20 border-t border-primary/15">
+        <section id="renders" className="py-16 md:py-24 px-6 md:px-12 lg:px-16 border-t border-primary/15">
           <div className="max-w-[1400px] mx-auto">
             <p className="font-body text-[10px] tracking-[0.2em] uppercase text-secondary mb-3">
               PRE-CONSTRUCTION RENDERS
@@ -328,7 +328,7 @@ export default function ProjectClientStandard({ project }: { project: Project })
       {/* ── 4. THE SITE, BEFORE (auto-appears when before[] is populated) ── */}
       {before.length > 0 && (
         <section id="before" className="py-16 md:py-24 border-t border-primary/15">
-          <div className="px-6 md:px-12 lg:px-20 mb-8 max-w-[1400px] mx-auto">
+          <div className="px-6 md:px-12 lg:px-16 mb-8 max-w-[1400px] mx-auto">
             <p className="font-body text-[10px] tracking-[0.2em] uppercase text-secondary mb-3">
               THE SITE, BEFORE
             </p>
@@ -341,7 +341,7 @@ export default function ProjectClientStandard({ project }: { project: Project })
           </div>
 
           <div
-            className="flex flex-col md:flex-row md:overflow-x-auto md:snap-x md:snap-mandatory gap-4 px-6 md:px-12 lg:px-20 pb-4"
+            className="flex flex-col md:flex-row md:overflow-x-auto md:snap-x md:snap-mandatory gap-4 px-6 md:px-12 lg:px-16 pb-4"
             style={{ scrollbarWidth: 'thin', scrollbarColor: '#C4A882 #EDE3CE' }}
           >
             {before.map((img, i) => (
@@ -376,7 +376,7 @@ export default function ProjectClientStandard({ project }: { project: Project })
 
       {/* ── 5. CONSTRUCTION REALITY ──────────────────────────────────────── */}
       {construction.length > 0 && (
-        <section id="construction" className="py-16 md:py-24 px-6 md:px-12 lg:px-20 border-t border-primary/15">
+        <section id="construction" className="py-16 md:py-24 px-6 md:px-12 lg:px-16 border-t border-primary/15">
           <div className="max-w-[1400px] mx-auto">
             <p className="font-body text-[10px] tracking-[0.2em] uppercase text-secondary mb-3">
               BUILT FROM A RENDER
@@ -438,7 +438,7 @@ export default function ProjectClientStandard({ project }: { project: Project })
 
       {/* ── 6. SIDE-BY-SIDE COMPARISON ───────────────────────────────────── */}
       {renders[0] && construction[0] && (
-        <section id="comparison" className="py-16 md:py-24 px-6 md:px-12 lg:px-20 border-t border-primary/15">
+        <section id="comparison" className="py-16 md:py-24 px-6 md:px-12 lg:px-16 border-t border-primary/15">
           <div className="max-w-[1400px] mx-auto">
             <p className="font-body text-[10px] tracking-[0.2em] uppercase text-secondary mb-3">
               SPEC vs. REALITY
@@ -510,7 +510,7 @@ export default function ProjectClientStandard({ project }: { project: Project })
 
       {/* ── 7. WALKTHROUGH FILMS (auto-appears when videos[] is populated) ── */}
       {videos.length > 0 && (
-        <section id="films" className="py-16 md:py-24 px-6 md:px-12 lg:px-20 border-t border-primary/15">
+        <section id="films" className="py-16 md:py-24 px-6 md:px-12 lg:px-16 border-t border-primary/15">
           <div className="max-w-[1400px] mx-auto">
             <p className="font-body text-[10px] tracking-[0.2em] uppercase text-secondary mb-3">
               WALKTHROUGH FILMS
@@ -557,7 +557,7 @@ export default function ProjectClientStandard({ project }: { project: Project })
 
       {/* ── 8. OTHER LOCATIONS ───────────────────────────────────────────── */}
       {otherProjects.length > 0 && (
-        <section className="py-16 md:py-24 px-6 md:px-12 lg:px-20 border-t border-primary/15">
+        <section className="py-16 md:py-24 px-6 md:px-12 lg:px-16 border-t border-primary/15">
           <div className="max-w-[1400px] mx-auto">
             <p className="font-body text-[10px] tracking-[0.2em] uppercase text-secondary mb-3">
               MORE FROM CHOCOLATE FISH
@@ -633,8 +633,8 @@ export default function ProjectClientStandard({ project }: { project: Project })
           Have a project ready to be built?
         </h2>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-8">
-          <StartLink href="/contact" label="Book a Call" tone="inverse" />
-          <StartLink href="/contact" label="Get a Quote" tone="inverse" />
+          <StartLink href="/consulting" label="Book a Call" tone="inverse" />
+          <StartLink href="/consulting" label="Get a Quote" tone="inverse" />
         </div>
       </section>
 

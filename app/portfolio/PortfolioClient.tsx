@@ -245,7 +245,7 @@ export default function PortfolioClient() {
 
         {/* Editorial text — left third */}
         <div
-          className="relative z-10 h-full flex flex-col justify-center px-8 md:px-16 lg:px-24"
+          className="relative z-10 h-full flex flex-col justify-center px-6 md:px-12 lg:px-16"
           style={{ maxWidth: '56rem', animationName: 'hero-fadein', animationDuration: '1.2s', animationFillMode: 'both' }}
         >
           <p className="font-body text-[11px] tracking-[0.2em] uppercase text-secondary mb-6">
@@ -260,13 +260,56 @@ export default function PortfolioClient() {
             Built from a render.
           </h1>
           <p className="font-body text-background/60 text-[13px] tracking-[0.06em] mb-10 uppercase">
-            Chocolate Fish Coffee Roasters · Three California cafés, pre-visualized end-to-end.
+            Three California cafés, pre-visualized end-to-end.
           </p>
           <StartLink
             href="/portfolio/chocolate-fish-modesto#films"
             label="Watch the film"
             tone="inverse"
           />
+        </div>
+
+        {/* Client + Contractor logos — right side */}
+        <div className="absolute right-8 md:right-12 lg:right-16 top-1/2 -translate-y-1/2 z-10 flex flex-col items-end gap-6">
+
+          {/* Client */}
+          <div className="flex flex-col items-end gap-2">
+            <p className="font-body text-[9px] tracking-[0.2em] uppercase text-background/40">Client</p>
+            <a
+              href="https://chocolatefishcoffee.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="opacity-75 hover:opacity-100 transition-opacity duration-300"
+            >
+              <img
+                src="/clients/chocolate-fish-logo.png"
+                alt="Chocolate Fish Coffee Roasters"
+                className="h-14 md:h-16 w-auto"
+                style={{ filter: 'brightness(0) invert(1)' }}
+              />
+            </a>
+          </div>
+
+          {/* Divider */}
+          <div className="w-full h-px bg-background/20" />
+
+          {/* Contractor */}
+          <div className="flex flex-col items-end gap-2">
+            <p className="font-body text-[9px] tracking-[0.2em] uppercase text-background/40">Contractor</p>
+            <a
+              href="https://www.moorishconstruction.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="opacity-90 hover:opacity-100 transition-opacity duration-300"
+            >
+              <img
+                src="/clients/moorish-construction-logo.png"
+                alt="Moorish Construction"
+                className="h-14 md:h-16 w-auto"
+              />
+            </a>
+          </div>
+
         </div>
 
         {/* Scroll affordance */}
@@ -322,11 +365,31 @@ export default function PortfolioClient() {
               </p>
               <div data-anim="featured-meta">
                 <h2
-                  className="font-heading text-background leading-[0.92] tracking-[-0.02em] mb-4"
+                  className="font-heading text-background leading-[0.92] tracking-[-0.02em] mb-3"
                   style={{ fontSize: 'clamp(2.5rem, 5vw, 4.5rem)' }}
                 >
                   {modesto.name}
                 </h2>
+                <div className="flex items-center gap-6 mb-4">
+                  <div className="flex flex-col gap-1">
+                    <span className="font-body text-[8px] tracking-[0.2em] uppercase text-background/35">Client</span>
+                    <img
+                      src="/clients/chocolate-fish-logo.png"
+                      alt="Chocolate Fish Coffee Roasters"
+                      className="h-5 w-auto opacity-50"
+                      style={{ filter: 'brightness(0) invert(1)' }}
+                    />
+                  </div>
+                  <div className="w-px h-8 bg-background/20" />
+                  <div className="flex flex-col gap-1">
+                    <span className="font-body text-[8px] tracking-[0.2em] uppercase text-background/35">Contractor</span>
+                    <img
+                      src="/clients/moorish-construction-logo.png"
+                      alt="Moorish Construction"
+                      className="h-5 w-auto"
+                    />
+                  </div>
+                </div>
                 <div className="flex flex-wrap items-center gap-4 mb-2">
                   <span className="font-body text-[11px] tracking-[0.12em] uppercase text-background/50">
                     {modesto.city}
@@ -366,7 +429,7 @@ export default function PortfolioClient() {
       {/* ── 3. OTHER LOCATIONS (2-up grid) — always visible ──────────────── */}
       <section
         data-anim="locations-grid"
-        className="max-w-[1400px] mx-auto px-6 md:px-12 lg:px-20 py-4 md:py-6"
+        className="max-w-[1400px] mx-auto px-6 md:px-12 lg:px-16 py-4 md:py-6"
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {supporting.map((project) => {
@@ -410,11 +473,17 @@ export default function PortfolioClient() {
                       {project.type}
                     </p>
                     <h3
-                      className="font-heading text-background leading-[0.92] mb-3"
+                      className="font-heading text-background leading-[0.92] mb-2"
                       style={{ fontSize: 'clamp(1.75rem, 3.5vw, 3rem)' }}
                     >
                       {project.name}
                     </h3>
+                    <img
+                      src="/clients/chocolate-fish-logo.png"
+                      alt="Chocolate Fish Coffee Roasters"
+                      className="h-3.5 w-auto opacity-40 mb-3"
+                      style={{ filter: 'brightness(0) invert(1)' }}
+                    />
                     <div className="flex items-center gap-3">
                       <span className="font-body text-[11px] tracking-[0.1em] uppercase text-background/50">
                         {project.city}
@@ -439,7 +508,7 @@ export default function PortfolioClient() {
 
       {/* ── 4. FILTER STRIP (sticky) ───────────────────────────────────────── */}
       <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-md border-b border-primary/15 h-14 flex items-center">
-        <div className="max-w-[1400px] mx-auto px-6 md:px-12 lg:px-20 w-full flex flex-wrap gap-2">
+        <div className="max-w-[1400px] mx-auto px-6 md:px-12 lg:px-16 w-full flex flex-wrap gap-2">
           {FILTERS.map((f) => (
             <button
               key={f}
@@ -462,7 +531,7 @@ export default function PortfolioClient() {
       {/* ── 5. GALLERY SECTION ────────────────────────────────────────────── */}
       <section
         id="renders"
-        className="max-w-[1400px] mx-auto px-6 md:px-12 lg:px-20 py-10 md:py-16"
+        className="max-w-[1400px] mx-auto px-6 md:px-12 lg:px-16 py-10 md:py-16"
       >
         <div className="mb-8">
           <p className="font-body text-[10px] tracking-[0.2em] uppercase text-secondary mb-3">
@@ -555,7 +624,7 @@ export default function PortfolioClient() {
       {/* ── 6. CTA STRIP ──────────────────────────────────────────────────── */}
       <section
         data-anim="cta"
-        className="bg-primary border-t border-primary/20 py-12 md:py-16 px-6 text-center"
+        className="bg-primary border-t border-primary/20 py-12 md:py-16 px-6 md:px-12 lg:px-16 text-center"
       >
         <p className="font-body text-[10px] tracking-[0.2em] uppercase text-secondary mb-4">
           NEXT PROJECT
@@ -567,8 +636,8 @@ export default function PortfolioClient() {
           Have a project to bring to life?
         </h2>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-8">
-          <StartLink href="/contact" label="Book a Call" tone="inverse" />
-          <StartLink href="/contact" label="Get a Quote" tone="inverse" />
+          <StartLink href="/consulting" label="Book a Call" tone="inverse" />
+          <StartLink href="/consulting" label="Get a Quote" tone="inverse" />
         </div>
       </section>
 

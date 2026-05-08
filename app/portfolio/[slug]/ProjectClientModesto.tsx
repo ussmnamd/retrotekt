@@ -342,7 +342,7 @@ export default function ProjectClientModesto({ project }: { project: Project }) 
       </section>
 
       {/* ── 2. THE BRIEF ─────────────────────────────────────────────────── */}
-      <section className="py-20 md:py-28 px-6 md:px-12 lg:px-20 border-t border-primary/15">
+      <section className="py-20 md:py-28 px-6 md:px-12 lg:px-16 border-t border-primary/15">
         <div className="max-w-[1400px] mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-20">
             {/* Left 2 cols: description + pull quote */}
@@ -414,7 +414,7 @@ export default function ProjectClientModesto({ project }: { project: Project }) 
                   </dd>
                 </div>
                 <div className="pt-2">
-                  <StartLink href="/contact" label="Get in Touch" tone="primary" />
+                  <StartLink href="/consulting" label="Get in Touch" tone="primary" />
                 </div>
               </dl>
             </div>
@@ -425,7 +425,7 @@ export default function ProjectClientModesto({ project }: { project: Project }) 
       {/* ── 3. BEFORE ────────────────────────────────────────────────────── */}
       {before.length > 0 && (
         <section id="before" className="py-16 md:py-24 border-t border-primary/15">
-          <div className="px-6 md:px-12 lg:px-20 mb-8 max-w-[1400px] mx-auto">
+          <div className="px-6 md:px-12 lg:px-16 mb-8 max-w-[1400px] mx-auto">
             <p className="font-body text-[10px] tracking-[0.2em] uppercase text-secondary mb-3">
               THE SITE, BEFORE
             </p>
@@ -438,7 +438,7 @@ export default function ProjectClientModesto({ project }: { project: Project }) 
           </div>
 
           {/* Horizontal scroll rail on desktop, stacked on mobile */}
-          <div className="flex flex-col md:flex-row md:overflow-x-auto md:snap-x md:snap-mandatory gap-4 px-6 md:px-12 lg:px-20 pb-4"
+          <div className="flex flex-col md:flex-row md:overflow-x-auto md:snap-x md:snap-mandatory gap-4 px-6 md:px-12 lg:px-16 pb-4"
             style={{ scrollbarWidth: 'thin', scrollbarColor: '#C4A882 #EDE3CE' }}
           >
             {before.map((img, i) => (
@@ -479,7 +479,7 @@ export default function ProjectClientModesto({ project }: { project: Project }) 
 
       {/* ── 4. CONSTRUCTION IN MOTION ────────────────────────────────────── */}
       {construction.length > 0 && (
-        <section id="construction" className="py-16 md:py-24 px-6 md:px-12 lg:px-20 border-t border-primary/15">
+        <section id="construction" className="py-16 md:py-24 px-6 md:px-12 lg:px-16 border-t border-primary/15">
           <div className="max-w-[1400px] mx-auto">
             <p className="font-body text-[10px] tracking-[0.2em] uppercase text-secondary mb-3">
               CONSTRUCTION IN MOTION
@@ -567,7 +567,7 @@ export default function ProjectClientModesto({ project }: { project: Project }) 
 
       {/* ── 5. THE RENDERS ───────────────────────────────────────────────── */}
       {renders.length > 0 && (
-        <section id="renders" className="py-16 md:py-24 px-6 md:px-12 lg:px-20 border-t border-primary/15">
+        <section id="renders" className="py-16 md:py-24 px-6 md:px-12 lg:px-16 border-t border-primary/15">
           <div className="max-w-[1400px] mx-auto">
             <p className="font-body text-[10px] tracking-[0.2em] uppercase text-secondary mb-3">
               THE VISION, RENDERED
@@ -638,7 +638,7 @@ export default function ProjectClientModesto({ project }: { project: Project }) 
 
       {/* ── 6. SIDE-BY-SIDE REVEAL ───────────────────────────────────────── */}
       {renders[0] && construction[0] && (
-        <section id="reveal" className="py-16 md:py-24 px-6 md:px-12 lg:px-20 border-t border-primary/15">
+        <section id="reveal" className="py-16 md:py-24 px-6 md:px-12 lg:px-16 border-t border-primary/15">
           <div className="max-w-[1400px] mx-auto">
             <p className="font-body text-[10px] tracking-[0.2em] uppercase text-secondary mb-3">
               SPEC vs. REALITY
@@ -663,7 +663,7 @@ export default function ProjectClientModesto({ project }: { project: Project }) 
 
       {/* ── 7. ALL FILMS ─────────────────────────────────────────────────── */}
       {videos.length > 0 && (
-        <section id="films" className="py-16 md:py-24 px-6 md:px-12 lg:px-20 border-t border-primary/15">
+        <section id="films" className="py-16 md:py-24 px-6 md:px-12 lg:px-16 border-t border-primary/15">
           <div className="max-w-[1400px] mx-auto">
             <p className="font-body text-[10px] tracking-[0.2em] uppercase text-secondary mb-3">
               WALKTHROUGH FILMS
@@ -741,7 +741,7 @@ export default function ProjectClientModesto({ project }: { project: Project }) 
 
       {/* ── 9. OTHER LOCATIONS ───────────────────────────────────────────── */}
       {otherProjects.length > 0 && (
-        <section className="py-16 md:py-24 px-6 md:px-12 lg:px-20 border-t border-primary/15">
+        <section className="py-16 md:py-24 px-6 md:px-12 lg:px-16 border-t border-primary/15">
           <div className="max-w-[1400px] mx-auto">
             <p className="font-body text-[10px] tracking-[0.2em] uppercase text-secondary mb-3">
               MORE FROM CHOCOLATE FISH
@@ -810,8 +810,8 @@ export default function ProjectClientModesto({ project }: { project: Project }) 
           Bring your project to life.
         </h2>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-8">
-          <StartLink href="/contact" label="Book a Call" tone="inverse" />
-          <StartLink href="/contact" label="Get a Quote" tone="inverse" />
+          <StartLink href="/consulting" label="Book a Call" tone="inverse" />
+          <StartLink href="/consulting" label="Get a Quote" tone="inverse" />
         </div>
       </section>
 

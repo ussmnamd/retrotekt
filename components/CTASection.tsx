@@ -25,6 +25,37 @@ export default function CTASection() {
     transitionDelay: delay,
   });
 
+  const phases = [
+    {
+      num: "01",
+      name: "Tactical Start",
+      milestone: "We brief the project and begin modeling immediately.",
+      commitment: "$0 Upfront Cost",
+      commitmentSub: "Nothing owed. We move first.",
+    },
+    {
+      num: "02",
+      name: "The Reveal",
+      milestone: "You review the first high-fidelity concept.",
+      commitment: "50% Due",
+      commitmentSub: "Only after you see it.",
+    },
+    {
+      num: "03",
+      name: "Mission Success",
+      milestone: "Final renders delivered in 4K, print-ready format.",
+      commitment: "50% Balance",
+      commitmentSub: "On file handoff.",
+    },
+  ];
+
+  const stats = [
+    { icon: "⚡", value: "48h", label: "Average Delivery" },
+    { icon: "🎯", value: "100+", label: "High-Stakes Projects" },
+    { icon: "🛡️", value: "Zero", label: "Risk Entry" },
+    { icon: "🔄", value: "2 Rev", label: "Rounds Included" },
+  ];
+
   return (
     <section
       ref={sectionRef}
@@ -33,7 +64,7 @@ export default function CTASection() {
       style={{ background: "#2C1F14" }}
       aria-label="Call to action"
     >
-      {/* ── Award-winning background: architectural plan arcs ── */}
+      {/* ── Architectural plan arc background ── */}
       <svg
         className="absolute inset-0 w-full h-full pointer-events-none"
         aria-hidden="true"
@@ -80,11 +111,8 @@ export default function CTASection() {
         <rect width="100%" height="100%" filter="url(#cta-grain)" opacity="0.055" style={{ mixBlendMode: "overlay" }} />
       </svg>
 
-      {/* ══════════════════════════════════════
-          MAIN CONTENT
-      ══════════════════════════════════════ */}
       <div
-        className="relative z-10 flex flex-col items-center text-center max-w-screen-xl mx-auto px-6 md:px-12"
+        className="relative z-10 flex flex-col items-center text-center max-w-screen-xl mx-auto px-6 md:px-12 lg:px-16"
         style={{ paddingTop: "clamp(2.5rem, 4vw, 3.5rem)", paddingBottom: "clamp(2rem, 3.5vw, 3rem)" }}
       >
         {/* Eyebrow */}
@@ -101,142 +129,141 @@ export default function CTASection() {
 
         {/* Headline */}
         <h2
-          className="font-heading font-bold text-[#F7F0E3] leading-[0.92] tracking-[-0.04em] mb-12"
-          style={{ fontSize: "clamp(2.2rem, 5vw, 4.2rem)", maxWidth: "16ch", ...fadeUp("0.12s") }}
+          className="font-heading font-bold text-[#F7F0E3] leading-[0.92] tracking-[-0.04em] mb-6"
+          style={{ fontSize: "clamp(2.2rem, 5vw, 4.2rem)", maxWidth: "20ch", ...fadeUp("0.12s") }}
         >
-          Every great deal{" "}
+          Stop Funding Promises.{" "}
           <span className="italic font-light" style={{ color: "#C4A882" }}>
-            starts with
-          </span>{" "}
-          a better visual.
+            Start Seeing Results.
+          </span>
         </h2>
 
-        {/* ── PAYMENT PROMISE — prominent, elaborated ── */}
-        <div className="w-full max-w-2xl mb-12" style={fadeUp("0.28s")}>
-          <span
-            className="uppercase text-[#C4A882]/70 tracking-[0.32em] mb-6 block"
-            style={{ fontFamily: "monospace", fontSize: "11px" }}
-          >
-            Our Payment Promise
-          </span>
+        {/* Body */}
+        <p
+          className="font-body text-[#F7F0E3]/60 leading-relaxed mb-12 max-w-2xl"
+          style={{ fontSize: "clamp(0.9rem, 1.5vw, 1.05rem)", ...fadeUp("0.20s") }}
+        >
+          Most studios demand a deposit before they even open your files. At Retrotekt, we put our skin in the game first. We move at the speed of construction so you can close deals while your competitors are still waiting on a quote.
+        </p>
 
-          {/* 3-step grid */}
-          <div className="grid grid-cols-3 gap-0 relative">
-            {/* Connecting line behind */}
-            <div className="absolute top-[22px] left-[16.66%] right-[16.66%] h-px bg-[#C4A882]/15 pointer-events-none" />
-
-            {[
-              {
-                dot: true,
-                value: "$0",
-                label: "Project Start",
-                sub: "No upfront payment required",
-                note: "We begin the moment you brief us. Nothing owed until you see real progress.",
-              },
-              {
-                dot: false,
-                value: "50%",
-                label: "First Concept",
-                sub: "Due on initial review",
-                note: "You review the first complete concept. Pay only once you've seen what we built.",
-              },
-              {
-                dot: false,
-                value: "50%",
-                label: "Final Delivery",
-                sub: "Due on file handoff",
-                note: "The remaining balance is due when we deliver your finished, production-ready files.",
-              },
-            ].map((step, i) => (
-              <div key={i} className="flex flex-col items-center gap-2 px-3 relative">
-                <div
-                  className="w-2 h-2 rounded-full z-10 relative"
-                  style={{
-                    background: i === 0 ? "rgba(196,168,130,0.95)" : "rgba(196,168,130,0.50)",
-                    boxShadow: i === 0 ? "0 0 0 4px rgba(196,168,130,0.10)" : "none",
-                  }}
-                />
-                <span
-                  className="font-heading font-light text-[#F7F0E3] tabular-nums leading-none"
-                  style={{ fontSize: "clamp(1.5rem, 3vw, 2.2rem)" }}
-                >
-                  {step.value}
-                </span>
-                <span
-                  className="font-body font-medium text-[#C4A882] tracking-[0.08em] uppercase"
-                  style={{ fontSize: "12px" }}
-                >
-                  {step.label}
-                </span>
-                <span
-                  className="text-[#C4A882]/80 tracking-[0.12em] uppercase"
-                  style={{ fontFamily: "monospace", fontSize: "10px" }}
-                >
-                  {step.sub}
-                </span>
-                <p className="font-body font-medium text-[13px] text-[#F7F0E3]/70 leading-relaxed mt-1 max-w-[160px] text-center">
-                  {step.note}
-                </p>
-              </div>
-            ))}
+        {/* ── Phase table ── */}
+        <div className="w-full max-w-2xl mb-10" style={fadeUp("0.28s")}>
+          {/* Table header */}
+          <div className="grid grid-cols-[auto_1fr_auto] gap-x-6 pb-3 mb-1" style={{ borderBottom: "1px solid rgba(196,168,130,0.15)" }}>
+            <span className="uppercase text-[#C4A882]/45 tracking-[0.28em] text-left" style={{ fontFamily: "monospace", fontSize: "10px" }}>Phase</span>
+            <span className="uppercase text-[#C4A882]/45 tracking-[0.28em] text-left" style={{ fontFamily: "monospace", fontSize: "10px" }}>Milestone</span>
+            <span className="uppercase text-[#C4A882]/45 tracking-[0.28em] text-right" style={{ fontFamily: "monospace", fontSize: "10px" }}>Your Commitment</span>
           </div>
+
+          {/* Table rows */}
+          {phases.map((phase, i) => (
+            <div
+              key={i}
+              className="grid grid-cols-[auto_1fr_auto] gap-x-6 py-4 text-left items-center"
+              style={{ borderBottom: "1px solid rgba(196,168,130,0.08)" }}
+            >
+              {/* Phase */}
+              <div className="flex flex-col gap-0.5 min-w-[90px]">
+                <span className="text-[#C4A882]/40 tabular-nums" style={{ fontFamily: "monospace", fontSize: "10px" }}>{phase.num}.</span>
+                <span className="font-body font-semibold text-[#F7F0E3]/90 tracking-[0.04em]" style={{ fontSize: "13px" }}>{phase.name}</span>
+              </div>
+
+              {/* Milestone */}
+              <p className="font-body text-[#F7F0E3]/55 leading-snug" style={{ fontSize: "13px" }}>
+                {phase.milestone}
+              </p>
+
+              {/* Commitment */}
+              <div className="flex flex-col items-end gap-0.5 min-w-[120px]">
+                <span
+                  className="font-heading font-light tabular-nums"
+                  style={{ color: i === 0 ? "#C4A882" : "rgba(247,240,227,0.85)", fontSize: "clamp(1.1rem, 2vw, 1.4rem)" }}
+                >
+                  {phase.commitment}
+                </span>
+                <span className="text-[#C4A882]/50 tracking-[0.1em]" style={{ fontFamily: "monospace", fontSize: "10px" }}>
+                  {phase.commitmentSub}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Primary CTA */}
+        <div className="flex flex-col items-center gap-3 mb-10" style={fadeUp("0.38s")}>
+          <Link
+            href="/consulting"
+            className="group inline-flex items-center gap-5 px-8 py-4 rounded-[3px] border border-[#C4A882]/40 bg-[#C4A882]/10 hover:bg-[#C4A882]/18 hover:border-[#C4A882]/60 transition-colors duration-300"
+          >
+            <div className="w-6 h-[1.5px] bg-[#C4A882]/60 group-hover:w-16 group-hover:bg-[#C4A882] transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]" />
+            <span className="font-body font-medium tracking-[0.22em] uppercase text-[#F7F0E3]/90 group-hover:text-[#F7F0E3] transition-colors duration-300" style={{ fontSize: "12px" }}>
+              Claim Your $0 Start &amp; Custom Quote
+            </span>
+            <div className="w-6 h-[1.5px] bg-[#C4A882]/60 group-hover:w-16 group-hover:bg-[#C4A882] transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]" />
+          </Link>
+          <span className="text-[#F7F0E3]/35 tracking-[0.18em] uppercase" style={{ fontFamily: "monospace", fontSize: "10px" }}>
+            Submit your plans in 60 seconds. We start today.
+          </span>
         </div>
 
         {/* Divider */}
         <div
           className="w-full max-w-xs h-px mb-8"
-          style={{ background: "rgba(196,168,130,0.10)", ...fadeUp("0.40s") }}
+          style={{ background: "rgba(196,168,130,0.10)", ...fadeUp("0.46s") }}
         />
 
-        {/* CTA Buttons */}
-        <div
-          className="flex flex-col sm:flex-row items-center gap-7 mb-12"
-          style={fadeUp("0.45s")}
+        {/* Why section label */}
+        <span
+          className="uppercase text-[#C4A882]/45 tracking-[0.32em] mb-6 block"
+          style={{ fontFamily: "monospace", fontSize: "10px", ...fadeUp("0.50s") }}
         >
-          <Link href="/contact" className="group inline-flex items-center gap-4 px-5 py-[10px] rounded-[3px] border border-[#C4A882]/20 bg-[#F7F0E3]/[0.05] hover:bg-[#F7F0E3]/10 hover:border-[#C4A882]/35 transition-colors duration-300">
-            <div className="w-8 h-[1.5px] bg-[#C4A882]/40 group-hover:w-20 group-hover:bg-[#C4A882] transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]" />
-            <span className="font-body font-medium text-[11px] tracking-[0.3em] uppercase text-[#F7F0E3]/85 group-hover:text-[#F7F0E3] transition-colors duration-300">
-              Start Your Project
-            </span>
-          </Link>
-          <div className="hidden sm:block w-px h-3.5 bg-[#C4A882]/15" />
-          <Link href="/portfolio" className="group inline-flex items-center gap-4 px-5 py-[10px] rounded-[3px] border border-[#F7F0E3]/[0.08] bg-[#F7F0E3]/[0.03] hover:bg-[#F7F0E3]/[0.07] hover:border-[#F7F0E3]/15 transition-colors duration-300">
-            <div className="w-8 h-[1.5px] bg-[#F7F0E3]/12 group-hover:w-20 group-hover:bg-[#F7F0E3]/35 transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]" />
-            <span className="font-body font-medium text-[11px] tracking-[0.3em] uppercase text-[#F7F0E3]/55 group-hover:text-[#F7F0E3]/80 transition-colors duration-300">
-              View Our Work
-            </span>
-          </Link>
-        </div>
+          Why Elite Builders Choose Us
+        </span>
 
-        {/* ── STATS — compact row ── */}
+        {/* Stats row */}
         <div
-          className="flex flex-wrap justify-center gap-x-10 gap-y-3 pt-4"
-          style={{ borderTop: "1px solid rgba(196,168,130,0.12)", ...fadeUp("0.58s") }}
+          className="flex flex-wrap justify-center gap-x-8 gap-y-4 mb-10"
+          style={fadeUp("0.54s")}
         >
-          {[
-            { value: "48h", label: "Avg. Delivery" },
-            { value: "100+", label: "Projects" },
-            { value: "$0", label: "Upfront" },
-            { value: "2 Rev", label: "Included" },
-          ].map(({ value, label }) => (
-            <div key={label} className="flex items-baseline gap-2">
+          {stats.map(({ icon, value, label }) => (
+            <div key={label} className="flex items-center gap-2.5">
+              <span style={{ fontSize: "14px" }}>{icon}</span>
               <span
                 className="font-heading font-light text-[#F7F0E3]/85 tabular-nums"
-                style={{ fontSize: "clamp(1.1rem, 2vw, 1.4rem)" }}
+                style={{ fontSize: "clamp(1rem, 1.8vw, 1.25rem)" }}
               >
                 {value}
               </span>
               <span
-                className="uppercase text-[#C4A882]/60 tracking-[0.18em]"
-                style={{ fontFamily: "monospace", fontSize: "8px" }}
+                className="uppercase text-[#C4A882]/55 tracking-[0.16em]"
+                style={{ fontFamily: "monospace", fontSize: "9px" }}
               >
                 {label}
               </span>
             </div>
           ))}
         </div>
-      </div>
 
+        {/* Secondary CTAs */}
+        <div
+          className="flex flex-col sm:flex-row items-center gap-7"
+          style={fadeUp("0.60s")}
+        >
+          <Link href="/consulting" className="group inline-flex items-center gap-4 px-5 py-[10px] rounded-[3px] border border-[#C4A882]/20 bg-[#F7F0E3]/[0.05] hover:bg-[#F7F0E3]/10 hover:border-[#C4A882]/35 transition-colors duration-300">
+            <div className="w-8 h-[1.5px] bg-[#C4A882]/40 group-hover:w-20 group-hover:bg-[#C4A882] transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]" />
+            <span className="font-body font-medium text-[11px] tracking-[0.3em] uppercase text-[#F7F0E3]/85 group-hover:text-[#F7F0E3] transition-colors duration-300">
+              Get My Free Project Blueprint
+            </span>
+          </Link>
+          <div className="hidden sm:block w-px h-3.5 bg-[#C4A882]/15" />
+          <Link href="/portfolio" className="group inline-flex items-center gap-4 px-5 py-[10px] rounded-[3px] border border-[#F7F0E3]/[0.08] bg-[#F7F0E3]/[0.03] hover:bg-[#F7F0E3]/[0.07] hover:border-[#F7F0E3]/15 transition-colors duration-300">
+            <div className="w-8 h-[1.5px] bg-[#F7F0E3]/12 group-hover:w-20 group-hover:bg-[#F7F0E3]/35 transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]" />
+            <span className="font-body font-medium text-[11px] tracking-[0.3em] uppercase text-[#F7F0E3]/55 group-hover:text-[#F7F0E3]/80 transition-colors duration-300">
+              View The Portfolio
+            </span>
+          </Link>
+        </div>
+      </div>
     </section>
   );
 }

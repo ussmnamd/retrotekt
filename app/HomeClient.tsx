@@ -447,7 +447,6 @@ export default function HomeClient() {
       <PageLoader onComplete={onLoaderComplete} />
 
       <main className="relative w-full bg-background" ref={pageRef}>
-        <link rel="preload" href="/models/updatedmodel.draco.glb" as="fetch" crossOrigin="anonymous" />
 
         {/* ── HERO ───────────────────────────────────────────────────────── */}
         <div className="bg-primary">
@@ -488,7 +487,7 @@ export default function HomeClient() {
                   the finished space.<br />
                   <span className="text-secondary italic font-light mt-2 block">Why aren&apos;t you?</span>
                 </h2>
-                <Link href="/contact" className="group inline-flex items-center gap-4 px-5 py-[10px] rounded-[3px] border border-primary/10 bg-primary/[0.04] hover:bg-primary/[0.09] hover:border-primary/20 transition-colors duration-300">
+                <Link href="/consulting" className="group inline-flex items-center gap-4 px-5 py-[10px] rounded-[3px] border border-primary/10 bg-primary/[0.04] hover:bg-primary/[0.09] hover:border-primary/20 transition-colors duration-300">
                   <div className="w-8 h-[1.5px] bg-primary/60 group-hover:w-24 group-hover:bg-primary transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"></div>
                   <span className="font-body font-medium text-[11px] tracking-[0.3em] uppercase text-primary group-hover:text-primary transition-colors duration-300">Start Project</span>
                 </Link>
@@ -509,9 +508,9 @@ export default function HomeClient() {
         </div>
 
         {/* ── SERVICES ───────────────────────────────────────────────────── */}
-        <section id="services-section" className="bg-primary pt-16 pb-20 overflow-hidden relative">
+        <section id="services-section" className="bg-primary pt-10 pb-12 overflow-hidden relative">
 
-          <div className="heading-wrapper max-w-screen-2xl mx-auto px-6 md:px-12 lg:px-16 mb-12 relative flex flex-col items-center text-center">
+          <div className="heading-wrapper max-w-screen-2xl mx-auto px-6 md:px-12 lg:px-16 mb-8 relative flex flex-col items-center text-center">
             <div className="flex items-center gap-4 mb-5">
               <div className="h-px w-10 bg-secondary/40" />
               <span className="font-body text-[10px] tracking-[0.25em] uppercase text-secondary/90">What we do</span>
@@ -537,7 +536,7 @@ export default function HomeClient() {
             </div>
           </div>
 
-          <div className="max-w-screen-2xl mx-auto px-6 md:px-12 lg:px-16 mt-8 relative flex justify-center">
+          <div className="max-w-screen-2xl mx-auto px-6 md:px-12 lg:px-16 mt-6 relative flex justify-center">
             <div className="w-full max-w-sm h-px bg-secondary/20 relative overflow-hidden">
                <div
                  className="absolute top-0 left-0 h-full bg-secondary transition-all duration-700 ease-[cubic-bezier(0.76,0,0.24,1)]"
@@ -550,7 +549,7 @@ export default function HomeClient() {
             </div>
           </div>
 
-          <div className="max-w-screen-2xl mx-auto px-6 md:px-12 lg:px-16 mt-8 flex justify-center">
+          <div className="max-w-screen-2xl mx-auto px-6 md:px-12 lg:px-16 mt-6 flex justify-center">
              <Link href="/services" className="group inline-flex items-center gap-4 px-5 py-[10px] rounded-[3px] border border-[#C4A882]/20 bg-[#F7F0E3]/[0.05] hover:bg-[#F7F0E3]/10 hover:border-[#C4A882]/35 transition-colors duration-300">
                 <div className="w-8 h-[1.5px] bg-secondary/60 group-hover:w-24 group-hover:bg-secondary transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"></div>
                 <span className="font-body font-medium text-[11px] tracking-[0.3em] uppercase text-secondary">Explore All Services</span>
@@ -559,7 +558,7 @@ export default function HomeClient() {
         </section>
 
         <div className="bg-primary">
-          <div className="mx-2 md:mx-3 overflow-hidden rounded-[2.5rem]">
+          <div className="overflow-hidden rounded-[2.5rem]">
             <ModelShowcase />
           </div>
         </div>
@@ -692,7 +691,7 @@ export default function HomeClient() {
                 </div>
               </div>
 
-              <Link href="/contact" className="group inline-flex items-center gap-4 relative z-10 px-5 py-[10px] rounded-[3px] border border-[#C4A882]/20 bg-[#F7F0E3]/[0.05] hover:bg-[#F7F0E3]/10 hover:border-[#C4A882]/35 transition-colors duration-300">
+              <Link href="/consulting" className="group inline-flex items-center gap-4 relative z-10 px-5 py-[10px] rounded-[3px] border border-[#C4A882]/20 bg-[#F7F0E3]/[0.05] hover:bg-[#F7F0E3]/10 hover:border-[#C4A882]/35 transition-colors duration-300">
                 <div className="w-8 h-[1.5px] bg-[#C4A882]/40 group-hover:w-24 group-hover:bg-[#C4A882] transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]" />
                 <span className="font-body font-medium text-[11px] tracking-[0.3em] uppercase text-[#F7F0E3]/50 group-hover:text-[#F7F0E3] transition-colors duration-300">Start Your Project</span>
               </Link>
@@ -709,12 +708,12 @@ export default function HomeClient() {
             ? `${(heroLoop.height / heroLoop.width) * 100}%`
             : `${(fallbackRender.height / fallbackRender.width) * 100}%`;
           return (
-            <div className="bg-[#2C1F14] px-2 md:px-3 py-2 md:py-3">
-            <section className="py-16 md:py-24 px-6 md:px-12 lg:px-16 overflow-hidden rounded-[2.5rem]" style={{ background: '#F7F0E3' }}>
+            <div className="bg-[#2C1F14] py-2 md:py-3">
+            <section className="py-10 md:py-14 px-6 md:px-12 lg:px-16 overflow-hidden rounded-[2.5rem]" style={{ background: '#F7F0E3' }}>
               <div className="max-w-screen-2xl mx-auto">
-                
+
                 {/* High-End Art Studio Typography Header */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 mb-10 md:mb-16 items-end">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 mb-6 md:mb-10 items-end">
                   <div className="lg:col-span-8 flex flex-col items-start">
                      <div className="flex items-center gap-4 mb-6 md:mb-8">
                        <span data-anim="label" className="font-body text-[9px] md:text-[10px] tracking-[0.3em] uppercase text-[#3b2516]/60">Featured Project // Modesto, CA</span>
