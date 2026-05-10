@@ -17,7 +17,7 @@ function useInView(rootMargin = '200px') {
   }, [inView, rootMargin]);
   return { ref, inView };
 }
-import { Hero3DPlaceholder } from "@/components/Hero3DPlaceholder";
+// import { Hero3DPlaceholder } from "@/components/Hero3DPlaceholder";
 import { ServiceCard } from "@/components/ServiceCard";
 import { ProcessCard } from "@/components/ProcessCard";
 import PageLoader from "@/components/PageLoader";
