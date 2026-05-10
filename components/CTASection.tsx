@@ -130,7 +130,7 @@ export default function CTASection() {
         {/* Headline */}
         <h2
           className="font-heading font-bold text-[#F7F0E3] leading-[0.92] tracking-[-0.04em] mb-6"
-          style={{ fontSize: "clamp(2.2rem, 5vw, 4.2rem)", maxWidth: "20ch", ...fadeUp("0.12s") }}
+          style={{ fontSize: "clamp(2rem, 4vw, 3.2rem)", maxWidth: "20ch", ...fadeUp("0.12s") }}
         >
           Stop Funding Promises.{" "}
           <span className="italic font-light" style={{ color: "#C4A882" }}>

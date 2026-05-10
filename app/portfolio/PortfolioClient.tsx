@@ -243,71 +243,79 @@ export default function PortfolioClient() {
         <div className="absolute inset-0 bg-gradient-to-r from-primary/60 via-primary/25 to-primary/10" />
         <div className="absolute inset-0 bg-gradient-to-t from-primary/55 via-transparent to-transparent" />
 
-        {/* Editorial text — left third */}
+        {/* Editorial text — Aesthetic Wow Factor Placement */}
         <div
-          className="relative z-10 h-full flex flex-col justify-center px-6 md:px-12 lg:px-16"
-          style={{ maxWidth: '56rem', animationName: 'hero-fadein', animationDuration: '1.2s', animationFillMode: 'both' }}
+          className="relative z-10 h-full flex flex-col justify-end pb-24 md:pb-32 px-6 md:px-12 lg:px-16"
+          style={{ maxWidth: '64rem', animationName: 'hero-fadein', animationDuration: '1.2s', animationFillMode: 'both' }}
         >
-          <p className="font-body text-[11px] tracking-[0.2em] uppercase text-secondary mb-6">
-            PORTFOLIO · 2025
-          </p>
+          <div className="flex items-center gap-3 mb-8 opacity-60">
+            <div className="w-8 h-px bg-secondary" />
+            <p className="font-body text-[10px] tracking-[0.3em] uppercase text-secondary">
+              PORTFOLIO · 2025
+            </p>
+          </div>
+          
           <h1
-            className="font-heading text-background leading-[0.9] tracking-[-0.03em] mb-8"
-            style={{ fontSize: 'clamp(2rem, 4.5vw, 4.25rem)' }}
+            className="font-heading text-background leading-[0.88] tracking-[-0.04em] mb-10"
+            style={{ fontSize: 'clamp(2.2rem, 5.5vw, 4.5rem)' }}
           >
-            Three locations.
+            Three locations<span className="text-secondary italic font-serif">.</span>
             <br />
-            Built from a render.
+            <span className="text-background/40">Built from a</span> <span className="italic font-serif">render.</span>
           </h1>
-          <p className="font-body text-background/60 text-[13px] tracking-[0.06em] mb-10 uppercase">
-            Three California cafés, pre-visualized end-to-end.
-          </p>
-          <StartLink
-            href="/portfolio/chocolate-fish-modesto#films"
-            label="Watch the film"
-            tone="inverse"
-          />
+          
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-8">
+            <StartLink
+              href="/portfolio/chocolate-fish-modesto#films"
+              label="Watch the film"
+              tone="inverse"
+            />
+            <p className="font-body text-background/40 text-[11px] tracking-[0.15em] uppercase max-w-[200px] leading-relaxed">
+              Three California cafés, pre-visualized end-to-end.
+            </p>
+          </div>
         </div>
 
-        {/* Client + Contractor logos — right side */}
-        <div className="hidden md:flex absolute right-8 md:right-12 lg:right-16 top-1/2 -translate-y-1/2 z-10 flex-col items-end gap-6">
+        {/* Client + Contractor logos — Bottom Right, scaled down */}
+        <div className="hidden md:flex absolute right-12 lg:right-16 bottom-12 z-10 flex-col items-end gap-5">
 
-          {/* Client */}
-          <div className="flex flex-col items-end gap-2">
-            <p className="font-body text-[9px] tracking-[0.2em] uppercase text-background/40">Client</p>
-            <a
-              href="https://chocolatefishcoffee.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="opacity-75 hover:opacity-100 transition-opacity duration-300"
-            >
-              <img
-                src="/clients/chocolate-fish-logo.png"
-                alt="Chocolate Fish Coffee Roasters"
-                className="h-14 md:h-16 w-auto"
-                style={{ filter: 'brightness(0) invert(1)' }}
-              />
-            </a>
-          </div>
+          <div className="flex items-center gap-8">
+            {/* Client */}
+            <div className="flex flex-col items-end gap-1.5">
+              <p className="font-body text-[8px] tracking-[0.2em] uppercase text-background/30">Client</p>
+              <a
+                href="https://chocolatefishcoffee.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="opacity-60 hover:opacity-100 transition-opacity duration-300"
+              >
+                <img
+                  src="/clients/chocolate-fish-logo.png"
+                  alt="Chocolate Fish Coffee Roasters"
+                  className="h-10 md:h-12 w-auto"
+                  style={{ filter: 'brightness(0) invert(1)' }}
+                />
+              </a>
+            </div>
 
-          {/* Divider */}
-          <div className="w-full h-px bg-background/20" />
+            <div className="w-px h-8 bg-background/10" />
 
-          {/* Contractor */}
-          <div className="flex flex-col items-end gap-2">
-            <p className="font-body text-[9px] tracking-[0.2em] uppercase text-background/40">Contractor</p>
-            <a
-              href="https://www.moorishconstruction.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="opacity-90 hover:opacity-100 transition-opacity duration-300"
-            >
-              <img
-                src="/clients/moorish-construction-logo.png"
-                alt="Moorish Construction"
-                className="h-14 md:h-16 w-auto"
-              />
-            </a>
+            {/* Contractor */}
+            <div className="flex flex-col items-end gap-1.5">
+              <p className="font-body text-[8px] tracking-[0.2em] uppercase text-background/30">Contractor</p>
+              <a
+                href="https://www.moorishconstruction.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="opacity-70 hover:opacity-100 transition-opacity duration-300"
+              >
+                <img
+                  src="/clients/moorish-construction-logo.png"
+                  alt="Moorish Construction"
+                  className="h-10 md:h-12 w-auto"
+                />
+              </a>
+            </div>
           </div>
 
         </div>

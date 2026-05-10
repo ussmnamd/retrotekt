@@ -468,34 +468,36 @@ export default function HomeClient() {
           {/* 3. FRONT LAYER (Interactive Button & Solid Logo, Z-30) */}
           <div className="absolute inset-0 z-30 w-full pointer-events-none" aria-hidden="true">
 
-            {/* BOTTOM BAR: LOGO (Left) & CTA (Right) */}
-            <div className="absolute bottom-8 md:bottom-28 left-0 w-full px-6 md:px-12 lg:px-16 flex flex-col md:flex-row justify-end md:justify-between items-start md:items-end gap-8 md:gap-0 pointer-events-none">
+            {/* BOTTOM BAR: TAGLINE (Left) & LOGO (Right) */}
+            <div className="absolute bottom-10 md:bottom-20 left-0 w-full px-6 md:px-12 lg:px-16 flex flex-col md:flex-row justify-between items-start md:items-end gap-10 md:gap-0 pointer-events-none">
               
-              {/* LOGO - Bottom Left (Solid) */}
-              <div data-hero-front className="flex flex-col items-start pointer-events-auto">
-                <p className="font-heading font-light text-[clamp(2.5rem,10vw,7rem)] text-primary tracking-[-0.03em] leading-[0.85] mb-4">
-                  retrotekt<span className="text-secondary">.</span>
-                </p>
-                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                  <h1 className="font-body font-medium text-[9px] md:text-[10px] tracking-[0.2em] md:tracking-[0.3em] uppercase text-primary/90">
-                    3D Architectural Visualization Studio
-                  </h1>
-                  <span className="hidden sm:block text-secondary opacity-50">|</span>
-                  <span className="font-body font-medium text-[9px] tracking-[0.2em] uppercase text-secondary">The New Standard</span>
+              {/* TAGLINE + BUTTON - Bottom Left */}
+              <div data-hero-front className="pointer-events-auto flex-shrink-0 flex flex-col items-start gap-5 w-full md:w-auto">
+                <h2 className="font-heading font-light text-[clamp(1.8rem,4.5vw,3.5rem)] leading-[0.9] text-primary tracking-[-0.03em]">
+                  Visuals so <span className="font-bold">hyper-real,</span><br />
+                  <span className="text-secondary/50">they sell the</span> <span className="italic font-serif">unbuilt.</span>
+                </h2>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+                  <Link href="/consulting" className="group inline-flex items-center gap-4 px-5 py-[10px] rounded-[3px] border border-primary/10 bg-primary/[0.04] hover:bg-primary/[0.09] hover:border-primary/20 transition-colors duration-300">
+                    <div className="w-5 h-[1.5px] bg-primary/60 group-hover:w-12 group-hover:bg-primary transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"></div>
+                    <span className="font-body font-medium text-[11px] tracking-[0.3em] uppercase text-primary group-hover:text-primary transition-colors duration-300">Start Project</span>
+                  </Link>
+                  <span className="font-body font-medium text-[9px] tracking-[0.2em] uppercase text-secondary/60">Step into your vision</span>
                 </div>
               </div>
 
-              {/* TAGLINE + BUTTON - Bottom Right */}
-              <div data-hero-front className="pointer-events-auto flex-shrink-0 flex flex-col items-start md:items-end gap-4 w-full md:w-auto">
-                <h2 className="font-heading font-light text-[clamp(1.6rem,3vw,2.4rem)] leading-[1.1] text-primary tracking-[-0.01em] text-left md:text-right">
-                  Visuals so <span className="font-bold">hyper-real,</span><br />
-                  they sell the unbuilt.<br />
-                  <span className="text-secondary italic font-light mt-2 block">Step into your vision.</span>
-                </h2>
-                <Link href="/consulting" className="group inline-flex items-center gap-4 px-5 py-[10px] rounded-[3px] border border-primary/10 bg-primary/[0.04] hover:bg-primary/[0.09] hover:border-primary/20 transition-colors duration-300">
-                  <div className="w-8 h-[1.5px] bg-primary/60 group-hover:w-24 group-hover:bg-primary transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"></div>
-                  <span className="font-body font-medium text-[11px] tracking-[0.3em] uppercase text-primary group-hover:text-primary transition-colors duration-300">Start Project</span>
-                </Link>
+              {/* LOGO - Bottom Right (Smaller) */}
+              <div data-hero-front className="flex flex-col items-end pointer-events-auto text-right">
+                <p className="font-heading font-light text-[clamp(2rem,6vw,4.5rem)] text-primary tracking-[-0.03em] leading-[0.85] mb-3">
+                  retrotekt<span className="text-secondary">.</span>
+                </p>
+                <div className="flex flex-col items-end gap-1.5 opacity-40">
+                  <h1 className="font-body font-medium text-[9px] md:text-[10px] tracking-[0.3em] uppercase text-primary">
+                    3D Architectural Visualization Studio
+                  </h1>
+                  <div className="h-px bg-primary/30 w-12" />
+                  <span className="font-body font-medium text-[9px] tracking-[0.2em] uppercase text-secondary">The New Standard</span>
+                </div>
               </div>
 
             </div>
@@ -556,7 +558,7 @@ export default function HomeClient() {
 
           <div className="max-w-screen-2xl mx-auto px-6 md:px-12 lg:px-16 mt-6 flex justify-center">
              <Link href="/services" className="group inline-flex items-center gap-4 px-5 py-[10px] rounded-[3px] border border-[#C4A882]/20 bg-[#F7F0E3]/[0.05] hover:bg-[#F7F0E3]/10 hover:border-[#C4A882]/35 transition-colors duration-300">
-                <div className="w-8 h-[1.5px] bg-secondary/60 group-hover:w-24 group-hover:bg-secondary transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"></div>
+                <div className="w-5 h-[1.5px] bg-secondary/60 group-hover:w-12 group-hover:bg-secondary transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"></div>
                 <span className="font-body font-medium text-[11px] tracking-[0.3em] uppercase text-secondary">Explore All Services</span>
              </Link>
           </div>
@@ -699,7 +701,7 @@ export default function HomeClient() {
               </div>
 
               <Link href="/consulting" className="group inline-flex items-center gap-4 relative z-10 px-5 py-[10px] rounded-[3px] border border-[#C4A882]/20 bg-[#F7F0E3]/[0.05] hover:bg-[#F7F0E3]/10 hover:border-[#C4A882]/35 transition-colors duration-300">
-                <div className="w-8 h-[1.5px] bg-[#C4A882]/40 group-hover:w-24 group-hover:bg-[#C4A882] transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]" />
+                <div className="w-5 h-[1.5px] bg-[#C4A882]/40 group-hover:w-12 group-hover:bg-[#C4A882] transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]" />
                 <span className="font-body font-medium text-[11px] tracking-[0.3em] uppercase text-[#F7F0E3]/50 group-hover:text-[#F7F0E3] transition-colors duration-300">Start Your Project</span>
               </Link>
             </div>
@@ -735,7 +737,7 @@ export default function HomeClient() {
                      </p>
                      <Link href="/portfolio" data-anim="fade" className="group inline-flex items-center gap-4 px-5 py-[10px] rounded-[3px] border border-[#3b2516]/10 bg-[#3b2516]/[0.04] hover:bg-[#3b2516]/[0.09] hover:border-[#3b2516]/20 transition-colors duration-300">
                         <span className="font-body font-medium text-[10px] tracking-[0.3em] uppercase text-[#3b2516] transition-colors duration-300">View Full Portfolio</span>
-                        <div className="w-12 h-[1px] bg-[#3b2516]/30 group-hover:w-24 group-hover:bg-[#3b2516] transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"></div>
+                        <div className="w-6 h-[1px] bg-[#3b2516]/30 group-hover:w-12 group-hover:bg-[#3b2516] transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"></div>
                      </Link>
                   </div>
                 </div>

@@ -19,7 +19,7 @@ export default function StartLink({ label, tone = 'primary', className = '', ...
   const t = TONES[tone];
   return (
     <Link {...rest} className={`group inline-flex items-center gap-4 px-5 py-[10px] rounded-[3px] transition-colors duration-300 ${t.wrapper} ${className}`}>
-      <span aria-hidden className={`block w-8 h-[1.5px] ${t.line} ${t.lineHover} transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:w-24`} />
+      <span aria-hidden className={`block w-5 h-[1.5px] ${t.line} ${t.lineHover} transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:w-12`} />
       <span className={`font-body font-medium text-[11px] tracking-[0.3em] uppercase ${t.text} ${t.textHover} transition-colors duration-300`}>
         {label}
       </span>
