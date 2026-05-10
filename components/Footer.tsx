@@ -5,11 +5,9 @@ export default function Footer() {
 
   return (
     <footer
-      className="relative overflow-hidden"
+      className="relative overflow-hidden px-[var(--frame-strip)]"
       style={{
         background: "#D9CCBA",
-        paddingLeft: "var(--frame-strip)",
-        paddingRight: "var(--frame-strip)",
         borderRadius: "2.5rem 2.5rem 0 0",
       }}
       aria-label="Site footer"

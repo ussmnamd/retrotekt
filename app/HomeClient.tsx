@@ -480,35 +480,42 @@ export default function HomeClient() {
           {/* 3. FRONT LAYER (Interactive Button & Solid Logo, Z-30) */}
           <div className="absolute inset-0 z-30 w-full pointer-events-none" aria-hidden="true">
 
-            {/* BOTTOM BAR: TAGLINE (Left) & LOGO (Right) */}
+            {/* BOTTOM BAR: LOGO (Left) & TAGLINE (Right) */}
             <div className="absolute bottom-10 md:bottom-20 left-0 w-full px-6 md:px-12 lg:px-16 flex flex-col md:flex-row justify-between items-start md:items-end gap-10 md:gap-0 pointer-events-none">
               
-              {/* TAGLINE + BUTTON - Bottom Left */}
-              <div data-hero-front className="opacity-0 pointer-events-auto flex-shrink-0 flex flex-col items-start gap-5 w-full md:w-auto">
-                <h2 className="font-heading font-light text-[clamp(1.8rem,4.5vw,3.5rem)] leading-[0.9] text-primary tracking-[-0.03em]">
-                  Visuals so <span className="font-bold">hyper-real,</span><br />
-                  <span className="text-secondary/50">they sell the</span> <span className="italic font-serif">unbuilt.</span>
-                </h2>
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
-                  <Link href="/consulting" className="group inline-flex items-center gap-4 px-5 py-[10px] rounded-[3px] border border-primary/10 bg-primary/[0.04] hover:bg-primary/[0.09] hover:border-primary/20 transition-colors duration-300">
-                    <div className="w-5 h-[1.5px] bg-primary/60 group-hover:w-12 group-hover:bg-primary transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"></div>
-                    <span className="font-body font-medium text-[11px] tracking-[0.3em] uppercase text-primary group-hover:text-primary transition-colors duration-300">Start Project</span>
-                  </Link>
-                  <span className="font-body font-medium text-[9px] tracking-[0.2em] uppercase text-secondary/60">Step into your vision</span>
-                </div>
-              </div>
-
-              {/* LOGO - Bottom Right (Smaller) */}
-              <div data-hero-front className="opacity-0 flex flex-col items-end pointer-events-auto text-right">
+              {/* LOGO - Bottom Left */}
+              <div data-hero-front className="opacity-0 flex flex-col items-start pointer-events-auto text-left">
                 <p className="font-heading font-light text-[clamp(2rem,6vw,4.5rem)] text-primary tracking-[-0.03em] leading-[0.85] mb-3">
                   retrotekt<span className="text-secondary">.</span>
                 </p>
-                <div className="flex flex-col items-end gap-1.5 opacity-40">
+                <div className="flex flex-col items-start gap-1.5 opacity-40">
                   <h1 className="font-body font-medium text-[9px] md:text-[10px] tracking-[0.3em] uppercase text-primary">
                     3D Architectural Visualization Studio
                   </h1>
                   <div className="h-px bg-primary/30 w-12" />
                   <span className="font-body font-medium text-[9px] tracking-[0.2em] uppercase text-secondary">The New Standard</span>
+                </div>
+              </div>
+
+              {/* TAGLINE + BUTTON - Bottom Right */}
+              <div data-hero-front className="opacity-0 pointer-events-auto flex-shrink-0 flex flex-col items-start md:items-end text-left md:text-right gap-6 w-full md:w-auto">
+                <div className="flex flex-col items-start md:items-end gap-3">
+                  <h2 className="font-heading font-light text-[clamp(1.8rem,4.5vw,3.5rem)] leading-[0.9] text-primary tracking-[-0.03em]">
+                    Visuals so <span className="font-bold">hyper-real,</span><br />
+                    <span className="text-secondary/50">they sell the</span> <span className="italic font-serif">unbuilt.</span>
+                  </h2>
+                  <p className="font-body font-medium text-[12px] md:text-[14px] tracking-[0.2em] uppercase text-primary/70">
+                    Step into your vision.
+                  </p>
+                </div>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-end gap-4 mt-2">
+                  <Link href="/portfolio" className="group inline-flex items-center gap-4 px-5 py-[10px] rounded-[3px] border border-primary/10 bg-transparent hover:bg-primary/[0.04] transition-colors duration-300">
+                    <span className="font-body font-medium text-[11px] tracking-[0.3em] uppercase text-primary/70 group-hover:text-primary transition-colors duration-300">View Portfolio</span>
+                  </Link>
+                  <Link href="/consulting" className="group inline-flex items-center gap-4 px-5 py-[10px] rounded-[3px] border border-primary/10 bg-primary/[0.04] hover:bg-primary/[0.09] hover:border-primary/20 transition-colors duration-300">
+                    <span className="font-body font-medium text-[11px] tracking-[0.3em] uppercase text-primary group-hover:text-primary transition-colors duration-300">Start Project</span>
+                    <div className="w-5 h-[1.5px] bg-primary/60 group-hover:w-12 group-hover:bg-primary transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"></div>
+                  </Link>
                 </div>
               </div>
 
