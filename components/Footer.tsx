@@ -25,8 +25,22 @@ export default function Footer() {
         }}
         aria-label="Ready to move faster — go to contact"
       >
+        {/* Hover Accent */}
+        <div className="absolute inset-0 bg-[#C49A6C] opacity-0 group-hover:opacity-25 blur-[30px] transition-opacity duration-700 pointer-events-none" />
+
+        {/* Faint moving light sweep */}
+        <div 
+          className="absolute inset-y-0 left-0 w-1/2 bg-white pointer-events-none"
+          style={{
+            mixBlendMode: "screen",
+            opacity: 0.03,
+            filter: "blur(80px)",
+            animation: "footer-sweep 20s linear infinite"
+          }}
+        />
+
         <div
-          className="flex group-hover:[animation-play-state:paused]"
+          className="flex relative z-10 group-hover:[animation-play-state:paused]"
           style={{ animation: "footer-marquee 10s linear infinite" }}
         >
           {Array.from({ length: 8 }).map((_, i) => (
@@ -51,6 +65,10 @@ export default function Footer() {
           @keyframes footer-marquee {
             from { transform: translateX(0); }
             to   { transform: translateX(-50%); }
+          }
+          @keyframes footer-sweep {
+            from { transform: translateX(-200%); }
+            to   { transform: translateX(300%); }
           }
         `}</style>
       </Link>
