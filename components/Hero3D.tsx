@@ -29,9 +29,9 @@ const CONFIG = {
   endRotationY: -2.95,
   endRotationX: 0.18,
 
-  entranceDuration: 1.4,
-  entranceSpinTurns: 0.18,
-  entranceScaleFrom: 0.88,
+  entranceDuration: 2.0,
+  entranceSpinTurns: 0.5,
+  entranceScaleFrom: 0.01,
 
   floatAmplitude: 0.06,
   floatSpeed: 0.4,

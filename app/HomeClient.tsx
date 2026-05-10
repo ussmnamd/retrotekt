@@ -32,7 +32,7 @@ const ModelShowcase = dynamic(() => import("@/components/ModelShowcase"), {
 
 const Hero3D = dynamic(() => import("@/components/Hero3D"), {
   ssr: false,
-  loading: () => <Hero3DPlaceholder />,
+  loading: () => null,
 });
 
 export default function HomeClient() {
@@ -63,12 +63,24 @@ export default function HomeClient() {
             y: -64, opacity: 0, duration: 0.8, ease: "expo.out",
           });
 
-          // ── 2. Hero: no entrance animation — elements appear as-is when ───
-          //    the loader lifts. Only the scroll indicator does a quiet fade-in.
+          // ── 2. Hero entrance animation ───
+          // Fade in the hero text, then the scroll indicator.
+          gsapMod.fromTo("[data-hero-front]", 
+            { opacity: 0, y: 30 },
+            {
+              opacity: 1,
+              y: 0,
+              duration: 1.2,
+              stagger: 0.2,
+              ease: "power2.out",
+              delay: 0.2
+            }
+          );
+
           gsapMod.fromTo(
             "#scroll-indicator",
             { opacity: 0 },
-            { opacity: 0.35, duration: 0.6, ease: "power2.out" }
+            { opacity: 0.35, duration: 1.0, ease: "power2.out", delay: 0.8 }
           );
 
           // ── 3. Hero scroll indicator fade only — text stays put and ───────
@@ -472,7 +484,7 @@ export default function HomeClient() {
             <div className="absolute bottom-10 md:bottom-20 left-0 w-full px-6 md:px-12 lg:px-16 flex flex-col md:flex-row justify-between items-start md:items-end gap-10 md:gap-0 pointer-events-none">
               
               {/* TAGLINE + BUTTON - Bottom Left */}
-              <div data-hero-front className="pointer-events-auto flex-shrink-0 flex flex-col items-start gap-5 w-full md:w-auto">
+              <div data-hero-front className="opacity-0 pointer-events-auto flex-shrink-0 flex flex-col items-start gap-5 w-full md:w-auto">
                 <h2 className="font-heading font-light text-[clamp(1.8rem,4.5vw,3.5rem)] leading-[0.9] text-primary tracking-[-0.03em]">
                   Visuals so <span className="font-bold">hyper-real,</span><br />
                   <span className="text-secondary/50">they sell the</span> <span className="italic font-serif">unbuilt.</span>
@@ -487,7 +499,7 @@ export default function HomeClient() {
               </div>
 
               {/* LOGO - Bottom Right (Smaller) */}
-              <div data-hero-front className="flex flex-col items-end pointer-events-auto text-right">
+              <div data-hero-front className="opacity-0 flex flex-col items-end pointer-events-auto text-right">
                 <p className="font-heading font-light text-[clamp(2rem,6vw,4.5rem)] text-primary tracking-[-0.03em] leading-[0.85] mb-3">
                   retrotekt<span className="text-secondary">.</span>
                 </p>

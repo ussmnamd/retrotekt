@@ -32,9 +32,9 @@ function HeroGrid() {
       <line x1={800} y1={80} x2={800} y2={230} stroke="#C4A882" strokeWidth={0.5} strokeOpacity={0.08} />
       <line x1={920} y1={80} x2={920} y2={460} stroke="#C4A882" strokeWidth={0.5} strokeOpacity={0.08} />
       {/* Dimension annotations */}
-      <text x={790} y={72} fill="#C4A882" fillOpacity={0.18} fontSize={8} fontFamily="monospace" letterSpacing={1}>12&apos;-0&quot;</text>
-      <text x={955} y={195} fill="#C4A882" fillOpacity={0.18} fontSize={8} fontFamily="monospace" letterSpacing={1}>LIVING</text>
-      <text x={730} y={175} fill="#C4A882" fillOpacity={0.14} fontSize={7} fontFamily="monospace" letterSpacing={1}>BED 1</text>
+      <text x={790} y={72} fill="#C4A882" fillOpacity={0.18} fontSize={8} fontFamily="var(--font-geist-sans)" letterSpacing={1}>12&apos;-0&quot;</text>
+      <text x={955} y={195} fill="#C4A882" fillOpacity={0.18} fontSize={8} fontFamily="var(--font-geist-sans)" letterSpacing={1}>LIVING</text>
+      <text x={730} y={175} fill="#C4A882" fillOpacity={0.14} fontSize={7} fontFamily="var(--font-geist-sans)" letterSpacing={1}>BED 1</text>
       {/* Crosshair center mark */}
       <circle cx={810} cy={310} r={3} stroke="#C4A882" strokeWidth={0.8} fill="none" strokeOpacity={0.12} />
       <line x1={810} y1={298} x2={810} y2={322} stroke="#C4A882" strokeWidth={0.5} strokeOpacity={0.1} />
@@ -545,7 +545,7 @@ export default function ServicesClient() {
                     <polygon points="233,170 233,190 254,180" fill="#C4A882" fillOpacity={0.3} />
                     {/* Duration badge */}
                     <rect x="170" y="325" width="60" height="16" rx="2" fill="#3D2A1A" />
-                    <text x="182" y="337" fill="#C4A882" fillOpacity={0.5} fontSize={7} fontFamily="monospace">0:45 / 4K</text>
+                    <text x="182" y="337" fill="#C4A882" fillOpacity={0.5} fontSize={7} fontFamily="var(--font-geist-sans)">0:45 / 4K</text>
                   </svg>
                   <div className="absolute bottom-0 left-0 right-0 px-5 py-3 flex items-center justify-between" style={{ background: "linear-gradient(to top, #1C1309cc, transparent)" }}>
                     <span className="font-body text-[11px] tracking-[0.14em] uppercase text-secondary/50">Exterior Flythrough · 45s</span>
@@ -659,11 +659,11 @@ export default function ServicesClient() {
                     <line x1="30" y1="340" x2="130" y2="340" stroke="#C4A882" strokeWidth={0.8} strokeOpacity={0.25} />
                     <line x1="30" y1="336" x2="30" y2="344" stroke="#C4A882" strokeWidth={0.8} strokeOpacity={0.25} />
                     <line x1="130" y1="336" x2="130" y2="344" stroke="#C4A882" strokeWidth={0.8} strokeOpacity={0.25} />
-                    <text x="55" y="336" fill="#C4A882" fillOpacity={0.3} fontSize={7} fontFamily="monospace">50ft</text>
+                    <text x="55" y="336" fill="#C4A882" fillOpacity={0.3} fontSize={7} fontFamily="var(--font-geist-sans)">50ft</text>
                     {/* Compass */}
                     <circle cx="450" cy="310" r="18" fill="none" stroke="#C4A882" strokeWidth={0.5} strokeOpacity={0.15} />
                     <polygon points="450,294 453,308 450,305 447,308" fill="#C4A882" fillOpacity={0.3} />
-                    <text x="447" y="332" fill="#C4A882" fillOpacity={0.25} fontSize={7} fontFamily="monospace">N</text>
+                    <text x="447" y="332" fill="#C4A882" fillOpacity={0.25} fontSize={7} fontFamily="var(--font-geist-sans)">N</text>
                   </svg>
                   <div className="absolute bottom-0 left-0 right-0 px-5 py-3 flex items-center justify-between" style={{ background: "linear-gradient(to top, #1C1309cc, transparent)" }}>
                     <span className="font-body text-[11px] tracking-[0.14em] uppercase text-secondary/50">Aerial Site Plan · Bird&apos;s-Eye</span>
@@ -768,7 +768,7 @@ export default function ServicesClient() {
                     <circle cx="240" cy="180" r="36" fill="none" stroke="#C4A882" strokeWidth={0.8} strokeOpacity={0.18} />
                     <path d="M 212,175 A 28,14 0 0 1 268,175" fill="none" stroke="#C4A882" strokeWidth={0.8} strokeOpacity={0.3} />
                     <path d="M 268,185 A 28,14 0 0 1 212,185" fill="none" stroke="#C4A882" strokeWidth={0.8} strokeOpacity={0.3} />
-                    <text x="224" y="184" fill="#C4A882" fillOpacity={0.35} fontSize={11} fontFamily="monospace" fontWeight="bold">360°</text>
+                    <text x="224" y="184" fill="#C4A882" fillOpacity={0.35} fontSize={11} fontFamily="var(--font-geist-sans)" fontWeight="bold">360°</text>
                     {/* Navigation hotspot dots */}
                     {[[180, 220], [300, 240], [140, 160], [360, 150]].map(([cx, cy], i) => (
                       <g key={i}>
@@ -885,19 +885,19 @@ export default function ServicesClient() {
                       { x: 100, y: 250, label: "BED 2", sub: "12' × 11'" },
                     ].map((r) => (
                       <g key={r.label}>
-                        <text x={r.x} y={r.y} fill="#C4A882" fillOpacity={0.3} fontSize={8} fontFamily="monospace" textAnchor="middle" letterSpacing={1}>{r.label}</text>
-                        <text x={r.x} y={r.y + 12} fill="#C4A882" fillOpacity={0.18} fontSize={6} fontFamily="monospace" textAnchor="middle">{r.sub}</text>
+                        <text x={r.x} y={r.y} fill="#C4A882" fillOpacity={0.3} fontSize={8} fontFamily="var(--font-geist-sans)" textAnchor="middle" letterSpacing={1}>{r.label}</text>
+                        <text x={r.x} y={r.y + 12} fill="#C4A882" fillOpacity={0.18} fontSize={6} fontFamily="var(--font-geist-sans)" textAnchor="middle">{r.sub}</text>
                       </g>
                     ))}
                     {/* Dimension lines */}
                     <line x1="40" y1="20" x2="440" y2="20" stroke="#C4A882" strokeWidth={0.5} strokeOpacity={0.2} />
                     <line x1="40" y1="16" x2="40" y2="24" stroke="#C4A882" strokeWidth={0.5} strokeOpacity={0.2} />
                     <line x1="440" y1="16" x2="440" y2="24" stroke="#C4A882" strokeWidth={0.5} strokeOpacity={0.2} />
-                    <text x="240" y="16" fill="#C4A882" fillOpacity={0.3} fontSize={7} fontFamily="monospace" textAnchor="middle">42&apos;-0&quot;</text>
+                    <text x="240" y="16" fill="#C4A882" fillOpacity={0.3} fontSize={7} fontFamily="var(--font-geist-sans)" textAnchor="middle">42&apos;-0&quot;</text>
                     <line x1="460" y1="40" x2="460" y2="320" stroke="#C4A882" strokeWidth={0.5} strokeOpacity={0.2} />
                     <line x1="456" y1="40" x2="464" y2="40" stroke="#C4A882" strokeWidth={0.5} strokeOpacity={0.2} />
                     <line x1="456" y1="320" x2="464" y2="320" stroke="#C4A882" strokeWidth={0.5} strokeOpacity={0.2} />
-                    <text x="472" y="184" fill="#C4A882" fillOpacity={0.3} fontSize={7} fontFamily="monospace" textAnchor="middle" transform="rotate(90, 472, 184)">30&apos;-0&quot;</text>
+                    <text x="472" y="184" fill="#C4A882" fillOpacity={0.3} fontSize={7} fontFamily="var(--font-geist-sans)" textAnchor="middle" transform="rotate(90, 472, 184)">30&apos;-0&quot;</text>
                   </svg>
                   <div className="absolute bottom-0 left-0 right-0 px-5 py-3 flex items-center justify-between" style={{ background: "linear-gradient(to top, #1C1309cc, transparent)" }}>
                     <span className="font-body text-[11px] tracking-[0.14em] uppercase text-secondary/50">2D Floor Plan · Annotated</span>
@@ -990,7 +990,7 @@ export default function ServicesClient() {
                     ))}
                     <rect x="40" y="80" width="80" height="60" fill="none" stroke="#C4A882" strokeWidth={0.8} strokeOpacity={0.12} strokeDasharray="3 2" />
                     <rect x="140" y="100" width="60" height="80" fill="none" stroke="#C4A882" strokeWidth={0.8} strokeOpacity={0.12} strokeDasharray="3 2" />
-                    <text x="120" y="40" fill="#C4A882" fillOpacity={0.2} fontSize={8} fontFamily="monospace" textAnchor="middle" letterSpacing={2}>BEFORE</text>
+                    <text x="120" y="40" fill="#C4A882" fillOpacity={0.2} fontSize={8} fontFamily="var(--font-geist-sans)" textAnchor="middle" letterSpacing={2}>BEFORE</text>
                     {/* After side: rendered */}
                     <polygon points="240,80 380,80 380,280 240,280" fill="#2C1F14" />
                     <polygon points="380,80 480,120 480,320 380,280" fill="#241A0F" />
@@ -998,13 +998,13 @@ export default function ServicesClient() {
                     <rect x="270" y="110" width="60" height="80" fill="#C4A882" fillOpacity={0.06} stroke="#C4A882" strokeWidth={0.4} strokeOpacity={0.12} />
                     <rect x="350" y="130" width="20" height="60" fill="#C4A882" fillOpacity={0.05} stroke="#C4A882" strokeWidth={0.4} strokeOpacity={0.1} />
                     <rect x="270" y="260" width="100" height="20" fill="#3D2A1A" />
-                    <text x="360" y="40" fill="#C4A882" fillOpacity={0.2} fontSize={8} fontFamily="monospace" textAnchor="middle" letterSpacing={2}>AFTER</text>
+                    <text x="360" y="40" fill="#C4A882" fillOpacity={0.2} fontSize={8} fontFamily="var(--font-geist-sans)" textAnchor="middle" letterSpacing={2}>AFTER</text>
                     {/* Clock icon — fast turnaround */}
                     <circle cx="60" cy="310" r="20" fill="none" stroke="#C4A882" strokeWidth={0.6} strokeOpacity={0.2} />
                     <line x1="60" y1="310" x2="60" y2="297" stroke="#C4A882" strokeWidth={0.8} strokeOpacity={0.25} />
                     <line x1="60" y1="310" x2="70" y2="316" stroke="#C4A882" strokeWidth={0.8} strokeOpacity={0.25} />
-                    <text x="90" y="308" fill="#C4A882" fillOpacity={0.3} fontSize={7} fontFamily="monospace">24–48h</text>
-                    <text x="90" y="318" fill="#C4A882" fillOpacity={0.2} fontSize={6} fontFamily="monospace">DELIVERY</text>
+                    <text x="90" y="308" fill="#C4A882" fillOpacity={0.3} fontSize={7} fontFamily="var(--font-geist-sans)">24–48h</text>
+                    <text x="90" y="318" fill="#C4A882" fillOpacity={0.2} fontSize={6} fontFamily="var(--font-geist-sans)">DELIVERY</text>
                   </svg>
                   <div className="absolute bottom-0 left-0 right-0 px-5 py-3 flex items-center justify-between" style={{ background: "linear-gradient(to top, #1C1309cc, transparent)" }}>
                     <span className="font-body text-[11px] tracking-[0.14em] uppercase text-secondary/50">Pre-Sale Concept · Before / After</span>

@@ -30,6 +30,8 @@ const config: Config = {
         },
       },
       fontFamily: {
+        sans: ["var(--font-geist-sans)", "sans-serif"],
+        mono: ["var(--font-geist-sans)", "sans-serif"],
         heading: ["var(--font-geist-sans)", "sans-serif"],
         body: ["var(--font-geist-sans)", "sans-serif"],
       },

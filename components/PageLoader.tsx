@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 
-const DRAW_MS = 800;
-const EXIT_MS = 400;
+const DRAW_MS = 150;
+const EXIT_MS = 100;
 
 function Line({ x1, y1, x2, y2, delay = 0, dur = 600, stroke = "#C4A882", sw = 1.2, op = 1 }: {
   x1: number; y1: number; x2: number; y2: number;

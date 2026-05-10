@@ -46,7 +46,7 @@ function DebugPanelDev() {
       position: "fixed", top: 10, left: 10, zIndex: 100000,
       background: "rgba(0,0,0,0.85)", color: "#00ff00",
       padding: "15px", borderRadius: "8px", fontSize: "10px",
-      fontFamily: "monospace", maxWidth: "400px", pointerEvents: "none"
+      fontFamily: "var(--font-geist-sans)", maxWidth: "400px", pointerEvents: "none"
     }}>
       <div style={{ fontWeight: "bold", marginBottom: "8px", color: "#fff" }}>RETROTEKT DEBUG PANEL (Shift + D to hide)</div>
       <div style={{ maxHeight: "300px", overflowY: "auto" }}>

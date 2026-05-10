@@ -121,7 +121,7 @@ export default function CTASection() {
           style={{ opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(12px)", transition: "opacity 0.7s ease, transform 0.7s ease", transitionDelay: "0.05s" }}
         >
           <div className="w-5 h-px bg-[#C4A882]/35" />
-          <span className="uppercase text-[#C4A882]/45 tracking-[0.32em]" style={{ fontFamily: "monospace", fontSize: "11px" }}>
+          <span className="uppercase text-[#C4A882]/45 tracking-[0.32em]" style={{ fontFamily: "var(--font-geist-sans)", fontSize: "11px" }}>
             The Studio That Delivers
           </span>
           <div className="w-5 h-px bg-[#C4A882]/35" />
@@ -150,9 +150,9 @@ export default function CTASection() {
         <div className="w-full max-w-2xl mb-10" style={fadeUp("0.28s")}>
           {/* Table header */}
           <div className="grid grid-cols-[auto_1fr_auto] gap-x-6 pb-3 mb-1" style={{ borderBottom: "1px solid rgba(196,168,130,0.15)" }}>
-            <span className="uppercase text-[#C4A882]/45 tracking-[0.28em] text-left" style={{ fontFamily: "monospace", fontSize: "10px" }}>Phase</span>
-            <span className="uppercase text-[#C4A882]/45 tracking-[0.28em] text-left" style={{ fontFamily: "monospace", fontSize: "10px" }}>Milestone</span>
-            <span className="uppercase text-[#C4A882]/45 tracking-[0.28em] text-right" style={{ fontFamily: "monospace", fontSize: "10px" }}>Your Commitment</span>
+            <span className="uppercase text-[#C4A882]/45 tracking-[0.28em] text-left" style={{ fontFamily: "var(--font-geist-sans)", fontSize: "10px" }}>Phase</span>
+            <span className="uppercase text-[#C4A882]/45 tracking-[0.28em] text-left" style={{ fontFamily: "var(--font-geist-sans)", fontSize: "10px" }}>Milestone</span>
+            <span className="uppercase text-[#C4A882]/45 tracking-[0.28em] text-right" style={{ fontFamily: "var(--font-geist-sans)", fontSize: "10px" }}>Your Commitment</span>
           </div>
 
           {/* Table rows */}
@@ -164,7 +164,7 @@ export default function CTASection() {
             >
               {/* Phase */}
               <div className="flex flex-col gap-0.5 min-w-[90px]">
-                <span className="text-[#C4A882]/40 tabular-nums" style={{ fontFamily: "monospace", fontSize: "10px" }}>{phase.num}.</span>
+                <span className="text-[#C4A882]/40 tabular-nums" style={{ fontFamily: "var(--font-geist-sans)", fontSize: "10px" }}>{phase.num}.</span>
                 <span className="font-body font-semibold text-[#F7F0E3]/90 tracking-[0.04em]" style={{ fontSize: "13px" }}>{phase.name}</span>
               </div>
 
@@ -181,7 +181,7 @@ export default function CTASection() {
                 >
                   {phase.commitment}
                 </span>
-                <span className="text-[#C4A882]/50 tracking-[0.1em]" style={{ fontFamily: "monospace", fontSize: "10px" }}>
+                <span className="text-[#C4A882]/50 tracking-[0.1em]" style={{ fontFamily: "var(--font-geist-sans)", fontSize: "10px" }}>
                   {phase.commitmentSub}
                 </span>
               </div>
@@ -201,7 +201,7 @@ export default function CTASection() {
             </span>
             <div className="w-6 h-[1.5px] bg-[#C4A882]/60 group-hover:w-16 group-hover:bg-[#C4A882] transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]" />
           </Link>
-          <span className="text-[#F7F0E3]/35 tracking-[0.18em] uppercase" style={{ fontFamily: "monospace", fontSize: "10px" }}>
+          <span className="text-[#F7F0E3]/35 tracking-[0.18em] uppercase" style={{ fontFamily: "var(--font-geist-sans)", fontSize: "10px" }}>
             Submit your plans in 60 seconds. We start today.
           </span>
         </div>
@@ -215,7 +215,7 @@ export default function CTASection() {
         {/* Why section label */}
         <span
           className="uppercase text-[#C4A882]/45 tracking-[0.32em] mb-6 block"
-          style={{ fontFamily: "monospace", fontSize: "10px", ...fadeUp("0.50s") }}
+          style={{ fontFamily: "var(--font-geist-sans)", fontSize: "10px", ...fadeUp("0.50s") }}
         >
           Why Elite Builders Choose Us
         </span>
@@ -236,7 +236,7 @@ export default function CTASection() {
               </span>
               <span
                 className="uppercase text-[#C4A882]/55 tracking-[0.16em]"
-                style={{ fontFamily: "monospace", fontSize: "9px" }}
+                style={{ fontFamily: "var(--font-geist-sans)", fontSize: "9px" }}
               >
                 {label}
               </span>
