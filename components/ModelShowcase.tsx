@@ -204,49 +204,48 @@ export default function ModelShowcase() {
           </div>
         </div>
 
-        {/* Slider tick pill with flanking nav arrows */}
-        <div className="absolute bottom-[120px] md:bottom-[94px] left-0 right-0 mx-auto w-fit flex items-center gap-3 z-40 bg-[#F7F0E3]/85 backdrop-blur-sm px-4 py-2 rounded-full border border-primary/10 shadow-sm">
-
-          {/* ‹ Prev */}
+        {/* Minimal Nav Arrows — Embedded on sides */}
+        <div className="absolute inset-x-8 top-1/2 -translate-y-1/2 flex justify-between items-center z-40 pointer-events-none">
           <button
             id="showcase-prev"
             aria-label="Previous project"
-            className="flex items-center justify-center w-5 h-5 rounded-full text-primary/60 hover:text-primary hover:bg-primary/8 transition-colors duration-200 text-[13px] font-medium leading-none select-none"
+            className="pointer-events-auto group flex items-center justify-center w-12 h-12 transition-all duration-300 active:scale-90"
           >
-            ‹
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="opacity-30 group-hover:opacity-100 transition-opacity duration-300">
+              <path d="M15 19L8 12L15 5" stroke="#2C1F14" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
           </button>
-
-          {/* Tick marks */}
-          <div className="flex items-center gap-[14px]">
-            {showcase.map((_, i) => (
-              <button
-                key={i}
-                aria-label={`Go to project ${i + 1}`}
-                className="showcase-tick-btn flex items-center justify-center relative py-2 cursor-pointer group"
-              >
-                <div
-                  id={`showcase-tick-${i}`}
-                  style={{
-                    width: i === 0 ? "36px" : "10px",
-                    height: "2px",
-                    background: "#2C1F14",
-                    opacity: i === 0 ? 0.65 : 0.18,
-                    borderRadius: "2px",
-                  }}
-                  className="transition-all duration-300 group-hover:opacity-50"
-                />
-              </button>
-            ))}
-          </div>
-
-          {/* › Next */}
           <button
             id="showcase-next"
             aria-label="Next project"
-            className="flex items-center justify-center w-5 h-5 rounded-full text-primary/60 hover:text-primary hover:bg-primary/8 transition-colors duration-200 text-[13px] font-medium leading-none select-none"
+            className="pointer-events-auto group flex items-center justify-center w-12 h-12 transition-all duration-300 active:scale-90"
           >
-            ›
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="opacity-30 group-hover:opacity-100 transition-opacity duration-300">
+              <path d="M9 5L16 12L9 19" stroke="#2C1F14" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
           </button>
+        </div>
+
+        {/* Minimal Progress Ticks — Bottom */}
+        <div className="absolute bottom-[110px] md:bottom-[90px] left-0 right-0 mx-auto w-fit flex items-center gap-[18px] z-40">
+          {showcase.map((_, i) => (
+            <button
+              key={i}
+              aria-label={`Go to project ${i + 1}`}
+              className="showcase-tick-btn flex items-center justify-center relative py-3 cursor-pointer group"
+            >
+              <div
+                id={`showcase-tick-${i}`}
+                style={{
+                  width: i === 0 ? "40px" : "12px",
+                  height: "1px",
+                  background: "#2C1F14",
+                  opacity: i === 0 ? 0.6 : 0.15,
+                }}
+                className="transition-all duration-500 ease-out group-hover:opacity-40"
+              />
+            </button>
+          ))}
         </div>
 
       </div>

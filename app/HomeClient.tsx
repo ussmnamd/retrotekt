@@ -51,7 +51,8 @@ export default function HomeClient() {
       (async () => {
         const gsapMod = (await import("gsap")).default;
         const { ScrollTrigger } = await import("gsap/ScrollTrigger");
-        gsapMod.registerPlugin(ScrollTrigger);
+        const { ScrollToPlugin } = await import("gsap/ScrollToPlugin");
+        gsapMod.registerPlugin(ScrollTrigger, ScrollToPlugin);
   
         ctxRef.current = gsapMod.context(() => {
         const mm = gsapMod.matchMedia();
@@ -190,12 +191,12 @@ export default function HomeClient() {
                 anticipatePin: 1,
                 invalidateOnRefresh: true,
                 refreshPriority: 6,
-                scrub: 1,
+                scrub: 0.6,
                 snap: {
                   snapTo: [0, 0.5, 1],
-                  duration: { min: 0.3, max: 0.7 },
-                  ease: "power3.inOut",
-                  delay: 0.05,
+                  duration: { min: 0.2, max: 0.5 },
+                  ease: "power2.inOut",
+                  delay: 0,
                 },
                 onUpdate: (self) => {
                   const p = self.progress;
@@ -289,42 +290,63 @@ export default function HomeClient() {
             pin.addEventListener("mouseleave", handleMouseLeave);
 
             // ── Arrow / tick navigation ───────────────────────────────────────
-            // Reads live scroll position to determine the active slide (0|1|2),
-            // then scrolls to the exact snap point (pinTop + n × 1.1 × vh).
             const getActiveSlide = (): number => {
-              const pinTop = pin.getBoundingClientRect().top + window.scrollY;
-              const vh = window.innerHeight;
-              const scrolled = window.scrollY - pinTop;
-              if (scrolled < vh * 0.55) return 0;
-              if (scrolled < vh * 1.65) return 1;
+              const st = masterTl.scrollTrigger;
+              if (!st) return 0;
+              const p = st.progress;
+              if (p < 0.25) return 0;
+              if (p < 0.75) return 1;
               return 2;
             };
+
             const goToSlide = (n: number) => {
-              const pinTop = pin.getBoundingClientRect().top + window.scrollY;
-              const vh = window.innerHeight;
-              window.scrollTo({ top: pinTop + n * vh * 1.1, behavior: "smooth" });
+              const st = masterTl.scrollTrigger;
+              if (!st) return;
+              
+              // Map 0, 1, 2 to the exact scroll positions
+              // 0 -> st.start
+              // 1 -> st.start + (st.end - st.start) * 0.5
+              // 2 -> st.end
+              const progress = n * 0.5;
+              const targetY = st.start + (st.end - st.start) * progress;
+              
+              gsapMod.to(window, {
+                scrollTo: targetY,
+                duration: 0.8,
+                ease: "power2.inOut",
+                overwrite: "auto"
+              });
             };
 
             const prevBtn  = document.getElementById("showcase-prev");
             const nextBtn  = document.getElementById("showcase-next");
-            const tickBtns = Array.from(
-              document.querySelectorAll<HTMLButtonElement>(".showcase-tick-btn")
-            );
+            const tickBtns = Array.from(document.querySelectorAll<HTMLButtonElement>(".showcase-tick-btn"));
 
-            const handlePrev  = () => { const c = getActiveSlide(); if (c > 0) goToSlide(c - 1); };
-            const handleNext  = () => { const c = getActiveSlide(); if (c < 2) goToSlide(c + 1); };
-            const handleTicks = tickBtns.map((btn, i) => () => goToSlide(i));
+            const handlePrev  = (e?: Event) => { e?.preventDefault(); const c = getActiveSlide(); if (c > 0) goToSlide(c - 1); };
+            const handleNext  = (e?: Event) => { e?.preventDefault(); const c = getActiveSlide(); if (c < 2) goToSlide(c + 1); };
+            const handleKeyDown = (e: KeyboardEvent) => {
+              const st = masterTl.scrollTrigger;
+              if (st && st.isActive) {
+                if (e.key === "ArrowLeft") handlePrev();
+                if (e.key === "ArrowRight") handleNext();
+              }
+            };
 
             prevBtn?.addEventListener("click", handlePrev);
             nextBtn?.addEventListener("click", handleNext);
-            tickBtns.forEach((btn, i) => btn.addEventListener("click", handleTicks[i]));
+            window.addEventListener("keydown", handleKeyDown);
+            tickBtns.forEach((btn, i) => {
+              const handler = (e: Event) => { e.preventDefault(); goToSlide(i); };
+              btn.addEventListener("click", handler);
+              cleanups.push(() => btn.removeEventListener("click", handler));
+            });
 
             cleanups.push(() => {
               pin.removeEventListener("mousemove", handleMouseMove as EventListener);
               pin.removeEventListener("mouseleave", handleMouseLeave);
               prevBtn?.removeEventListener("click", handlePrev);
               nextBtn?.removeEventListener("click", handleNext);
-              tickBtns.forEach((btn, i) => btn.removeEventListener("click", handleTicks[i]));
+              window.removeEventListener("keydown", handleKeyDown);
             });
           } // end showcase-pin
 
