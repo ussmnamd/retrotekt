@@ -32,7 +32,9 @@ const ModelShowcase = dynamic(() => import("@/components/ModelShowcase"), {
 
 const Hero3D = dynamic(() => import("@/components/Hero3D"), {
   ssr: false,
-  loading: () => null,
+  // Opaque fallback prevents the browser's stale compositor snapshot from
+  // bleeding through the transparent canvas while the JS chunk is fetching.
+  loading: () => <div style={{ position: "absolute", inset: 0, background: "var(--color-background, #F7F0E3)" }} />,
 });
 
 export default function HomeClient() {
@@ -469,8 +471,8 @@ export default function HomeClient() {
         <div className="bg-primary">
         <section className="relative w-full h-screen min-h-[700px] overflow-hidden bg-background rounded-b-[2.5rem]">
 
-          {/* 1. BACK LAYER (Z-0) — no content */}
-          <div className="absolute inset-0 z-0 w-full pointer-events-none" />
+          {/* 1. BACK LAYER (Z-0) — opaque base prevents compositor snapshot bleed-through */}
+          <div className="absolute inset-0 z-0 w-full pointer-events-none bg-background" />
 
           {/* 2. 3D MODEL (Z-10) */}
           <div id="hero-section" className="absolute inset-0 z-10 pointer-events-auto">
