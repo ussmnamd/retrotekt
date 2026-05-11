@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     title: "3D Architectural Rendering Services — Retrotekt",
     description:
       "Everything a contractor or developer needs to visualize a project. Still renders, animations, floor plans, aerials — delivered in 3–5 days.",
-    url: "https://retrotekt.com/services",
+    url: "https://www.retrotekt.com/services",
     images: [
       {
         url: "/og/services.png",
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     ],
   },
   alternates: {
-    canonical: "https://retrotekt.com/services",
+    canonical: "https://www.retrotekt.com/services",
   },
 };
 
@@ -46,7 +46,7 @@ const servicesCatalogSchema = {
   provider: {
     "@type": "Organization",
     name: "Retrotekt",
-    url: "https://retrotekt.com",
+    url: "https://www.retrotekt.com",
   },
   areaServed: {
     "@type": "Country",
@@ -63,7 +63,7 @@ const servicesCatalogSchema = {
           name: "Still Renders",
           description:
             "Photorealistic interior and exterior architectural renders. HD, print-ready, permit-compatible.",
-          url: "https://retrotekt.com/services#renders",
+          url: "https://www.retrotekt.com/services#renders",
         },
         priceSpecification: {
           "@type": "UnitPriceSpecification",
@@ -79,7 +79,7 @@ const servicesCatalogSchema = {
           name: "Walkthrough Animations",
           description:
             "Cinematic 3D walkthrough animations — room walkthroughs, full interior tours, exterior flyovers.",
-          url: "https://retrotekt.com/services#walkthroughs",
+          url: "https://www.retrotekt.com/services#walkthroughs",
         },
         priceSpecification: {
           "@type": "UnitPriceSpecification",
@@ -94,7 +94,7 @@ const servicesCatalogSchema = {
           name: "Floor Plan Renders",
           description:
             "Clean architectural floor plan renders for permit applications and client proposals.",
-          url: "https://retrotekt.com/services#floor-plans",
+          url: "https://www.retrotekt.com/services#floor-plans",
         },
         priceSpecification: {
           "@type": "UnitPriceSpecification",
@@ -110,7 +110,7 @@ const servicesCatalogSchema = {
           name: "Aerial & Bird's-Eye Views",
           description:
             "Drone-perspective site overviews and aerial renders for developer pitch decks.",
-          url: "https://retrotekt.com/services#aerial",
+          url: "https://www.retrotekt.com/services#aerial",
         },
         priceSpecification: {
           "@type": "UnitPriceSpecification",
@@ -126,7 +126,7 @@ const servicesCatalogSchema = {
           name: "360° Panorama Views",
           description:
             "Fully immersive 360-degree room renders clients can explore on any device.",
-          url: "https://retrotekt.com/services#panoramas",
+          url: "https://www.retrotekt.com/services#panoramas",
         },
         priceSpecification: {
           "@type": "UnitPriceSpecification",

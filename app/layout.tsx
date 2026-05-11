@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     "Retrotekt | 3D Architectural Rendering Services for Contractors & Developers",
   description:
     "Photorealistic 3D renders, walkthroughs, floor plans, and aerial views — built for US contractors, remodelers, and real estate developers. Fast delivery. Studio quality. Starting from $200/render.",
-  metadataBase: new URL("https://retrotekt.com"),
+  metadataBase: new URL("https://www.retrotekt.com"),
   openGraph: {
     siteName: "Retrotekt",
     locale: "en_US",
@@ -44,10 +44,10 @@ const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "Retrotekt",
-  url: "https://retrotekt.com",
+  url: "https://www.retrotekt.com",
   logo: {
     "@type": "ImageObject",
-    url: "https://retrotekt.com/logo-mark.png",
+    url: "https://www.retrotekt.com/logo-mark.png",
   },
   description:
     "Photorealistic 3D architectural rendering studio serving US contractors, remodelers, real estate developers, and interior designers.",

@@ -26,7 +26,7 @@ export async function generateMetadata({
     openGraph: {
       title: `${project.name} — 3D Architectural Visualization`,
       description: project.description.slice(0, 155),
-      url: `https://retrotekt.com/portfolio/${project.slug}`,
+      url: `https://www.retrotekt.com/portfolio/${project.slug}`,
       images: [
         {
           url: coverImage,
@@ -43,7 +43,7 @@ export async function generateMetadata({
       images: [coverImage],
     },
     alternates: {
-      canonical: `https://retrotekt.com/portfolio/${project.slug}`,
+      canonical: `https://www.retrotekt.com/portfolio/${project.slug}`,
     },
   };
 }
@@ -56,10 +56,10 @@ const projectSchema = (project: (typeof projects)[number]) => ({
   creator: {
     '@type': 'Organization',
     name: 'Retrotekt',
-    url: 'https://retrotekt.com',
+    url: 'https://www.retrotekt.com',
   },
   image: portfolioAssets[project.assetKey].renders[0]?.jpg ?? '/og/portfolio.png',
-  url: `https://retrotekt.com/portfolio/${project.slug}`,
+  url: `https://www.retrotekt.com/portfolio/${project.slug}`,
   locationCreated: {
     '@type': 'Place',
     name: project.city,

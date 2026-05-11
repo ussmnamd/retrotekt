@@ -16,7 +16,7 @@ const CSP = [
   // that don't fully honour worker-src independently fall back to checking script-src.
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} 'wasm-unsafe-eval' blob: https://cdn.cal.com`,
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https://retrotekt.vercel.app https://retrotekt.com",
+  "img-src 'self' data: blob: https://retrotekt.vercel.app https://retrotekt.com https://www.retrotekt.com",
   "font-src 'self'",
   // blob: required — Three.js ImageLoader uses fetch() to load blob-URL textures (WebP/GLB).
   "connect-src 'self' blob:",

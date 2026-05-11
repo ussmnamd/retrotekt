@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     title: "Why Smart Contractors Choose Retrotekt Over Local Studios",
     description:
       "Same quality. Faster delivery. Up to 60% less than US studio rates. See how Retrotekt's global model saves you money without cutting corners.",
-    url: "https://retrotekt.com/consulting",
+    url: "https://www.retrotekt.com/consulting",
     images: [
       {
         url: "/og/consulting.png",
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     ],
   },
   alternates: {
-    canonical: "https://retrotekt.com/consulting",
+    canonical: "https://www.retrotekt.com/consulting",
   },
 };
 

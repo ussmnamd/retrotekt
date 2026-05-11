@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 import { projects } from "./portfolio/data";
 
-const BASE_URL = "https://retrotekt.com";
+const BASE_URL = "https://www.retrotekt.com";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages: MetadataRoute.Sitemap = [

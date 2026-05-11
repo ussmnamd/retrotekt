@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     title: "Retrotekt — Win More Bids With Photorealistic 3D Renders",
     description:
       "Turn your plans into visuals that close deals. Still renders, walkthroughs, floor plans, and aerials for US contractors and developers.",
-    url: "https://retrotekt.com",
+    url: "https://www.retrotekt.com",
     siteName: "Retrotekt",
     locale: "en_US",
     type: "website",
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     ],
   },
   alternates: {
-    canonical: "https://retrotekt.com",
+    canonical: "https://www.retrotekt.com",
   },
 };
 
@@ -42,7 +42,7 @@ const professionalServiceSchema = {
   "@context": "https://schema.org",
   "@type": "ProfessionalService",
   name: "Retrotekt",
-  url: "https://retrotekt.com",
+  url: "https://www.retrotekt.com",
   description:
     "Photorealistic 3D renders, walkthroughs, floor plans, and aerial views for US contractors, remodelers, and real estate developers.",
   priceRange: "$200–$1,500",

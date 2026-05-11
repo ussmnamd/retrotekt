@@ -6,6 +6,6 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: "*",
       allow: "/",
     },
-    sitemap: "https://retrotekt.com/sitemap.xml",
+    sitemap: "https://www.retrotekt.com/sitemap.xml",
   };
 }

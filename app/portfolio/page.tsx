@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     title: "Our Work — Retrotekt Architectural Visualization Portfolio",
     description:
       "Photorealistic renders, animated walkthroughs, aerials, and full-project visual suites for US contractors and developers.",
-    url: "https://retrotekt.com/portfolio",
+    url: "https://www.retrotekt.com/portfolio",
     images: [
       {
         url: "/og/portfolio.png",
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     ],
   },
   alternates: {
-    canonical: "https://retrotekt.com/portfolio",
+    canonical: "https://www.retrotekt.com/portfolio",
   },
 };
 
