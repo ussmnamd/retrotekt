@@ -1,4 +1,5 @@
 import bundleAnalyzer from '@next/bundle-analyzer';
+import { withSentryConfig } from '@sentry/nextjs';
 
 const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
@@ -19,7 +20,8 @@ const CSP = [
   "img-src 'self' data: blob: https://retrotekt.vercel.app https://retrotekt.com https://www.retrotekt.com",
   "font-src 'self'",
   // blob: required — Three.js ImageLoader uses fetch() to load blob-URL textures (WebP/GLB).
-  "connect-src 'self' blob:",
+  // *.ingest.sentry.io required for Sentry error/performance reporting.
+  "connect-src 'self' blob: https://*.ingest.sentry.io",
   "frame-src https://cal.com https://calendly.com",
   // blob: needed for Three.js / Draco worker blobs.
   "worker-src 'self' blob:",
@@ -151,4 +153,19 @@ const nextConfig = {
   },
 };
 
-export default withBundleAnalyzer(nextConfig);
+export default withSentryConfig(withBundleAnalyzer(nextConfig), {
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  // Silent unless running in CI to avoid noisy local builds
+  silent: !process.env.CI,
+  // Upload wider set of source maps for better stack traces
+  widenClientFileUpload: true,
+  // Hide source maps from the client bundle
+  hideSourceMaps: true,
+  // Tree-shake Sentry debug logging in production
+  webpack: { treeshake: { removeDebugLogging: true } },
+  // Don't block builds if Sentry upload fails (e.g. missing token)
+  errorHandler(err) {
+    console.warn('[Sentry] Source map upload skipped:', err.message);
+  },
+});

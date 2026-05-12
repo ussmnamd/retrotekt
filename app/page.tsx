@@ -141,6 +141,28 @@ export default function HomePage() {
           __html: JSON.stringify(professionalServiceSchema),
         }}
       />
+      <section className="sr-only" aria-label="About Retrotekt">
+        <h2>3D Architectural Visualization Studio for US Contractors &amp; Developers</h2>
+        <p>
+          Retrotekt delivers photorealistic 3D renders, walkthrough animations, floor plan
+          renders, and aerial views for contractors, remodelers, and real estate developers
+          across the United States. Studio quality, fast delivery, starting from $200 per render.
+        </p>
+        <h3>Services</h3>
+        <ul>
+          <li>Still Renders — Photorealistic interior and exterior architectural renders. HD, print-ready, permit-compatible. From $200.</li>
+          <li>Walkthrough Animations — Cinematic 3D walkthrough videos: room walkthroughs, full interior tours, exterior flyovers. From $800.</li>
+          <li>Floor Plan Renders — Clean architectural floor plan renders for permit applications and client proposals. From $150 per floor.</li>
+          <li>Aerial &amp; Bird&#39;s-Eye Views — Drone-perspective site overviews and aerial renders for development projects. From $200.</li>
+          <li>360° Panorama Views — Immersive 360-degree room renders clients can explore on any device. From $300 per room.</li>
+        </ul>
+        <h3>Areas Served</h3>
+        <p>
+          Serving real estate developers, general contractors, remodelers, interior designers,
+          architects, and property marketers across California, Texas, Florida, New York, and
+          all US states. Global operations, US-market quality, delivered in 3–5 business days.
+        </p>
+      </section>
       <HomeClient />
     </>
   );

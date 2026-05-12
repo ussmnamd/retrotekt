@@ -38,6 +38,10 @@ next-env.d.ts
 # Dev tooling
 .claude/
 CLAUDE.md
+
+# Playwright test output
+/test-results/
+/playwright-report/
 temp_home_client.txt
 .vscode/
 

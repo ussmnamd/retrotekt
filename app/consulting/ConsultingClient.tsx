@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { validators, sanitize, hasErrors, type FieldError } from "@/lib/validate";
+import { validators, hasErrors, type FieldError } from "@/lib/validate";
 
 // ── Icons ─────────────────────────────────────────────────────────────────────
 
@@ -108,11 +108,12 @@ export default function ConsultingClient() {
 
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const update = (field: keyof MessageForm, value: string) =>
     setForm((prev) => ({ ...prev, [field]: value }));
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const newErrors: FormErrors = {
       name: validators.name(form.name),
@@ -121,32 +122,35 @@ export default function ConsultingClient() {
     };
     setErrors(newErrors);
     if (hasErrors(newErrors)) return;
-    
-    setSending(true);
 
-    const safeName = sanitize(form.name);
-    const safeCompany = sanitize(form.company);
-    const safeProjectType = sanitize(form.projectType);
-    const subject = `Inquiry from ${safeName}${safeCompany ? ` — ${safeCompany}` : ""} — ${safeProjectType || "Consulting"}`;
-    const body = [
-      `Name: ${safeName}`,
-      `Email: ${sanitize(form.email)}`,
-      safeCompany ? `Company: ${safeCompany}` : "",
-      `Project Type: ${safeProjectType || "Not specified"}`,
-      `Budget: ${sanitize(form.budget) || "Not specified"}`,
-      ``,
-      `Message:`,
-      sanitize(form.message),
-    ]
-      .filter(Boolean)
-      .join("\n");
-      
-    window.location.href = `mailto:shahan@retrotekt.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    
-    setTimeout(() => {
-      setSending(false);
+    setSending(true);
+    setSubmitError(null);
+
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name:        form.name.trim(),
+          email:       form.email.trim(),
+          company:     form.company.trim() || undefined,
+          projectType: form.projectType || undefined,
+          budget:      form.budget || undefined,
+          message:     form.message.trim(),
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error ?? 'Submission failed. Please try again.');
+      }
+
       setSent(true);
-    }, 800);
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
+    } finally {
+      setSending(false);
+    }
   };
 
   if (sent) {
@@ -157,10 +161,10 @@ export default function ConsultingClient() {
             <span className="text-[#C4A882] text-3xl">✓</span>
           </div>
           <h2 className="font-heading text-[clamp(2rem,5vw,3.5rem)] leading-[1.05] text-[#F7F0E3] mb-6">
-            Message Prepared.
+            Message Sent.
           </h2>
           <p className="font-body text-[16px] text-[#F7F0E3]/60 leading-relaxed mb-10">
-            Complete and send the pre-filled email from your client. We aim to respond with a custom quote within 24 hours.
+            We&apos;ve received your inquiry and will respond within 24 hours with a custom quote.
           </p>
           <button
             onClick={() => setSent(false)}
@@ -415,6 +419,12 @@ export default function ConsultingClient() {
                             </div>
                         </div>
 
+                        {submitError && (
+                          <p role="alert" className="font-body text-[12px] text-red-400 -mt-4">
+                            {submitError}
+                          </p>
+                        )}
+
                         <div className="pt-6 border-t border-[#F7F0E3]/10 flex flex-col sm:flex-row items-center justify-between gap-6">
                             <button
                                 type="submit"
@@ -422,7 +432,7 @@ export default function ConsultingClient() {
                                 className="group w-full sm:w-auto inline-flex justify-center items-center gap-4 px-8 py-4 bg-[#C4A882] hover:bg-[#b39771] text-primary transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 <span className="font-body font-bold text-[12px] tracking-[0.3em] uppercase">
-                                    {sending ? "Opening Email…" : "Submit Inquiry"}
+                                    {sending ? "Sending…" : "Submit Inquiry"}
                                 </span>
                             </button>
                             <p className="font-body text-[12px] text-[#F7F0E3]/40 text-center sm:text-right max-w-[200px]">

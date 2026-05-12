@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
@@ -88,14 +89,20 @@ const GALLERY_HEADINGS: Record<FilterLabel, { eyebrow: string; headline: string 
 const modesto = projects[0];
 const supporting = projects.slice(1); // Livermore, Sacramento
 
+// ── SearchParamsReader — isolated so parent can SSR without suspending ─────────
+function SearchParamsReader({ onFilter }: { onFilter: (f: FilterLabel) => void }) {
+  const searchParams = useSearchParams();
+  const paramFilter = searchParams.get('filter') as FilterLabel;
+  useEffect(() => {
+    if (FILTERS.includes(paramFilter)) onFilter(paramFilter);
+  }, [paramFilter, onFilter]);
+  return null;
+}
+
 // ── Component ──────────────────────────────────────────────────────────────────
 export default function PortfolioClient() {
   const root = useRef<HTMLDivElement>(null);
-  const searchParams = useSearchParams();
-  const paramFilter = searchParams.get('filter') as FilterLabel;
-  const [activeFilter, setActiveFilter] = useState<FilterLabel>(
-    FILTERS.includes(paramFilter) ? paramFilter : 'All'
-  );
+  const [activeFilter, setActiveFilter] = useState<FilterLabel>('All');
   // null = closed; number = index into galleryModalItems
   const [modalIndex, setModalIndex] = useState<number | null>(null);
 
@@ -217,6 +224,10 @@ export default function PortfolioClient() {
   return (
     <div ref={root} className="bg-background min-h-screen text-primary">
 
+      <Suspense fallback={null}>
+        <SearchParamsReader onFilter={setActiveFilter} />
+      </Suspense>
+
       {/* ── 1. CINEMATIC HERO (~90vh) ──────────────────────────────────────── */}
       <section
         className="relative overflow-hidden"
@@ -289,9 +300,11 @@ export default function PortfolioClient() {
                 rel="noopener noreferrer"
                 className="opacity-60 hover:opacity-100 transition-opacity duration-300"
               >
-                <img
+                <Image
                   src="/clients/chocolate-fish-logo.png"
                   alt="Chocolate Fish Coffee Roasters"
+                  width={290}
+                  height={111}
                   className="h-10 md:h-12 w-auto"
                   style={{ filter: 'brightness(0) invert(1)' }}
                 />
@@ -309,9 +322,11 @@ export default function PortfolioClient() {
                 rel="noopener noreferrer"
                 className="opacity-70 hover:opacity-100 transition-opacity duration-300"
               >
-                <img
+                <Image
                   src="/clients/moorish-construction-logo.png"
                   alt="Moorish Construction"
+                  width={500}
+                  height={500}
                   className="h-10 md:h-12 w-auto"
                 />
               </a>
@@ -381,9 +396,11 @@ export default function PortfolioClient() {
                 <div className="flex items-center gap-6 mb-4">
                   <div className="flex flex-col gap-1">
                     <span className="font-body text-[8px] tracking-[0.2em] uppercase text-background/35">Client</span>
-                    <img
+                    <Image
                       src="/clients/chocolate-fish-logo.png"
                       alt="Chocolate Fish Coffee Roasters"
+                      width={290}
+                      height={111}
                       className="h-5 w-auto opacity-50"
                       style={{ filter: 'brightness(0) invert(1)' }}
                     />
@@ -391,9 +408,11 @@ export default function PortfolioClient() {
                   <div className="w-px h-8 bg-background/20" />
                   <div className="flex flex-col gap-1">
                     <span className="font-body text-[8px] tracking-[0.2em] uppercase text-background/35">Contractor</span>
-                    <img
+                    <Image
                       src="/clients/moorish-construction-logo.png"
                       alt="Moorish Construction"
+                      width={500}
+                      height={500}
                       className="h-5 w-auto"
                     />
                   </div>
@@ -486,9 +505,11 @@ export default function PortfolioClient() {
                     >
                       {project.name}
                     </h3>
-                    <img
+                    <Image
                       src="/clients/chocolate-fish-logo.png"
                       alt="Chocolate Fish Coffee Roasters"
+                      width={290}
+                      height={111}
                       className="h-3.5 w-auto opacity-40 mb-3"
                       style={{ filter: 'brightness(0) invert(1)' }}
                     />

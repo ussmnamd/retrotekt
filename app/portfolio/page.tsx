@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import PortfolioClient from "./PortfolioClient";
+import PortfolioFallback from "./PortfolioFallback";
+import { projects } from "./data";
 
 export const metadata: Metadata = {
   title: "Portfolio | 3D Architectural Renders & Walkthroughs — Retrotekt",
@@ -33,10 +35,36 @@ export const metadata: Metadata = {
   },
 };
 
+const portfolioListSchema = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  name: "Retrotekt Architectural Visualization Portfolio",
+  description:
+    "Portfolio of photorealistic 3D architectural renders, walkthrough animations, and construction documentation by Retrotekt.",
+  url: "https://www.retrotekt.com/portfolio",
+  numberOfItems: projects.length,
+  itemListElement: projects.map((p, i) => ({
+    "@type": "ListItem",
+    position: i + 1,
+    item: {
+      "@type": "CreativeWork",
+      name: p.name,
+      description: p.description,
+      url: `https://www.retrotekt.com/portfolio/${p.slug}`,
+    },
+  })),
+};
+
 export default function PortfolioPage() {
   return (
-    <Suspense fallback={null}>
-      <PortfolioClient />
-    </Suspense>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(portfolioListSchema) }}
+      />
+      <Suspense fallback={<PortfolioFallback />}>
+        <PortfolioClient />
+      </Suspense>
+    </>
   );
 }

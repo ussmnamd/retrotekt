@@ -1,4 +1,12 @@
 {
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "retrotekt.com" }],
+      "destination": "https://www.retrotekt.com/:path*",
+      "permanent": true
+    }
+  ],
   "headers": [
     {
       "source": "/models/(.*)",
