@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
-    "@sentry/nextjs": "^10.53.0",
+    "@sentry/nextjs": "^10.53.1",
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
     "geist": "^1.7.0",
