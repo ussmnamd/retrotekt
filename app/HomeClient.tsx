@@ -2,12 +2,11 @@
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useInView } from "@/lib/use-in-view";
-// import { Hero3DPlaceholder } from "@/components/Hero3DPlaceholder";
+import { useDeferredMount } from "@/hooks/useDeferredMount";
 import { ServiceCard } from "@/components/ServiceCard";
 import { ProcessCard } from "@/components/ProcessCard";
-import PageLoader from "@/components/PageLoader";
 import DebugPanel from "@/components/DebugPanel";
 import { portfolioAssets } from "@/app/portfolio/assets";
 import CTASection from "@/components/CTASection";
@@ -32,42 +31,38 @@ export default function HomeClient() {
   const ctxRef = useRef<gsap.Context | null>(null);
   const { ref: featuredVideoWrapRef, inView: featuredVideoInView } = useInView('200px');
 
-  /* ── Single unified GSAP context, created after the page loader exits ── */
-  const onLoaderComplete = useCallback(() => {
-    setTimeout(() => {
-      (async () => {
-        const gsapMod = (await import("gsap")).default;
-        const { ScrollTrigger } = await import("gsap/ScrollTrigger");
-        const { ScrollToPlugin } = await import("gsap/ScrollToPlugin");
-        gsapMod.registerPlugin(ScrollTrigger, ScrollToPlugin);
-  
-        ctxRef.current = gsapMod.context(() => {
-        const mm = gsapMod.matchMedia();
+  const hero3dReady = useDeferredMount(1200);
 
-        // ── Full-motion variant ──────────────────────────────────────────────
-        mm.add("(prefers-reduced-motion: no-preference)", () => {
-          const cleanups: Array<() => void> = [];
+  /* ── GSAP: navbar fires immediately; scroll animations deferred to idle ── */
+  useEffect(() => {
+    let cancelled = false;
 
-          // ── 1. Navbar entrance (no scroll) ─────────────────────────────────
-          gsapMod.from("nav", {
-            y: -64, opacity: 0, duration: 0.8, ease: "expo.out",
-          });
+    // Navbar entrance: load gsap core only, fires before user can scroll
+    (async () => {
+      const gsapMod = (await import("gsap")).default;
+      if (cancelled) return;
+      gsapMod.from("nav", { y: -64, opacity: 0, duration: 0.8, ease: "expo.out" });
+    })();
 
-          // ── 2. Hero entrance animation ───
-          // Fade in the hero text, then the scroll indicator.
-          gsapMod.fromTo("[data-hero-front]", 
-            { opacity: 0, y: 30 },
-            {
-              opacity: 1,
-              y: 0,
-              duration: 1.2,
-              stagger: 0.2,
-              ease: "power2.out",
-              delay: 0.2
-            }
-          );
+    // All scroll-linked animations deferred to idle time (removes INP block)
+    const initScrollAnims = async () => {
+      if (cancelled) return;
+      const gsapMod = (await import("gsap")).default;
+      const { ScrollTrigger } = await import("gsap/ScrollTrigger");
+      const { ScrollToPlugin } = await import("gsap/ScrollToPlugin");
+      gsapMod.registerPlugin(ScrollTrigger, ScrollToPlugin);
+      if (cancelled) return;
 
-          gsapMod.fromTo(
+      ctxRef.current = gsapMod.context(() => {
+      const mm = gsapMod.matchMedia();
+
+      // ── Full-motion variant ──────────────────────────────────────────────
+      mm.add("(prefers-reduced-motion: no-preference)", () => {
+        const cleanups: Array<() => void> = [];
+
+        // [data-hero-front] reveal is handled by CSS animation in globals.css
+
+        gsapMod.fromTo(
             "#scroll-indicator",
             { opacity: 0 },
             { opacity: 0.35, duration: 1.0, ease: "power2.out", delay: 0.8 }
@@ -461,20 +456,29 @@ export default function HomeClient() {
 
       // Refresh once after dynamic content settles
       requestAnimationFrame(() => ScrollTrigger.refresh());
-    })();
-    }, 150); // Yield to main thread to fix INP delay
-  }, []);
+    };
 
-  // Revert the entire context on unmount
-  useEffect(() => () => { ctxRef.current?.revert(); }, []);
+    const w = window as Window & { requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number; cancelIdleCallback?: (id: number) => void };
+    let idleId: number | undefined;
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+    if (typeof w.requestIdleCallback === "function") {
+      idleId = w.requestIdleCallback(() => { initScrollAnims(); }, { timeout: 2000 });
+    } else {
+      timeoutId = setTimeout(() => { initScrollAnims(); }, 200);
+    }
+
+    return () => {
+      cancelled = true;
+      if (idleId !== undefined) w.cancelIdleCallback?.(idleId);
+      if (timeoutId !== undefined) clearTimeout(timeoutId);
+      ctxRef.current?.revert();
+    };
+  }, []);
 
   return (
     <>
       <DebugPanel />
-      {/* Page loader — unmounts itself after animation */}
-      <PageLoader onComplete={onLoaderComplete} />
-
-      <main className="relative w-full bg-background" ref={pageRef}>
+<main className="relative w-full bg-background" ref={pageRef}>
 
         {/* ── HERO ───────────────────────────────────────────────────────── */}
         <div className="bg-primary">
@@ -485,7 +489,7 @@ export default function HomeClient() {
 
           {/* 2. 3D MODEL (Z-10) */}
           <div id="hero-section" className="absolute inset-0 z-10 pointer-events-auto">
-            <Hero3D />
+            {hero3dReady && <Hero3D />}
           </div>
 
           {/* 3. FRONT LAYER (Interactive Button & Solid Logo, Z-30) */}
@@ -495,7 +499,7 @@ export default function HomeClient() {
             <div className="absolute bottom-10 md:bottom-20 left-0 w-full px-6 md:px-12 lg:px-16 flex flex-col md:flex-row justify-between items-start md:items-end gap-10 md:gap-0 pointer-events-none">
               
               {/* LOGO - Bottom Left */}
-              <div data-hero-front className="opacity-0 flex flex-col items-start pointer-events-auto text-left">
+              <div data-hero-front className="flex flex-col items-start pointer-events-auto text-left">
                 <p className="font-heading font-light text-[clamp(2rem,6vw,4.5rem)] text-primary tracking-[-0.03em] leading-[0.85] mb-3">
                   retrotekt<span className="text-secondary">.</span>
                 </p>
@@ -509,7 +513,7 @@ export default function HomeClient() {
               </div>
 
               {/* TAGLINE + BUTTON - Bottom Right */}
-              <div data-hero-front className="opacity-0 pointer-events-auto flex-shrink-0 flex flex-col items-start md:items-end text-left md:text-right gap-6 w-full md:w-auto">
+              <div data-hero-front className="pointer-events-auto flex-shrink-0 flex flex-col items-start md:items-end text-left md:text-right gap-6 w-full md:w-auto">
                 <div className="flex flex-col items-start md:items-end gap-3">
                   <h2 className="font-heading font-light text-[clamp(1.8rem,4.5vw,3.5rem)] leading-[0.9] text-primary tracking-[-0.03em]">
                     Visuals so <span className="font-bold">hyper-real,</span><br />

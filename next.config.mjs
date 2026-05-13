@@ -100,7 +100,8 @@ const nextConfig = {
             key: 'Link',
             value: [
               '</draco/draco_decoder.wasm>; rel=preload; as=fetch; crossorigin=anonymous',
-              // Only preload the desktop model on wide viewports — mobile/tablet load their own LOD on demand.
+              '</models/hero-mobile.glb>; rel=preload; as=fetch; crossorigin=anonymous; media="(max-width: 767px)"',
+              '</models/hero-tablet.glb>; rel=preload; as=fetch; crossorigin=anonymous; media="(min-width: 768px) and (max-width: 1179px)"',
               '</models/hero-desktop.glb>; rel=preload; as=fetch; crossorigin=anonymous; media="(min-width: 1180px)"',
             ].join(', '),
           },
