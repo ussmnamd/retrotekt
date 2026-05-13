@@ -39,16 +39,15 @@
 
 /* ── Hero front-layer reveal (replaces GSAP fromTo — no JS dependency) ──────── */
 @keyframes hero-reveal {
-  from { opacity: 0; transform: translateY(30px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { transform: translateY(30px); }
+  to   { transform: translateY(0); }
 }
 [data-hero-front] {
-  opacity: 0;
-  animation: hero-reveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: hero-reveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 [data-hero-front]:nth-of-type(2) { animation-delay: 0.2s; }
 @media (prefers-reduced-motion: reduce) {
-  [data-hero-front] { animation: none; opacity: 1; transform: none; }
+  [data-hero-front] { animation: none; transform: none; }
 }
 
 /* placeholder dots trick via clip */

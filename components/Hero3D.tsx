@@ -252,6 +252,9 @@ export default function Hero3D() {
     let mixer: AnimationMixer | null = null;
     let elapsed = 0;
     let lastFrameTime = performance.now();
+    const TARGET_INTERVAL = isMobile ? 1000 / 15 : 1000 / 30; // 15 fps mobile, 30 fps desktop
+    const IDLE_SLEEP_MS = 3000; // park 3 s after entrance if no interaction
+    let lastInteractionTime = performance.now();
     let animationId = 0;
     let isPaused = false;
     let entranceDone = false;
@@ -477,7 +480,7 @@ export default function Hero3D() {
             x: 1, y: 1, z: 1,
             duration: CONFIG.entranceDuration,
             ease: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
-            onComplete: () => { entranceDone = true; },
+            onComplete: () => { entranceDone = true; lastInteractionTime = performance.now(); },
           });
 
           rotTarget.y = CONFIG.startRotationY + Math.PI * 2 * CONFIG.entranceSpinTurns;
@@ -542,7 +545,10 @@ export default function Hero3D() {
     const viewportObserver = new IntersectionObserver(
       ([entry]) => {
         heroInViewport = entry.isIntersecting;
-        if (entry.isIntersecting) requestTick();
+        if (entry.isIntersecting) {
+          lastInteractionTime = performance.now();
+          requestTick();
+        }
       },
       { rootMargin: "200px" }
     );
@@ -556,6 +562,7 @@ export default function Hero3D() {
       if (isMobile) return;
       mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
       mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+      lastInteractionTime = performance.now();
       requestTick();
     };
     window.addEventListener("mousemove", onMouseMove, { passive: true });
@@ -567,6 +574,7 @@ export default function Hero3D() {
     let dragStartRotX = 0;
 
     const onPointerDown = (e: PointerEvent) => {
+      lastInteractionTime = performance.now();
       isDragging = true;
       dragStartX = e.clientX;
       dragStartY = e.clientY;
@@ -582,6 +590,7 @@ export default function Hero3D() {
       const dy = (e.clientY - dragStartY) * 0.004;
       rotTarget.y = dragStartRotY + dx;
       rotTarget.x = Math.max(-0.7, Math.min(0.1, dragStartRotX + dy));
+      lastInteractionTime = performance.now();
       requestTick();
     };
 
@@ -711,9 +720,23 @@ export default function Hero3D() {
         return;
       }
 
+      const now = performance.now();
+
+      // FPS cap — skip render if frame budget not elapsed; keeps RAF alive with <1 ms tasks
+      if (now - lastFrameTime < TARGET_INTERVAL) {
+        animationId = requestAnimationFrame(tick);
+        return;
+      }
+
+      // Auto-sleep: park after entrance + IDLE_SLEEP_MS with no interaction
+      if (entranceDone && now - lastInteractionTime > IDLE_SLEEP_MS) {
+        renderer.render(scene, camera);
+        isTicking = false;
+        return;
+      }
+
       animationId = requestAnimationFrame(tick);
 
-      const now = performance.now();
       const delta = Math.min((now - lastFrameTime) / 1000, 0.1);
       elapsed += delta;
       lastFrameTime = now;
