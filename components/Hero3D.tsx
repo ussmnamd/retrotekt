@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import {
-  CanvasTexture,
   RepeatWrapping,
   Color,
   WebGLRenderer,
@@ -31,6 +30,7 @@ import {
   Raycaster,
   Vector2,
   Texture,
+  TextureLoader,
 } from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
@@ -79,51 +79,6 @@ const CONFIG = {
   shadowMapSize: 1024,
 };
 
-// ── MARBLE FLOOR TEXTURE ──────────────────────────────────────────────────────
-function createMarbleTexture(): CanvasTexture {
-  const size = 256;
-  const canvas = document.createElement("canvas");
-  canvas.width = size;
-  canvas.height = size;
-  const ctx = canvas.getContext("2d")!;
-  const imageData = ctx.createImageData(size, size);
-  const px = imageData.data;
-
-  const hash = (n: number) => { const s = Math.sin(n) * 43758.5453; return s - Math.floor(s); };
-  const noise2d = (x: number, y: number) => {
-    const ix = Math.floor(x), iy = Math.floor(y);
-    const fx = x - ix, fy = y - iy;
-    const ux = fx * fx * (3 - 2 * fx), uy = fy * fy * (3 - 2 * fy);
-    const a = hash(ix + iy * 57), b = hash(ix + 1 + iy * 57);
-    const c = hash(ix + (iy + 1) * 57), d = hash(ix + 1 + (iy + 1) * 57);
-    return a + (b - a) * ux + (c - a) * uy + (a - b - c + d) * ux * uy;
-  };
-  const turbulence = (x: number, y: number) => {
-    let v = 0, a = 0.5, f = 1;
-    for (let i = 0; i < 4; i++) { v += Math.abs(noise2d(x * f, y * f) - 0.5) * a; a *= 0.5; f *= 2.1; }
-    return v;
-  };
-
-  for (let y = 0; y < size; y++) {
-    for (let x = 0; x < size; x++) {
-      const nx = (x / size) * 5, ny = (y / size) * 5;
-      const t = turbulence(nx, ny);
-      const vein = Math.sin((nx + ny) * 1.8 + t * 9) * 0.5 + 0.5;
-      const bright = 0.78 + vein * 0.18;
-      const i = (y * size + x) * 4;
-      px[i]     = Math.min(255, Math.floor(bright * 242));
-      px[i + 1] = Math.min(255, Math.floor(bright * 236));
-      px[i + 2] = Math.min(255, Math.floor(bright * 225));
-      px[i + 3] = 255;
-    }
-  }
-
-  ctx.putImageData(imageData, 0, 0);
-  const tex = new CanvasTexture(canvas);
-  tex.wrapS = tex.wrapT = RepeatWrapping;
-  tex.repeat.set(3, 3);
-  return tex;
-}
 
 function isWebGLAvailable(): boolean {
   try {
@@ -429,19 +384,22 @@ export default function Hero3D() {
           // Defer marble texture to idle time — only needed after model loads
           const buildFloor = () => {
             const floorBox = new Box3().setFromObject(modelGroup);
-            const marbleTex = createMarbleTexture();
-            const floorMat = new MeshStandardMaterial({
-              map: marbleTex,
-              roughness: 0.12,
-              metalness: 0.06,
-              envMapIntensity: 1.2,
+            new TextureLoader().load('/textures/marble.png', (marbleTex) => {
+              marbleTex.wrapS = marbleTex.wrapT = RepeatWrapping;
+              marbleTex.repeat.set(3, 3);
+              const floorMat = new MeshStandardMaterial({
+                map: marbleTex,
+                roughness: 0.12,
+                metalness: 0.06,
+                envMapIntensity: 1.2,
+              });
+              const floor = new Mesh(new PlaneGeometry(80, 80), floorMat);
+              floor.rotation.x = -Math.PI / 2;
+              floor.position.y = floorBox.min.y;
+              floor.receiveShadow = true;
+              scene.add(floor);
+              floorMesh = floor;
             });
-            const floor = new Mesh(new PlaneGeometry(80, 80), floorMat);
-            floor.rotation.x = -Math.PI / 2;
-            floor.position.y = floorBox.min.y;
-            floor.receiveShadow = true;
-            scene.add(floor);
-            floorMesh = floor;
           };
 
           if (typeof requestIdleCallback !== "undefined") {
