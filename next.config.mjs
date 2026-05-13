@@ -20,8 +20,8 @@ const CSP = [
   "img-src 'self' data: blob: https://retrotekt.vercel.app https://retrotekt.com https://www.retrotekt.com",
   "font-src 'self'",
   // blob: required — Three.js ImageLoader uses fetch() to load blob-URL textures (WebP/GLB).
-  // *.ingest.sentry.io required for Sentry error/performance reporting.
-  "connect-src 'self' blob: https://*.ingest.sentry.io",
+  // Sentry is tunnelled through /monitoring (tunnelRoute) so no ingest.sentry.io entry needed.
+  "connect-src 'self' blob:",
   "frame-src https://cal.com https://calendly.com",
   // blob: needed for Three.js / Draco worker blobs.
   "worker-src 'self' blob:",
@@ -100,9 +100,23 @@ const nextConfig = {
             key: 'Link',
             value: [
               '</draco/draco_decoder.wasm>; rel=preload; as=fetch; crossorigin=anonymous',
-              '</models/updatedmodel.draco.glb>; rel=preload; as=fetch; crossorigin=anonymous',
+              // Only preload the desktop model on wide viewports — mobile/tablet load their own LOD on demand.
+              '</models/hero-desktop.glb>; rel=preload; as=fetch; crossorigin=anonymous; media="(min-width: 1180px)"',
             ].join(', '),
           },
+        ],
+      },
+      // Sitemap and robots — cache for 1 day; they change rarely.
+      {
+        source: '/sitemap.xml',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=86400, stale-while-revalidate=3600' },
+        ],
+      },
+      {
+        source: '/robots.txt',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=86400, stale-while-revalidate=3600' },
         ],
       },
       // All pages: security headers + no-cache for HTML.

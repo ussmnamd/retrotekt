@@ -39,6 +39,9 @@ next-env.d.ts
 .claude/
 CLAUDE.md
 
+# Performance baselines / measurement artifacts
+/_perf/
+
 # Playwright test output
 /test-results/
 /playwright-report/

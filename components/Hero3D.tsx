@@ -16,7 +16,7 @@ gsap.registerPlugin(ScrollTrigger);
 // CONFIG — Premium 3D Hero Settings
 // ─────────────────────────────────────────────────────────────────────────────
 const CONFIG = {
-  modelPath: "/models/updatedmodel.draco.glb",
+  modelPath: "/models/updatedmodel.draco.glb", // fallback; overridden per-device in useEffect
 
   targetSize: 8.5,
   framePadding: 0.92,
@@ -367,9 +367,14 @@ export default function Hero3D() {
       }
     }, 45000);
 
+    const modelPath =
+      deviceProfile === "phone"  ? "/models/hero-mobile.glb"  :
+      deviceProfile === "tablet" ? "/models/hero-tablet.glb"  :
+                                   "/models/hero-desktop.glb";
+
     const loadModel = () => {
       loader.load(
-        CONFIG.modelPath,
+        modelPath,
         (gltf) => {
           window.clearTimeout(loadTimeout);
           model = gltf.scene;

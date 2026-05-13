@@ -3,20 +3,7 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
-
-// ── Lazy-mount helper — mounts children only when within rootMargin of viewport ──
-function useInView(rootMargin = '200px') {
-  const ref = useRef<HTMLDivElement>(null);
-  const [inView, setInView] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el || inView) return;
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setInView(true); }, { rootMargin });
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [inView, rootMargin]);
-  return { ref, inView };
-}
+import { useInView } from "@/lib/use-in-view";
 // import { Hero3DPlaceholder } from "@/components/Hero3DPlaceholder";
 import { ServiceCard } from "@/components/ServiceCard";
 import { ProcessCard } from "@/components/ProcessCard";

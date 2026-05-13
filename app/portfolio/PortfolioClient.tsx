@@ -4,9 +4,6 @@ import { useState, useRef, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 import { portfolioAssets } from './assets';
 import type { ResponsiveImage, ProjectVideo } from './assets';
@@ -15,8 +12,6 @@ import type { Project } from './data';
 import PortfolioPicture from './_components/PortfolioPicture';
 import StartLink from './_components/StartLink';
 import MediaModal, { type ModalItem } from './_components/MediaModal';
-
-gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 type FilterLabel = 'All' | 'Renders' | 'Walkthroughs' | 'Construction Story';
@@ -106,108 +101,91 @@ export default function PortfolioClient() {
   // null = closed; number = index into galleryModalItems
   const [modalIndex, setModalIndex] = useState<number | null>(null);
 
+  // Ref to ScrollTrigger once lazily loaded — used by filter changes.
+  const stRef = useRef<{ refresh: () => void } | null>(null);
+
   // ── Filter change handler with ScrollTrigger refresh ────────────────────────
   const onFilterChange = (next: FilterLabel) => {
     setActiveFilter(next);
-    // Double rAF: wait for React commit + DOM layout before refreshing ScrollTrigger
+    // Double rAF: wait for React commit + DOM layout before refreshing ScrollTrigger.
+    // If GSAP hasn't loaded yet there are no ST instances to refresh — safe to skip.
     requestAnimationFrame(() => {
-      requestAnimationFrame(() => ScrollTrigger.refresh());
+      requestAnimationFrame(() => stRef.current?.refresh());
     });
   };
 
-  // ── Master GSAP timeline ─────────────────────────────────────────────────────
-  useGSAP(
-    () => {
-      const mm = gsap.matchMedia();
+  // ── Master GSAP timeline — loaded lazily via IntersectionObserver ────────────
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-      mm.add(
-        {
-          isDesktop: '(min-width: 768px) and (prefers-reduced-motion: no-preference)',
-          isMobile: '(max-width: 767px)',
-          isReduced: '(prefers-reduced-motion: reduce)',
-        },
-        (ctx) => {
-          const { isDesktop } = ctx.conditions as {
-            isDesktop: boolean;
-            isMobile: boolean;
-            isReduced: boolean;
-          };
-          if (!isDesktop) return; // static for mobile + reduced-motion
+    const trigger = root.current?.querySelector('[data-anim="locations-grid"]');
+    if (!trigger) return;
 
-          const tl = gsap.timeline({ defaults: { ease: 'power3.out', duration: 0.9 } });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let ctx: { revert: () => void } | null = null;
 
-          // Featured slab reveal
-          tl.from('[data-anim="featured-eyebrow"]', {
-            y: 20,
-            opacity: 0,
-            scrollTrigger: {
-              trigger: '[data-anim="featured-eyebrow"]',
-              start: 'top 80%',
-            },
-          });
-          tl.from(
-            '[data-anim="featured-meta"]',
-            {
-              y: 30,
-              opacity: 0,
-              scrollTrigger: {
-                trigger: '[data-anim="featured-meta"]',
-                start: 'top 80%',
-              },
-            },
-            '<0.1'
-          );
-          tl.from(
-            '[data-anim="featured-image"]',
-            {
-              scale: 1.05,
-              opacity: 0,
-              duration: 1.2,
-              scrollTrigger: {
-                trigger: '[data-anim="featured-image"]',
-                start: 'top 75%',
-              },
-            },
-            '<'
-          );
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries[0].isIntersecting) return;
+        observer.disconnect();
 
-          // Other locations stagger
-          tl.from('[data-anim="location-card"]', {
-            y: 40,
-            opacity: 0,
-            stagger: 0.15,
-            scrollTrigger: {
-              trigger: '[data-anim="locations-grid"]',
-              start: 'top 75%',
-            },
-          });
+        void Promise.all([
+          import('gsap'),
+          import('gsap/ScrollTrigger'),
+        ]).then(([{ default: gsap }, { ScrollTrigger }]) => {
+          gsap.registerPlugin(ScrollTrigger);
+          stRef.current = ScrollTrigger;
 
-          // Gallery tiles stagger
-          tl.from('[data-anim="render-tile"]', {
-            y: 24,
-            opacity: 0,
-            stagger: 0.04,
-            duration: 0.6,
-            scrollTrigger: {
-              trigger: '#renders',
-              start: 'top 80%',
-            },
-          });
+          ctx = gsap.context(() => {
+            const mm = gsap.matchMedia();
+            mm.add(
+              { isDesktop: '(min-width: 768px) and (prefers-reduced-motion: no-preference)' },
+              (mmCtx) => {
+                const { isDesktop } = mmCtx.conditions as { isDesktop: boolean };
+                if (!isDesktop) return;
 
-          // CTA reveal
-          tl.from('[data-anim="cta"]', {
-            y: 30,
-            opacity: 0,
-            scrollTrigger: {
-              trigger: '[data-anim="cta"]',
-              start: 'top 85%',
-            },
-          });
-        }
-      );
-    },
-    { scope: root }
-  );
+                const tl = gsap.timeline({ defaults: { ease: 'power3.out', duration: 0.9 } });
+
+                tl.from('[data-anim="featured-eyebrow"]', {
+                  y: 20, opacity: 0,
+                  scrollTrigger: { trigger: '[data-anim="featured-eyebrow"]', start: 'top 80%' },
+                });
+                tl.from('[data-anim="featured-meta"]', {
+                  y: 30, opacity: 0,
+                  scrollTrigger: { trigger: '[data-anim="featured-meta"]', start: 'top 80%' },
+                }, '<0.1');
+                tl.from('[data-anim="featured-image"]', {
+                  scale: 1.05, opacity: 0, duration: 1.2,
+                  scrollTrigger: { trigger: '[data-anim="featured-image"]', start: 'top 75%' },
+                }, '<');
+                tl.from('[data-anim="location-card"]', {
+                  y: 40, opacity: 0, stagger: 0.15,
+                  scrollTrigger: { trigger: '[data-anim="locations-grid"]', start: 'top 75%' },
+                });
+                tl.from('[data-anim="render-tile"]', {
+                  y: 24, opacity: 0, stagger: 0.04, duration: 0.6,
+                  scrollTrigger: { trigger: '#renders', start: 'top 80%' },
+                });
+                tl.from('[data-anim="cta"]', {
+                  y: 30, opacity: 0,
+                  scrollTrigger: { trigger: '[data-anim="cta"]', start: 'top 85%' },
+                });
+              }
+            );
+          }, root);
+        });
+      },
+      { rootMargin: '200px 0px' }
+    );
+
+    observer.observe(trigger);
+
+    return () => {
+      observer.disconnect();
+      ctx?.revert();
+    };
+  }, []);
 
   const modestoAssets = portfolioAssets.modesto;
   const hero = modestoAssets.heroLoop;
