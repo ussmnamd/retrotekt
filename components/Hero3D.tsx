@@ -255,6 +255,7 @@ export default function Hero3D() {
     const TARGET_INTERVAL = isMobile ? 1000 / 15 : 1000 / 30; // 15 fps mobile, 30 fps desktop
     const IDLE_SLEEP_MS = 3000; // park 3 s after entrance if no interaction
     let lastInteractionTime = performance.now();
+    let autoSlept = false;
     let animationId = 0;
     let isPaused = false;
     let entranceDone = false;
@@ -546,6 +547,7 @@ export default function Hero3D() {
       ([entry]) => {
         heroInViewport = entry.isIntersecting;
         if (entry.isIntersecting) {
+          autoSlept = false;
           lastInteractionTime = performance.now();
           requestTick();
         }
@@ -562,6 +564,7 @@ export default function Hero3D() {
       if (isMobile) return;
       mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
       mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+      autoSlept = false;
       lastInteractionTime = performance.now();
       requestTick();
     };
@@ -574,6 +577,7 @@ export default function Hero3D() {
     let dragStartRotX = 0;
 
     const onPointerDown = (e: PointerEvent) => {
+      autoSlept = false;
       lastInteractionTime = performance.now();
       isDragging = true;
       dragStartX = e.clientX;
@@ -590,6 +594,7 @@ export default function Hero3D() {
       const dy = (e.clientY - dragStartY) * 0.004;
       rotTarget.y = dragStartRotY + dx;
       rotTarget.x = Math.max(-0.7, Math.min(0.1, dragStartRotX + dy));
+      autoSlept = false;
       lastInteractionTime = performance.now();
       requestTick();
     };
@@ -689,6 +694,7 @@ export default function Hero3D() {
 
     let isTicking = false;
     const requestTick = () => {
+      if (autoSlept) return; // don't wake on scroll/GSAP programmatic calls — only real input clears autoSlept
       if (!isTicking) {
         isTicking = true;
         tick();
@@ -731,6 +737,7 @@ export default function Hero3D() {
       // Auto-sleep: park after entrance + IDLE_SLEEP_MS with no interaction
       if (entranceDone && now - lastInteractionTime > IDLE_SLEEP_MS) {
         renderer.render(scene, camera);
+        autoSlept = true;
         isTicking = false;
         return;
       }
