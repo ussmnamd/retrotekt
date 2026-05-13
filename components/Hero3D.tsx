@@ -103,6 +103,18 @@ const TEXTURE_SLOTS = [
 // Reused in traverse loops — avoids per-mesh allocation and GC pressure.
 const ZERO_COLOR = new Color(0, 0, 0);
 
+// Module-level singleton — one DRACOLoader per page, not per mount.
+// Avoids spawning a new Draco worker on every Hero3D remount (React StrictMode, HMR).
+let _dracoLoader: DRACOLoader | null = null;
+function getDracoLoader(): DRACOLoader {
+  if (!_dracoLoader) {
+    _dracoLoader = new DRACOLoader();
+    _dracoLoader.setDecoderPath("/draco/");
+    _dracoLoader.preload();
+  }
+  return _dracoLoader;
+}
+
 export default function Hero3D() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -132,6 +144,12 @@ export default function Hero3D() {
     const isPhone = deviceProfile === "phone";
     const isTablet = deviceProfile === "tablet";
     const isMobile = isPhone || isTablet; // legacy compat for non-shadow-related checks
+
+    // Per-device tuning — local constants, never mutate the shared CONFIG object.
+    const envIntensity    = isMobile ? 0.7   : CONFIG.envIntensity;
+    const autoRotateSpeed = isMobile ? 0.04  : CONFIG.autoRotateSpeed;
+    const floatAmplitude  = isMobile ? 0.03  : CONFIG.floatAmplitude;
+    const breathAmplitude = isMobile ? 0.008 : CONFIG.breathAmplitude;
 
     // ── Renderer ─────────────────────────────────────────────────────────────
     const dprCap = isPhone ? 1 : isTablet ? 1.5 : Math.min(window.devicePixelRatio, 2);
@@ -165,10 +183,12 @@ export default function Hero3D() {
 
     // ── Environment map ──────────────────────────────────────────────────────
     const pmrem = new PMREMGenerator(renderer);
-    pmrem.compileEquirectangularShader();
+    // compileEquirectangularShader() is for HDRI maps — not needed for fromScene().
+    // Calling it unnecessarily triggers a shaderSource compile that can fail on
+    // some drivers before the context is fully initialized (Sentry: shaderSource TypeError).
     const envTexture = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
     scene.environment = envTexture;
-    scene.environmentIntensity = CONFIG.envIntensity;
+    scene.environmentIntensity = envIntensity;
 
     // ── Lighting ─────────────────────────────────────────────────────────────
     scene.add(new AmbientLight(0xf0f0f8, 0.08));
@@ -207,13 +227,6 @@ export default function Hero3D() {
     bounceLight.position.set(6, -2, 4);
     scene.add(bounceLight);
 
-    if (isMobile) {
-      CONFIG.envIntensity = 0.7;
-      CONFIG.autoRotateSpeed = 0.04;
-      CONFIG.floatAmplitude = 0.03;
-      CONFIG.breathAmplitude = 0.008;
-    }
-
     // ── Model group ──────────────────────────────────────────────────────────
     const modelGroup = new Group();
     modelGroup.rotation.y = CONFIG.startRotationY;
@@ -230,11 +243,8 @@ export default function Hero3D() {
     let maxCamDistance = Infinity;
 
     // ── Loaders ──────────────────────────────────────────────────────────────
-    const dracoLoader = new DRACOLoader();
-    dracoLoader.setDecoderPath("/draco/");
-
     const loader = new GLTFLoader();
-    loader.setDRACOLoader(dracoLoader);
+    loader.setDRACOLoader(getDracoLoader());
     loader.setMeshoptDecoder(MeshoptDecoder);
 
     let model: Group | null = null;
@@ -714,14 +724,14 @@ export default function Hero3D() {
       rotTarget.y += scrollVelocity;
 
       if (!isDragging) {
-        rotTarget.y += CONFIG.autoRotateSpeed * delta;
+        rotTarget.y += autoRotateSpeed * delta;
       }
 
       if (model) {
-        model.position.y = Math.sin(elapsed * CONFIG.floatSpeed) * CONFIG.floatAmplitude;
+        model.position.y = Math.sin(elapsed * CONFIG.floatSpeed) * floatAmplitude;
       }
 
-      const breathScale = 1 + Math.sin(elapsed * CONFIG.breathSpeed) * CONFIG.breathAmplitude;
+      const breathScale = 1 + Math.sin(elapsed * CONFIG.breathSpeed) * breathAmplitude;
       modelGroup.scale.setScalar(breathScale);
 
       const pxRad = (Math.PI / 180) * CONFIG.parallaxDeg;
@@ -790,7 +800,7 @@ export default function Hero3D() {
 
       envTexture.dispose();
       pmrem.dispose();
-      dracoLoader.dispose();
+      // dracoLoader is a module singleton — not disposed on unmount.
       renderer.dispose();
       mixer = null;
       model = null;

@@ -250,10 +250,13 @@ export default function HomeClient() {
 
             // ── 3D mouse-tilt — operates on rotationX/rotationY only ──────────
             // Does NOT conflict with the timeline's rotation/xPercent/yPercent/scale
+            let pinRect = pin.getBoundingClientRect();
+            const updatePinRect = () => { pinRect = pin.getBoundingClientRect(); };
+            ScrollTrigger.addEventListener("refresh", updatePinRect);
+
             const handleMouseMove = (e: MouseEvent) => {
-              const rect = pin.getBoundingClientRect();
-              const x = (e.clientX - rect.left) / rect.width - 0.5;
-              const y = (e.clientY - rect.top) / rect.height - 0.5;
+              const x = (e.clientX - pinRect.left) / pinRect.width - 0.5;
+              const y = (e.clientY - pinRect.top) / pinRect.height - 0.5;
               gsapMod.to([imgs, ghosts], {
                 rotationY: x * 14,
                 rotationX: -y * 14,
@@ -330,6 +333,7 @@ export default function HomeClient() {
               prevBtn?.removeEventListener("click", handlePrev);
               nextBtn?.removeEventListener("click", handleNext);
               window.removeEventListener("keydown", handleKeyDown);
+              ScrollTrigger.removeEventListener("refresh", updatePinRect);
             });
           } // end showcase-pin
 
