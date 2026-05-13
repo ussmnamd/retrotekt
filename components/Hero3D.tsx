@@ -1,7 +1,37 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
+import {
+  CanvasTexture,
+  RepeatWrapping,
+  Color,
+  WebGLRenderer,
+  PCFSoftShadowMap,
+  ACESFilmicToneMapping,
+  SRGBColorSpace,
+  Scene,
+  PerspectiveCamera,
+  PMREMGenerator,
+  AmbientLight,
+  DirectionalLight,
+  SpotLight,
+  Group,
+  Vector3,
+  MathUtils,
+  OrthographicCamera,
+  Object3D,
+  Box3,
+  Mesh,
+  Material,
+  MeshStandardMaterial,
+  MeshBasicMaterial,
+  PlaneGeometry,
+  AnimationMixer,
+  PointLight,
+  Raycaster,
+  Vector2,
+  Texture,
+} from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
@@ -50,7 +80,7 @@ const CONFIG = {
 };
 
 // ── MARBLE FLOOR TEXTURE ──────────────────────────────────────────────────────
-function createMarbleTexture(): THREE.CanvasTexture {
+function createMarbleTexture(): CanvasTexture {
   const size = 256;
   const canvas = document.createElement("canvas");
   canvas.width = size;
@@ -89,8 +119,8 @@ function createMarbleTexture(): THREE.CanvasTexture {
   }
 
   ctx.putImageData(imageData, 0, 0);
-  const tex = new THREE.CanvasTexture(canvas);
-  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  const tex = new CanvasTexture(canvas);
+  tex.wrapS = tex.wrapT = RepeatWrapping;
   tex.repeat.set(3, 3);
   return tex;
 }
@@ -116,7 +146,7 @@ const TEXTURE_SLOTS = [
 ] as const;
 
 // Reused in traverse loops — avoids per-mesh allocation and GC pressure.
-const ZERO_COLOR = new THREE.Color(0, 0, 0);
+const ZERO_COLOR = new Color(0, 0, 0);
 
 export default function Hero3D() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -151,7 +181,7 @@ export default function Hero3D() {
     // ── Renderer ─────────────────────────────────────────────────────────────
     const dprCap = isPhone ? 1 : isTablet ? 1.5 : Math.min(window.devicePixelRatio, 2);
 
-    const renderer = new THREE.WebGLRenderer({
+    const renderer = new WebGLRenderer({
       canvas,
       alpha: true,
       antialias: true,
@@ -160,16 +190,16 @@ export default function Hero3D() {
     renderer.setPixelRatio(dprCap);
     renderer.setSize(container.clientWidth, container.clientHeight);
     renderer.shadowMap.enabled = !isPhone;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.shadowMap.type = PCFSoftShadowMap;
+    renderer.toneMapping = ACESFilmicToneMapping;
     renderer.toneMappingExposure = CONFIG.toneExposure;
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.outputColorSpace = SRGBColorSpace;
 
     // ── Scene & camera ───────────────────────────────────────────────────────
-    const scene = new THREE.Scene();
+    const scene = new Scene();
     scene.background = null;
 
-    const camera = new THREE.PerspectiveCamera(
+    const camera = new PerspectiveCamera(
       CONFIG.cameraFov,
       container.clientWidth / container.clientHeight,
       0.01,
@@ -179,16 +209,16 @@ export default function Hero3D() {
     camera.lookAt(0, 0, 0);
 
     // ── Environment map ──────────────────────────────────────────────────────
-    const pmrem = new THREE.PMREMGenerator(renderer);
+    const pmrem = new PMREMGenerator(renderer);
     pmrem.compileEquirectangularShader();
     const envTexture = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
     scene.environment = envTexture;
     scene.environmentIntensity = CONFIG.envIntensity;
 
     // ── Lighting ─────────────────────────────────────────────────────────────
-    scene.add(new THREE.AmbientLight(0xf0f0f8, 0.08));
+    scene.add(new AmbientLight(0xf0f0f8, 0.08));
 
-    const keyLight = new THREE.DirectionalLight(0xfff8f0, 3.2);
+    const keyLight = new DirectionalLight(0xfff8f0, 3.2);
     keyLight.position.set(5, 10, 7);
     keyLight.castShadow = !isPhone;
     const shadowMapSize = isPhone ? 0 : (isTablet ? 512 : CONFIG.shadowMapSize);
@@ -200,7 +230,7 @@ export default function Hero3D() {
     }
     scene.add(keyLight);
 
-    const spotLight = new THREE.SpotLight(0xb8d4ff, 1.2);
+    const spotLight = new SpotLight(0xb8d4ff, 1.2);
     spotLight.position.set(-6, 8, 5);
     spotLight.angle = Math.PI / 5;
     spotLight.penumbra = 0.85;
@@ -209,7 +239,7 @@ export default function Hero3D() {
     spotLight.castShadow = false;
     scene.add(spotLight);
 
-    const rimLight = new THREE.SpotLight(0xfff2e0, 5.5);
+    const rimLight = new SpotLight(0xfff2e0, 5.5);
     rimLight.position.set(-3, 11, -9);
     rimLight.angle = Math.PI / 7;
     rimLight.penumbra = 0.5;
@@ -218,7 +248,7 @@ export default function Hero3D() {
     rimLight.castShadow = false;
     scene.add(rimLight);
 
-    const bounceLight = new THREE.DirectionalLight(0xffd8b0, 0.18);
+    const bounceLight = new DirectionalLight(0xffd8b0, 0.18);
     bounceLight.position.set(6, -2, 4);
     scene.add(bounceLight);
 
@@ -230,7 +260,7 @@ export default function Hero3D() {
     }
 
     // ── Model group ──────────────────────────────────────────────────────────
-    const modelGroup = new THREE.Group();
+    const modelGroup = new Group();
     modelGroup.rotation.y = CONFIG.startRotationY;
     modelGroup.rotation.x = CONFIG.startRotationX;
     scene.add(modelGroup);
@@ -240,7 +270,7 @@ export default function Hero3D() {
     rotTarget.y = CONFIG.startRotationY;
 
     // ── Camera target & distance bounds (replaces OrbitControls) ────────────
-    const cameraTarget = new THREE.Vector3();
+    const cameraTarget = new Vector3();
     let minCamDistance = 0;
     let maxCamDistance = Infinity;
 
@@ -252,9 +282,9 @@ export default function Hero3D() {
     loader.setDRACOLoader(dracoLoader);
     loader.setMeshoptDecoder(MeshoptDecoder);
 
-    let model: THREE.Group | null = null;
-    let floorMesh: THREE.Mesh | null = null;
-    let mixer: THREE.AnimationMixer | null = null;
+    let model: Group | null = null;
+    let floorMesh: Mesh | null = null;
+    let mixer: AnimationMixer | null = null;
     let elapsed = 0;
     let lastFrameTime = performance.now();
     let animationId = 0;
@@ -276,20 +306,20 @@ export default function Hero3D() {
     };
     window.addEventListener("scroll", scrollHandler, { passive: true });
 
-    const frameCamera = (object: THREE.Object3D) => {
-      const box = new THREE.Box3().setFromObject(object);
-      const size = box.getSize(new THREE.Vector3());
-      const center = box.getCenter(new THREE.Vector3());
+    const frameCamera = (object: Object3D) => {
+      const box = new Box3().setFromObject(object);
+      const size = box.getSize(new Vector3());
+      const center = box.getCenter(new Vector3());
 
       const radius = Math.max(size.x, size.y, size.z) * 0.5;
       const aspect = container.clientWidth / container.clientHeight;
-      const fovV = THREE.MathUtils.degToRad(camera.fov);
+      const fovV = MathUtils.degToRad(camera.fov);
       const fovH = 2 * Math.atan(Math.tan(fovV / 2) * aspect);
       const distV = radius / Math.sin(fovV / 2);
       const distH = radius / Math.sin(fovH / 2);
       const distance = Math.max(distV, distH) * CONFIG.framePadding;
 
-      const lookAt = new THREE.Vector3(center.x, center.y + CONFIG.lookAtYOffset, center.z);
+      const lookAt = new Vector3(center.x, center.y + CONFIG.lookAtYOffset, center.z);
 
       camera.position.set(center.x, center.y, center.z + distance);
       camera.near = Math.max(0.01, distance / 100);
@@ -301,7 +331,7 @@ export default function Hero3D() {
       maxCamDistance = distance * 2.5;
 
       const shadowSize = radius * 2.8;
-      const shadowCam = keyLight.shadow.camera as THREE.OrthographicCamera;
+      const shadowCam = keyLight.shadow.camera as OrthographicCamera;
       shadowCam.left = -shadowSize;
       shadowCam.right = shadowSize;
       shadowCam.top = shadowSize;
@@ -323,9 +353,9 @@ export default function Hero3D() {
       scene.add(rimLight.target);
     };
 
-    const sanitizeModel = (root: THREE.Object3D) => {
+    const sanitizeModel = (root: Object3D) => {
       root.traverse((child) => {
-        const mesh = child as THREE.Mesh;
+        const mesh = child as Mesh;
         if (!mesh.isMesh) return;
 
         mesh.castShadow = true;
@@ -333,16 +363,16 @@ export default function Hero3D() {
         mesh.frustumCulled = false;
         mesh.visible = true;
 
-        const fixMaterial = (mat: THREE.Material) => {
+        const fixMaterial = (mat: Material) => {
           if (!mat) return;
-          if ((mat as THREE.MeshStandardMaterial).side === undefined) return;
+          if ((mat as MeshStandardMaterial).side === undefined) return;
 
-          const std = mat as THREE.MeshStandardMaterial;
+          const std = mat as MeshStandardMaterial;
 
-          if (std.map) std.map.colorSpace = THREE.SRGBColorSpace;
+          if (std.map) std.map.colorSpace = SRGBColorSpace;
 
           // Replace with Basic Material to disable real-time lighting calculation
-          const basicMat = new THREE.MeshBasicMaterial({
+          const basicMat = new MeshBasicMaterial({
             map: std.map,
             color: std.color,
             side: std.side,
@@ -381,15 +411,15 @@ export default function Hero3D() {
 
           sanitizeModel(model);
 
-          const measureBox = new THREE.Box3().setFromObject(model);
-          const measureSize = measureBox.getSize(new THREE.Vector3());
+          const measureBox = new Box3().setFromObject(model);
+          const measureSize = measureBox.getSize(new Vector3());
           const maxDim = Math.max(measureSize.x, measureSize.y, measureSize.z) || 1;
           const scaleFactor = CONFIG.targetSize / maxDim;
           model.scale.setScalar(scaleFactor);
           model.userData.maxDim = maxDim;
 
-          const finalBox = new THREE.Box3().setFromObject(model);
-          const finalCenter = finalBox.getCenter(new THREE.Vector3());
+          const finalBox = new Box3().setFromObject(model);
+          const finalCenter = finalBox.getCenter(new Vector3());
           model.position.sub(finalCenter);
 
           modelGroup.add(model);
@@ -398,15 +428,15 @@ export default function Hero3D() {
 
           // Defer marble texture to idle time — only needed after model loads
           const buildFloor = () => {
-            const floorBox = new THREE.Box3().setFromObject(modelGroup);
+            const floorBox = new Box3().setFromObject(modelGroup);
             const marbleTex = createMarbleTexture();
-            const floorMat = new THREE.MeshStandardMaterial({
+            const floorMat = new MeshStandardMaterial({
               map: marbleTex,
               roughness: 0.12,
               metalness: 0.06,
               envMapIntensity: 1.2,
             });
-            const floor = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), floorMat);
+            const floor = new Mesh(new PlaneGeometry(80, 80), floorMat);
             floor.rotation.x = -Math.PI / 2;
             floor.position.y = floorBox.min.y;
             floor.receiveShadow = true;
@@ -425,17 +455,17 @@ export default function Hero3D() {
           // costs per-frame; emissive material alone gives the glow look without
           // the cost. Phones get zero point lights, others get a small budget.
           const MAX_BULB_LIGHTS = isPhone ? 0 : isTablet ? 2 : 4;
-          const bulbPositions: THREE.Vector3[] = [];
+          const bulbPositions: Vector3[] = [];
           const bulbKeywords = /light|bulb|lamp|glow|led|emit|neon|tube|globe|lantern|flame|candle/i;
           model.traverse((child) => {
-            const mesh = child as THREE.Mesh;
+            const mesh = child as Mesh;
             if (!mesh.isMesh) return;
 
             const name = mesh.name || "";
             const isEmissive = (() => {
               const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
               return mats.some((m) => {
-                const s = m as THREE.MeshStandardMaterial;
+                const s = m as MeshStandardMaterial;
                 return s.emissive && !s.emissive.equals(ZERO_COLOR);
               });
             })();
@@ -445,13 +475,13 @@ export default function Hero3D() {
 
             const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
             mats.forEach((m) => {
-              const s = m as THREE.MeshStandardMaterial;
-              s.emissive = new THREE.Color(0xfffde8);
+              const s = m as MeshStandardMaterial;
+              s.emissive = new Color(0xfffde8);
               s.emissiveIntensity = 8.0;
               s.needsUpdate = true;
             });
 
-            const wp = new THREE.Vector3();
+            const wp = new Vector3();
             mesh.getWorldPosition(wp);
             bulbPositions.push(wp);
           });
@@ -461,14 +491,14 @@ export default function Hero3D() {
           if (bulbPositions.length > 0 && MAX_BULB_LIGHTS > 0) {
             const step = Math.max(1, Math.floor(bulbPositions.length / MAX_BULB_LIGHTS));
             for (let i = 0, count = 0; i < bulbPositions.length && count < MAX_BULB_LIGHTS; i += step, count++) {
-              const bulbLight = new THREE.PointLight(0xffd97a, 6.0, 12, 2.0);
+              const bulbLight = new PointLight(0xffd97a, 6.0, 12, 2.0);
               bulbLight.position.copy(bulbPositions[i]);
               scene.add(bulbLight);
             }
           }
 
           if (gltf.animations.length > 0) {
-            mixer = new THREE.AnimationMixer(model);
+            mixer = new AnimationMixer(model);
             gltf.animations.forEach((clip) => mixer!.clipAction(clip).play());
           }
 
@@ -616,7 +646,7 @@ export default function Hero3D() {
         const delta = (dist - lastTouchDist) * 0.01;
         const currentDist = camera.position.distanceTo(cameraTarget);
         const newDist = Math.max(minCamDistance, Math.min(maxCamDistance, currentDist - delta));
-        const dir = new THREE.Vector3();
+        const dir = new Vector3();
         camera.getWorldDirection(dir);
         camera.position.copy(cameraTarget).addScaledVector(dir.negate(), newDist);
         lastTouchDist = dist;
@@ -627,8 +657,8 @@ export default function Hero3D() {
     canvas.addEventListener("touchstart", onTouchStart, { passive: true });
     canvas.addEventListener("touchmove", onTouchMove, { passive: true });
 
-    const raycaster = new THREE.Raycaster();
-    const pointer = new THREE.Vector2();
+    const raycaster = new Raycaster();
+    const pointer = new Vector2();
     const onWheel = (e: WheelEvent) => {
       if (!model) return;
 
@@ -642,7 +672,7 @@ export default function Hero3D() {
       if (hits.length > 0) {
         e.preventDefault();
         const zoomFactor = e.deltaY > 0 ? 1.1 : 0.9;
-        const dir = new THREE.Vector3();
+        const dir = new Vector3();
         camera.getWorldDirection(dir);
         const dist = camera.position.distanceTo(cameraTarget);
         const nextDist = Math.max(minCamDistance, Math.min(maxCamDistance, dist * zoomFactor));
@@ -779,14 +809,14 @@ export default function Hero3D() {
       viewportObserver.disconnect();
 
       scene.traverse((obj) => {
-        const mesh = obj as THREE.Mesh;
+        const mesh = obj as Mesh;
         if (mesh.isMesh) {
           mesh.geometry?.dispose();
-          const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material as THREE.Material];
+          const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material as Material];
           mats.forEach((m) => {
-            const std = m as THREE.MeshStandardMaterial;
+            const std = m as MeshStandardMaterial;
             TEXTURE_SLOTS.forEach((slot) => {
-              const tex = std[slot as keyof typeof std] as THREE.Texture | undefined;
+              const tex = std[slot as keyof typeof std] as Texture | undefined;
               tex?.dispose();
             });
             m.dispose();
@@ -795,7 +825,7 @@ export default function Hero3D() {
       });
 
       if (floorMesh) {
-        const fm = floorMesh.material as THREE.MeshStandardMaterial;
+        const fm = floorMesh.material as MeshStandardMaterial;
         fm.map?.dispose();
         fm.dispose();
       }
