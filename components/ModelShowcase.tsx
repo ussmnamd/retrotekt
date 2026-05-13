@@ -87,7 +87,7 @@ export default function ModelShowcase() {
                   fill
                   priority={i === 0}
                   className="object-contain showcase-img"
-                  sizes="(max-width: 768px) 70vw, 50vw"
+                  sizes="70vw"
                   style={{ opacity: i === 0 ? 1 : 0 }}
                 />
               </div>
@@ -99,7 +99,7 @@ export default function ModelShowcase() {
                   alt=""
                   fill
                   className="object-contain"
-                  sizes="(max-width: 768px) 70vw, 50vw"
+                  sizes="70vw"
                 />
               </div>
               
@@ -237,12 +237,14 @@ export default function ModelShowcase() {
               <div
                 id={`showcase-tick-${i}`}
                 style={{
-                  width: i === 0 ? "40px" : "12px",
+                  width: "36px",
                   height: "1px",
                   background: "#2C1F14",
-                  opacity: i === 0 ? 0.6 : 0.15,
+                  opacity: i === 0 ? 0.65 : 0.18,
+                  transform: i === 0 ? "scaleX(1)" : "scaleX(0.278)",
+                  transformOrigin: "left center",
                 }}
-                className="transition-all duration-500 ease-out group-hover:opacity-40"
+                className="transition-opacity duration-500 ease-out group-hover:opacity-40"
               />
             </button>
           ))}

@@ -153,9 +153,10 @@ export default function HomeClient() {
 
             if (mist) gsapMod.set(mist, { opacity: 0 });
 
-            // Ticks
+            // Ticks — use scaleX (GPU composited) instead of width (layout)
             ticks.forEach((tk, i) => tk && gsapMod.set(tk, {
-              width: i === 0 ? "36px" : "10px",
+              scaleX: i === 0 ? 1 : 0.278,
+              transformOrigin: "left center",
               opacity: i === 0 ? 0.65 : 0.18,
             }));
 
@@ -235,10 +236,10 @@ export default function HomeClient() {
 
               // Ticks: deactivate outIdx, activate inIdx, midway
               if (ticks[outIdx]) masterTl.to(ticks[outIdx], {
-                width: "10px", opacity: 0.18, duration: 0.35, ease: "power2.inOut",
+                scaleX: 0.278, opacity: 0.18, duration: 0.35, ease: "power2.inOut",
               }, startAt + 0.3);
               if (ticks[inIdx]) masterTl.to(ticks[inIdx], {
-                width: "36px", opacity: 0.65, duration: 0.35, ease: "power2.inOut",
+                scaleX: 1, opacity: 0.65, duration: 0.35, ease: "power2.inOut",
               }, startAt + 0.3);
             };
 
