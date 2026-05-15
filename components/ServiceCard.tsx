@@ -236,18 +236,18 @@ const ServiceCardBase: React.FC<ServiceCardProps> = ({ title, description, href,
       {/* ── Content ── */}
       <div className="relative h-full flex flex-col z-10 min-h-[280px]">
 
-        {/* ── Top area: Illustration ── */}
-        <div className="relative flex-1 overflow-hidden">
-          {/* service type pill — top left */}
-          <div className="absolute top-5 left-5 z-10 flex items-center gap-2">
-            <span className="font-body text-[9px] tracking-[0.25em] uppercase text-[#C4A882]/50 group-hover:text-[#C4A882]/80 transition-colors duration-500">
+        {/* ── Top area: Label + Illustration ── */}
+        <div className="relative flex-1 overflow-hidden pt-14">
+          {/* service type label — reserved space keeps it clear of the artwork */}
+          <div className="absolute left-5 right-5 top-5 z-20 min-w-0">
+            <span className="block max-w-full whitespace-nowrap font-body text-[9px] leading-none tracking-[0.18em] uppercase text-[#C4A882]/60 group-hover:text-[#C4A882]/85 transition-colors duration-500">
               {serviceLabel}
             </span>
           </div>
 
 
           {/* Illustration — fills the top area */}
-          <div className="absolute inset-0 flex items-center justify-center opacity-60 group-hover:opacity-90 transition-opacity duration-700 scale-100 group-hover:scale-105 transition-transform">
+          <div className="absolute inset-x-0 bottom-0 top-9 flex items-center justify-center opacity-60 group-hover:opacity-90 transition-opacity duration-700 scale-100 group-hover:scale-105 transition-transform">
             <Illustration />
           </div>
 

@@ -39,10 +39,10 @@ export default function CTASection() {
   ];
 
   const stats = [
-    { icon: "⚡", value: "48h", label: "Average Delivery" },
-    { icon: "🎯", value: "100+", label: "High-Stakes Projects" },
-    { icon: "🛡️", value: "Zero", label: "Risk Entry" },
-    { icon: "🔄", value: "2 Rev", label: "Rounds Included" },
+    { value: "48h", label: "Average Delivery" },
+    { value: "100+", label: "High-Stakes Projects" },
+    { value: "Zero", label: "Risk Entry" },
+    { value: "2 Rev", label: "Rounds Included" },
   ];
 
   return (
@@ -214,9 +214,8 @@ export default function CTASection() {
           className="flex flex-wrap justify-center gap-x-8 gap-y-4 mb-10"
           style={fadeUp("0.54s")}
         >
-          {stats.map(({ icon, value, label }) => (
+          {stats.map(({ value, label }) => (
             <div key={label} className="flex items-center gap-2.5">
-              <span style={{ fontSize: "14px" }}>{icon}</span>
               <span
                 className="font-heading font-light text-[#F7F0E3]/85 tabular-nums"
                 style={{ fontSize: "clamp(1rem, 1.8vw, 1.25rem)" }}

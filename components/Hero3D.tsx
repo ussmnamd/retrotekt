@@ -383,10 +383,11 @@ export default function Hero3D() {
       }
     }, 45000);
 
+    const modelVersion = "heromodel-20260515";
     const modelPath =
-      deviceProfile === "phone"  ? "/models/hero-mobile.glb"  :
-      deviceProfile === "tablet" ? "/models/hero-tablet.glb"  :
-                                   "/models/hero-desktop.glb";
+      deviceProfile === "phone"  ? `/models/hero-mobile.glb?v=${modelVersion}`  :
+      deviceProfile === "tablet" ? `/models/hero-tablet.glb?v=${modelVersion}`  :
+                                   `/models/hero-desktop.glb?v=${modelVersion}`;
 
     let floorIdleId: number | undefined;
     let floorTimeoutId: ReturnType<typeof setTimeout> | undefined;

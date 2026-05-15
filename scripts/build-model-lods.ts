@@ -1,21 +1,22 @@
 /**
  * Generates three LOD variants of the hero GLB for mobile/tablet/desktop.
- * Input:  public/models/updatedmodel.draco.glb
+ * Input:  model-sources/heromodel.glb, or HERO_MODEL_SOURCE if set.
  * Output: public/models/hero-{mobile,tablet,desktop}.glb
  *
- * Skips regeneration if all outputs exist and are newer than the source.
+ * Skips regeneration if all outputs exist and are newer than the source. If the
+ * source is unavailable in CI, existing generated outputs are reused.
  */
 import * as path from 'path';
 import * as fs from 'fs/promises';
-import { NodeIO } from '@gltf-transform/core';
+import { Document, NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
-import { dedup, prune, weld, simplify, textureCompress } from '@gltf-transform/functions';
+import { dedup, draco, prune, simplify, textureCompress, weld } from '@gltf-transform/functions';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const draco3d = require('draco3d');
 import { MeshoptSimplifier } from 'meshoptimizer';
 import sharp from 'sharp';
 
-const SRC = path.resolve('public/models/updatedmodel.draco.glb');
+const SRC = path.resolve(process.env.HERO_MODEL_SOURCE || 'model-sources/heromodel.glb');
 const SCRIPT = path.resolve('scripts/build-model-lods.ts');
 
 const LODS = [
@@ -25,13 +26,45 @@ const LODS = [
   { name: 'hero-desktop', ratio: 0.55, error: 0.004, resize: [768, 768] as [number, number], quality: 72 },
 ] as const;
 
+async function dropDegenerateTextures(doc: Document) {
+  for (const texture of doc.getRoot().listTextures()) {
+    const image = texture.getImage();
+    if (!image) continue;
+
+    try {
+      const metadata = await sharp(image).metadata();
+      if ((metadata.width ?? 0) < 2 || (metadata.height ?? 0) < 2) {
+        console.warn(
+          `  [warn] dropping degenerate texture "${texture.getName() || '(unnamed)'}" ` +
+          `(${metadata.width ?? 0}x${metadata.height ?? 0})`,
+        );
+        texture.dispose();
+      }
+    } catch (e) {
+      console.warn(`  [warn] dropping unreadable texture "${texture.getName() || '(unnamed)'}": ${(e as Error).message}`);
+      texture.dispose();
+    }
+  }
+}
+
 async function outPath(name: string) {
   return path.resolve('public/models', `${name}.glb`);
 }
 
 async function needsRebuild(): Promise<boolean> {
+  const srcStat = await fs.stat(SRC).catch(() => null);
+  if (!srcStat) {
+    const allOutputsExist = await Promise.all(
+      LODS.map(async (lod) => !!(await fs.stat(await outPath(lod.name)).catch(() => null))),
+    );
+    if (allOutputsExist.every(Boolean)) {
+      console.warn(`[build-model-lods] Source not found at ${SRC}; using existing generated LODs.`);
+      return false;
+    }
+    throw new Error(`[build-model-lods] Source model missing: ${SRC}`);
+  }
+
   try {
-    const srcStat = await fs.stat(SRC);
     const scriptStat = await fs.stat(SCRIPT);
     const newestInputMtime = Math.max(srcStat.mtimeMs, scriptStat.mtimeMs);
     for (const lod of LODS) {
@@ -70,6 +103,7 @@ async function main() {
     console.log(`\n[build-model-lods] Generating ${lod.name}…`);
 
     const doc = await io.read(SRC);
+    await dropDegenerateTextures(doc);
 
     // Compress textures FIRST on the original (valid) texture data.
     try {
@@ -92,6 +126,15 @@ async function main() {
         prune(),
         weld(),
         simplify({ simplifier: MeshoptSimplifier, ratio: lod.ratio, error: lod.error, lockBorder: true }),
+        draco({
+          method: 'edgebreaker',
+          encodeSpeed: 5,
+          decodeSpeed: 7,
+          quantizePosition: 14,
+          quantizeNormal: 10,
+          quantizeTexcoord: 12,
+          quantizeColor: 8,
+        }),
         prune(),
       );
     } catch (e) {
