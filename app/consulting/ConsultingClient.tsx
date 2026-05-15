@@ -304,7 +304,7 @@ export default function ConsultingClient() {
                             </div>
                             <span className="font-body text-[15px] text-[#F7F0E3]/70 group-hover:text-[#F7F0E3] transition-colors">shahan@retrotekt.com</span>
                         </a>
-                        <a href="https://wa.me/NUMBER_TBD" target="_blank" rel="noopener noreferrer" className="group flex items-center gap-4">
+                        <a href="https://wa.me/14406408735" target="_blank" rel="noopener noreferrer" className="group flex items-center gap-4">
                             <div className="w-12 h-12 rounded-full border border-[#F7F0E3]/15 flex items-center justify-center group-hover:border-[#C4A882] group-hover:bg-[#C4A882]/10 transition-all duration-300">
                                 <span className="text-[#F7F0E3]/50 group-hover:text-[#C4A882] transition-colors">
                                     <IconWhatsApp />

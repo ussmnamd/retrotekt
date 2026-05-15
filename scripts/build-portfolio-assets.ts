@@ -304,7 +304,7 @@ function encodeWalkthrough(
   console.log(`  extracting poster...`);
   ffmpeg([
     "-y", "-ss", "2", "-i", srcFile,
-    "-frames:v", "1", "-q:v", "3",
+    "-frames:v", "1", "-vf", "scale=1280:-2:flags=lanczos", "-q:v", "5",
     poster,
   ]);
 
@@ -344,7 +344,7 @@ function encodeHeroLoop(srcFile: string, outDir: string): ProjectVideo {
   console.log(`  extracting hero-loop poster...`);
   ffmpeg([
     "-y", "-ss", "1", "-i", srcFile,
-    "-frames:v", "1", "-q:v", "3",
+    "-frames:v", "1", "-vf", "scale=1280:-2:flags=lanczos", "-q:v", "5",
     poster,
   ]);
 

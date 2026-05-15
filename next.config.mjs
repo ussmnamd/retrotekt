@@ -1,5 +1,4 @@
 import bundleAnalyzer from '@next/bundle-analyzer';
-import { withSentryConfig } from '@sentry/nextjs';
 
 const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
@@ -20,7 +19,6 @@ const CSP = [
   "img-src 'self' data: blob: https://retrotekt.vercel.app https://retrotekt.com https://www.retrotekt.com",
   "font-src 'self'",
   // blob: required — Three.js ImageLoader uses fetch() to load blob-URL textures (WebP/GLB).
-  // Sentry is tunnelled through /monitoring (tunnelRoute) so no ingest.sentry.io entry needed.
   "connect-src 'self' blob:",
   "frame-src https://cal.com https://calendly.com",
   // blob: needed for Three.js / Draco worker blobs.
@@ -91,8 +89,8 @@ const nextConfig = {
           { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
         ],
       },
-      // Home route: preload Draco WASM decoder + hero GLB so both are in flight
-      // from the first HTTP response — before React hydrates.
+      // Home route: preload the Draco WASM decoder only. The GLB is intentionally
+      // loaded after the initial text paint so it does not compete with LCP.
       {
         source: '/',
         headers: [
@@ -100,9 +98,6 @@ const nextConfig = {
             key: 'Link',
             value: [
               '</draco/draco_decoder.wasm>; rel=preload; as=fetch; crossorigin=anonymous',
-              '</models/hero-mobile.glb>; rel=preload; as=fetch; crossorigin=anonymous; media="(max-width: 767px)"',
-              '</models/hero-tablet.glb>; rel=preload; as=fetch; crossorigin=anonymous; media="(min-width: 768px) and (max-width: 1179px)"',
-              '</models/hero-desktop.glb>; rel=preload; as=fetch; crossorigin=anonymous; media="(min-width: 1180px)"',
             ].join(', '),
           },
         ],
@@ -168,40 +163,4 @@ const nextConfig = {
   },
 };
 
-export default withSentryConfig(withBundleAnalyzer(nextConfig), {
-  // For all available options, see:
-  // https://www.npmjs.com/package/@sentry/webpack-plugin#options
-
-  org: "uvolv",
-
-  project: "javascript-nextjs",
-
-  // Only print logs for uploading source maps in CI
-  silent: !process.env.CI,
-
-  // For all available options, see:
-  // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
-
-  // Upload a larger set of source maps for prettier stack traces (increases build time)
-  widenClientFileUpload: true,
-
-  // Route browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers.
-  // This can increase your server load as well as your hosting bill.
-  // Note: Check that the configured route will not match with your Next.js middleware, otherwise reporting of client-
-  // side errors will fail.
-  tunnelRoute: "/monitoring",
-
-  webpack: {
-    // Enables automatic instrumentation of Vercel Cron Monitors. (Does not yet work with App Router route handlers.)
-    // See the following for more information:
-    // https://docs.sentry.io/product/crons/
-    // https://vercel.com/docs/cron-jobs
-    automaticVercelMonitors: true,
-
-    // Tree-shaking options for reducing bundle size
-    treeshake: {
-      // Automatically tree-shake Sentry logger statements to reduce bundle size
-      removeDebugLogging: true,
-    },
-  },
-});
+export default withBundleAnalyzer(nextConfig);

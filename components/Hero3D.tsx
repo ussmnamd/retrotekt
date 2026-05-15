@@ -185,7 +185,7 @@ export default function Hero3D() {
     const pmrem = new PMREMGenerator(renderer);
     // compileEquirectangularShader() is for HDRI maps — not needed for fromScene().
     // Calling it unnecessarily triggers a shaderSource compile that can fail on
-    // some drivers before the context is fully initialized (Sentry: shaderSource TypeError).
+    // some drivers before the context is fully initialized.
     const envTexture = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
     scene.environment = envTexture;
     scene.environmentIntensity = envIntensity;
@@ -266,6 +266,7 @@ export default function Hero3D() {
 
     let scrollVelocity = 0;
     let lastScrollY = window.scrollY;
+    let disposed = false;
 
     const scrollHandler = () => {
       const delta = window.scrollY - lastScrollY;
@@ -359,8 +360,25 @@ export default function Hero3D() {
       });
     };
 
+    const disposeMeshTree = (root: Object3D) => {
+      root.traverse((obj) => {
+        const mesh = obj as Mesh;
+        if (!mesh.isMesh) return;
+        mesh.geometry?.dispose();
+        const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material as Material];
+        mats.forEach((m) => {
+          const std = m as MeshStandardMaterial;
+          TEXTURE_SLOTS.forEach((slot) => {
+            const tex = std[slot as keyof typeof std] as Texture | undefined;
+            tex?.dispose();
+          });
+          m.dispose();
+        });
+      });
+    };
+
     const loadTimeout = window.setTimeout(() => {
-      if (!model) {
+      if (!disposed && !model) {
         console.error("[Hero3D] GLB load timed out after 45s");
         setStatus("error");
       }
@@ -371,11 +389,18 @@ export default function Hero3D() {
       deviceProfile === "tablet" ? "/models/hero-tablet.glb"  :
                                    "/models/hero-desktop.glb";
 
+    let floorIdleId: number | undefined;
+    let floorTimeoutId: ReturnType<typeof setTimeout> | undefined;
+
     const loadModel = () => {
       loader.load(
         modelPath,
         (gltf) => {
           window.clearTimeout(loadTimeout);
+          if (disposed) {
+            disposeMeshTree(gltf.scene);
+            return;
+          }
           model = gltf.scene;
 
           sanitizeModel(model);
@@ -397,8 +422,13 @@ export default function Hero3D() {
 
           // Defer marble texture to idle time — only needed after model loads
           const buildFloor = () => {
+            if (disposed || !model) return;
             const floorBox = new Box3().setFromObject(modelGroup);
             new TextureLoader().load('/textures/marble.png', (marbleTex) => {
+              if (disposed) {
+                marbleTex.dispose();
+                return;
+              }
               marbleTex.wrapS = marbleTex.wrapT = RepeatWrapping;
               marbleTex.repeat.set(3, 3);
               const floorMat = new MeshStandardMaterial({
@@ -417,9 +447,9 @@ export default function Hero3D() {
           };
 
           if (typeof requestIdleCallback !== "undefined") {
-            requestIdleCallback(buildFloor, { timeout: 2000 });
+            floorIdleId = requestIdleCallback(buildFloor, { timeout: 2000 });
           } else {
-            setTimeout(buildFloor, 0);
+            floorTimeoutId = setTimeout(buildFloor, 0);
           }
 
           // ── Bulb lighting — find light meshes, glow them, place point lights ──
@@ -513,6 +543,7 @@ export default function Hero3D() {
         undefined,
         (err) => {
           window.clearTimeout(loadTimeout);
+          if (disposed) return;
           console.error("[Hero3D] GLB load failed:", err);
           setStatus("error");
         }
@@ -782,10 +813,15 @@ export default function Hero3D() {
     canvas.addEventListener("webglcontextrestored", onContextRestored);
 
     return () => {
+      disposed = true;
       cancelAnimationFrame(animationId);
       clearTimeout(resizeTimer);
       window.clearTimeout(loadTimeout);
       window.clearTimeout(safetyTimer);
+      if (floorIdleId !== undefined && typeof cancelIdleCallback !== "undefined") {
+        cancelIdleCallback(floorIdleId);
+      }
+      if (floorTimeoutId !== undefined) clearTimeout(floorTimeoutId);
 
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("scroll", scrollHandler);
@@ -806,21 +842,7 @@ export default function Hero3D() {
       modelObserver.disconnect();
       viewportObserver.disconnect();
 
-      scene.traverse((obj) => {
-        const mesh = obj as Mesh;
-        if (mesh.isMesh) {
-          mesh.geometry?.dispose();
-          const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material as Material];
-          mats.forEach((m) => {
-            const std = m as MeshStandardMaterial;
-            TEXTURE_SLOTS.forEach((slot) => {
-              const tex = std[slot as keyof typeof std] as Texture | undefined;
-              tex?.dispose();
-            });
-            m.dispose();
-          });
-        }
-      });
+      disposeMeshTree(scene);
 
       if (floorMesh) {
         const fm = floorMesh.material as MeshStandardMaterial;

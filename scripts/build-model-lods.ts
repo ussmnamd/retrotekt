@@ -16,12 +16,13 @@ import { MeshoptSimplifier } from 'meshoptimizer';
 import sharp from 'sharp';
 
 const SRC = path.resolve('public/models/updatedmodel.draco.glb');
+const SCRIPT = path.resolve('scripts/build-model-lods.ts');
 
 const LODS = [
   // 122 textures in source; resize to max dimension to hit transfer targets
-  { name: 'hero-mobile',  ratio: 0.25, error: 0.01,  resize: [256,  256]  as [number,number], quality: 65 },
-  { name: 'hero-tablet',  ratio: 0.5,  error: 0.005, resize: [512,  512]  as [number,number], quality: 73 },
-  { name: 'hero-desktop', ratio: 0.75, error: 0.001, resize: [1024, 1024] as [number,number], quality: 82 },
+  { name: 'hero-mobile',  ratio: 0.18, error: 0.018, resize: [128, 128] as [number, number], quality: 52 },
+  { name: 'hero-tablet',  ratio: 0.35, error: 0.010, resize: [384, 384] as [number, number], quality: 62 },
+  { name: 'hero-desktop', ratio: 0.55, error: 0.004, resize: [768, 768] as [number, number], quality: 72 },
 ] as const;
 
 async function outPath(name: string) {
@@ -31,10 +32,12 @@ async function outPath(name: string) {
 async function needsRebuild(): Promise<boolean> {
   try {
     const srcStat = await fs.stat(SRC);
+    const scriptStat = await fs.stat(SCRIPT);
+    const newestInputMtime = Math.max(srcStat.mtimeMs, scriptStat.mtimeMs);
     for (const lod of LODS) {
       const dest = await outPath(lod.name);
       const destStat = await fs.stat(dest).catch(() => null);
-      if (!destStat || destStat.mtimeMs < srcStat.mtimeMs) return true;
+      if (!destStat || destStat.mtimeMs < newestInputMtime) return true;
     }
     return false;
   } catch {

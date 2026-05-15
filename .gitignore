@@ -37,6 +37,8 @@ next-env.d.ts
 
 # Dev tooling
 .claude/
+.agents/
+.codex/
 CLAUDE.md
 
 # Performance baselines / measurement artifacts
@@ -50,6 +52,3 @@ temp_home_client.txt
 
 # raw portfolio source media (optimized output lives in /public/portfolio)
 /portfolio/
-
-# Sentry Config File
-.env.sentry-build-plugin

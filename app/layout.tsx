@@ -7,7 +7,6 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { LiveProjectsTicker } from "@/components/LiveProjectsTicker";
-import { WebVitals } from "./web-vitals";
 
 
 
@@ -72,7 +71,6 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
         />
-        <WebVitals />
         <LiveProjectsTicker />
         <Navbar />
         <div className="flex min-h-screen">

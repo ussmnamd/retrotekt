@@ -40,16 +40,9 @@ export default function HomeClient() {
 
   const hero3dReady = useDeferredMount(1200);
 
-  /* ── GSAP: navbar fires immediately; scroll animations deferred to idle ── */
+  /* ── GSAP: scroll animations deferred to idle so hero text can paint first ── */
   useEffect(() => {
     let cancelled = false;
-
-    // Navbar entrance: load gsap core only, fires before user can scroll
-    (async () => {
-      const gsapMod = (await import("gsap")).default;
-      if (cancelled) return;
-      gsapMod.from("nav", { y: -64, opacity: 0, duration: 0.8, ease: "expo.out" });
-    })();
 
     // All scroll-linked animations deferred to idle time (removes INP block)
     const initScrollAnims = async () => {
