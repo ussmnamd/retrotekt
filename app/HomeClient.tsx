@@ -4,7 +4,6 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useInView } from "@/lib/use-in-view";
-import { useDeferredMount } from "@/hooks/useDeferredMount";
 import { ServiceCard } from "@/components/ServiceCard";
 import { ProcessCard } from "@/components/ProcessCard";
 import DebugPanel from "@/components/DebugPanel";
@@ -38,7 +37,49 @@ export default function HomeClient() {
   const ctxRef = useRef<gsap.Context | null>(null);
   const { ref: featuredVideoWrapRef, inView: featuredVideoInView } = useInView('200px');
 
-  const hero3dReady = useDeferredMount(1200);
+  const [hero3dReady, setHero3dReady] = useState(false);
+
+  /* ── 3D hero: auto-load on desktop, interaction-gated on mobile ── */
+  useEffect(() => {
+    if (hero3dReady) return;
+
+    const w = window as Window & {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+    const nav = navigator as Navigator & {
+      connection?: { saveData?: boolean };
+    };
+
+    const reducedMotion = w.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const coarsePointer = w.matchMedia("(pointer: coarse)").matches;
+    const smallViewport = w.matchMedia("(max-width: 900px)").matches;
+    const saveData = Boolean(nav.connection?.saveData);
+
+    if (reducedMotion || saveData) return;
+
+    const enableHero3d = () => setHero3dReady(true);
+
+    if (coarsePointer || smallViewport) {
+      const hero = document.getElementById("hero-section");
+      hero?.addEventListener("pointerdown", enableHero3d, { once: true, passive: true });
+      return () => hero?.removeEventListener("pointerdown", enableHero3d);
+    }
+
+    let idleId: number | undefined;
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+    if (typeof w.requestIdleCallback === "function") {
+      idleId = w.requestIdleCallback(enableHero3d, { timeout: 3000 });
+    } else {
+      timeoutId = setTimeout(enableHero3d, 1800);
+    }
+
+    return () => {
+      if (idleId !== undefined) w.cancelIdleCallback?.(idleId);
+      if (timeoutId !== undefined) clearTimeout(timeoutId);
+    };
+  }, [hero3dReady]);
 
   /* ── GSAP: scroll animations deferred to idle so hero text can paint first ── */
   useEffect(() => {
