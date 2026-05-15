@@ -263,10 +263,11 @@ function encodeWalkthrough(
   srcFile: string,
   outBase: string, // no extension
   crf: number = 23
-): ProjectVideo {
+): Promise<ProjectVideo> {
   const mp4 = `${outBase}.mp4`;
   const webm = `${outBase}.webm`;
-  const poster = `${outBase}.poster.jpg`;
+  const posterJpg = `${outBase}.poster.jpg`;
+  const posterWebp = `${outBase}.poster.webp`;
 
   console.log(`  encoding mp4...`);
   ffmpeg([
@@ -305,23 +306,25 @@ function encodeWalkthrough(
   ffmpeg([
     "-y", "-ss", "2", "-i", srcFile,
     "-frames:v", "1", "-vf", "scale=1280:-2:flags=lanczos", "-q:v", "5",
-    poster,
+    posterJpg,
   ]);
-
-  const dims = ffprobeSize(mp4);
-  return {
-    mp4: publicUrl(mp4),
-    webm: publicUrl(webm),
-    poster: publicUrl(poster),
-    width: dims.width,
-    height: dims.height,
-  };
+  return sharp(posterJpg).webp({ quality: IMG_QUALITY.webp }).toFile(posterWebp).then(() => {
+    const dims = ffprobeSize(mp4);
+    return {
+      mp4: publicUrl(mp4),
+      webm: publicUrl(webm),
+      poster: publicUrl(posterWebp),
+      width: dims.width,
+      height: dims.height,
+    };
+  });
 }
 
-function encodeHeroLoop(srcFile: string, outDir: string): ProjectVideo {
+function encodeHeroLoop(srcFile: string, outDir: string): Promise<ProjectVideo> {
   const mp4 = path.join(outDir, "hero-loop.mp4");
   const webm = path.join(outDir, "hero-loop.webm");
-  const poster = path.join(outDir, "hero-loop.poster.jpg");
+  const posterJpg = path.join(outDir, "hero-loop.poster.jpg");
+  const posterWebp = path.join(outDir, "hero-loop.poster.webp");
 
   console.log(`  encoding hero-loop mp4...`);
   ffmpeg([
@@ -345,17 +348,18 @@ function encodeHeroLoop(srcFile: string, outDir: string): ProjectVideo {
   ffmpeg([
     "-y", "-ss", "1", "-i", srcFile,
     "-frames:v", "1", "-vf", "scale=1280:-2:flags=lanczos", "-q:v", "5",
-    poster,
+    posterJpg,
   ]);
-
-  const dims = ffprobeSize(mp4);
-  return {
-    mp4: publicUrl(mp4),
-    webm: publicUrl(webm),
-    poster: publicUrl(poster),
-    width: dims.width,
-    height: dims.height,
-  };
+  return sharp(posterJpg).webp({ quality: IMG_QUALITY.webp }).toFile(posterWebp).then(() => {
+    const dims = ffprobeSize(mp4);
+    return {
+      mp4: publicUrl(mp4),
+      webm: publicUrl(webm),
+      poster: publicUrl(posterWebp),
+      width: dims.width,
+      height: dims.height,
+    };
+  });
 }
 
 // ─── MANIFEST WRITER ─────────────────────────────────────────────────────────
@@ -554,7 +558,7 @@ async function main(): Promise<void> {
     const src = path.join(modestoVideosDir, videoSources[i]);
     const outBase = path.join(videoDir, `walkthrough-0${i + 1}`);
     console.log(`\n  [walkthrough-0${i + 1}] ${videoSources[i]}`);
-    const vid = encodeWalkthrough(src, outBase);
+    const vid = await encodeWalkthrough(src, outBase);
     modestoVideos.push(vid);
     console.log(`  mp4: ${(fileSize(path.join(ROOT, "public") + vid.mp4.replace(/\//g, path.sep)) / 1024 / 1024).toFixed(1)}MB`);
   }

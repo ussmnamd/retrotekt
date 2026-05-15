@@ -248,7 +248,6 @@ export default function Hero3D() {
     loader.setMeshoptDecoder(MeshoptDecoder);
 
     let model: Group | null = null;
-    let floorMesh: Mesh | null = null;
     let mixer: AnimationMixer | null = null;
     let elapsed = 0;
     let lastFrameTime = performance.now();
@@ -420,34 +419,37 @@ export default function Hero3D() {
 
           frameCamera(modelGroup);
 
-          // Defer marble texture to idle time — only needed after model loads
           const buildFloor = () => {
             if (disposed || !model) return;
+
             const floorBox = new Box3().setFromObject(modelGroup);
-            new TextureLoader().load('/textures/marble.png', (marbleTex) => {
+            new TextureLoader().load("/textures/marble.png", (marbleTex) => {
               if (disposed) {
                 marbleTex.dispose();
                 return;
               }
+
+              marbleTex.colorSpace = SRGBColorSpace;
               marbleTex.wrapS = marbleTex.wrapT = RepeatWrapping;
-              marbleTex.repeat.set(3, 3);
-              const floorMat = new MeshStandardMaterial({
+              marbleTex.repeat.set(2.5, 2.5);
+
+              const floorMat = new MeshBasicMaterial({
                 map: marbleTex,
-                roughness: 0.12,
-                metalness: 0.06,
-                envMapIntensity: 1.2,
+                transparent: true,
+                opacity: 0.42,
+                depthWrite: false,
               });
-              const floor = new Mesh(new PlaneGeometry(80, 80), floorMat);
+              const floor = new Mesh(new PlaneGeometry(72, 72), floorMat);
               floor.rotation.x = -Math.PI / 2;
-              floor.position.y = floorBox.min.y;
-              floor.receiveShadow = true;
+              floor.position.y = floorBox.min.y - 0.02;
+              floor.renderOrder = -1;
               scene.add(floor);
-              floorMesh = floor;
+              requestTick();
             });
           };
 
           if (typeof requestIdleCallback !== "undefined") {
-            floorIdleId = requestIdleCallback(buildFloor, { timeout: 2000 });
+            floorIdleId = requestIdleCallback(buildFloor, { timeout: 1200 });
           } else {
             floorTimeoutId = setTimeout(buildFloor, 0);
           }
@@ -843,12 +845,6 @@ export default function Hero3D() {
       viewportObserver.disconnect();
 
       disposeMeshTree(scene);
-
-      if (floorMesh) {
-        const fm = floorMesh.material as MeshStandardMaterial;
-        fm.map?.dispose();
-        fm.dispose();
-      }
 
       envTexture.dispose();
       pmrem.dispose();

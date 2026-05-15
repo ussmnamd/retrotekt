@@ -178,21 +178,21 @@ export const portfolioAssets: Record<AssetKey, ProjectAssets> = {
     {
       mp4: "/portfolio/modesto/videos/walkthrough-01.mp4",
       webm: "/portfolio/modesto/videos/walkthrough-01.webm",
-      poster: "/portfolio/modesto/videos/walkthrough-01.poster.jpg",
+      poster: "/portfolio/modesto/videos/walkthrough-01.poster.webp",
       width: 1920,
       height: 1080,
     },
     {
       mp4: "/portfolio/modesto/videos/walkthrough-02.mp4",
       webm: "/portfolio/modesto/videos/walkthrough-02.webm",
-      poster: "/portfolio/modesto/videos/walkthrough-02.poster.jpg",
+      poster: "/portfolio/modesto/videos/walkthrough-02.poster.webp",
       width: 1920,
       height: 1080,
     },
     {
       mp4: "/portfolio/modesto/videos/walkthrough-03.mp4",
       webm: "/portfolio/modesto/videos/walkthrough-03.webm",
-      poster: "/portfolio/modesto/videos/walkthrough-03.poster.jpg",
+      poster: "/portfolio/modesto/videos/walkthrough-03.poster.webp",
       width: 1920,
       height: 1080,
     }
@@ -200,7 +200,7 @@ export const portfolioAssets: Record<AssetKey, ProjectAssets> = {
     heroLoop: {
       mp4: "/portfolio/modesto/videos/walkthrough-03.mp4",
       webm: "/portfolio/modesto/videos/walkthrough-03.webm",
-      poster: "/portfolio/modesto/videos/walkthrough-03.poster.jpg",
+      poster: "/portfolio/modesto/videos/walkthrough-03.poster.webp",
       width: 1920,
       height: 1080,
     },
