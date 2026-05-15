@@ -1,22 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useInView } from "@/lib/use-in-view";
 
 export default function CTASection() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const el = sectionRef.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) setVisible(true); },
-      { threshold: 0.08 }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
+  // HTMLElement is used since the ref attaches to a <section> (not a <div>)
+  const { ref: sectionRef, inView: visible } = useInView<HTMLElement>({ threshold: 0.08 });
 
   const fadeUp = (delay = "0s") => ({
     opacity: visible ? 1 : 0,

@@ -80,6 +80,13 @@ const GALLERY_HEADINGS: Record<FilterLabel, { eyebrow: string; headline: string 
   'Construction Story': { eyebrow: 'CONSTRUCTION DOCUMENTATION',    headline: 'Render → reality. Photographs of the build.' },
 };
 
+// ── Viewport height constants ──────────────────────────────────────────────────
+// Extracted here so layout intent is clear and easy to adjust in one place.
+const HERO_HEIGHT = '90vh';
+const HERO_MIN_HEIGHT = '480px';
+const FEATURED_MIN_HEIGHT = '60vh';
+const LOCATION_CARD_MIN_HEIGHT = '40vh';
+
 // ── Derived data ───────────────────────────────────────────────────────────────
 const modesto = projects[0];
 const supporting = projects.slice(1); // Livermore, Sacramento
@@ -102,7 +109,7 @@ export default function PortfolioClient() {
   const [modalIndex, setModalIndex] = useState<number | null>(null);
 
   // Ref to ScrollTrigger once lazily loaded — used by filter changes.
-  const stRef = useRef<{ refresh: () => void } | null>(null);
+  const scrollTriggerRef = useRef<{ refresh: () => void } | null>(null);
 
   // ── Filter change handler with ScrollTrigger refresh ────────────────────────
   const onFilterChange = (next: FilterLabel) => {
@@ -110,7 +117,7 @@ export default function PortfolioClient() {
     // Double rAF: wait for React commit + DOM layout before refreshing ScrollTrigger.
     // If GSAP hasn't loaded yet there are no ST instances to refresh — safe to skip.
     requestAnimationFrame(() => {
-      requestAnimationFrame(() => stRef.current?.refresh());
+      requestAnimationFrame(() => scrollTriggerRef.current?.refresh());
     });
   };
 
@@ -135,7 +142,7 @@ export default function PortfolioClient() {
           import('gsap/ScrollTrigger'),
         ]).then(([{ default: gsap }, { ScrollTrigger }]) => {
           gsap.registerPlugin(ScrollTrigger);
-          stRef.current = ScrollTrigger;
+          scrollTriggerRef.current = ScrollTrigger;
 
           ctx = gsap.context(() => {
             const mm = gsap.matchMedia();
@@ -209,7 +216,7 @@ export default function PortfolioClient() {
       {/* ── 1. CINEMATIC HERO (~90vh) ──────────────────────────────────────── */}
       <section
         className="relative overflow-hidden"
-        style={{ height: '90vh', minHeight: '480px' }}
+        style={{ height: HERO_HEIGHT, minHeight: HERO_MIN_HEIGHT }}
       >
         {/* Video background */}
         {hero && (
@@ -323,14 +330,14 @@ export default function PortfolioClient() {
       {/* ── 2. FEATURED SLAB — MODESTO (~70vh) ────────────────────────────── */}
       <section
         className="relative overflow-hidden"
-        style={{ minHeight: '60vh' }}
+        style={{ minHeight: FEATURED_MIN_HEIGHT }}
       >
         <Link href="/portfolio/chocolate-fish-modesto" className="block h-full group">
           {/* Split frame: render left, construction right on hover */}
           <div
             data-anim="featured-image"
             className="relative overflow-hidden"
-            style={{ minHeight: '60vh' }}
+            style={{ minHeight: FEATURED_MIN_HEIGHT }}
           >
             {/* Render — fills frame by default */}
             {modestoAssets.renders[0] && (
@@ -446,12 +453,12 @@ export default function PortfolioClient() {
               <div
                 key={project.slug}
                 data-anim="location-card"
-                style={{ minHeight: '40vh' }}
+                style={{ minHeight: LOCATION_CARD_MIN_HEIGHT }}
               >
                 <Link
                   href={`/portfolio/${project.slug}`}
                   className="relative overflow-hidden block h-full group"
-                  style={{ minHeight: '40vh' }}
+                  style={{ minHeight: LOCATION_CARD_MIN_HEIGHT }}
                 >
                   {/* Default: render */}
                   {leadRender && (

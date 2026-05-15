@@ -73,6 +73,9 @@ type FormErrors = {
 export default function ConsultingClient() {
   const pageRef = useRef<HTMLDivElement>(null);
 
+  // Observes multiple .reveal elements and adds .revealed when they enter viewport.
+  // CSS in globals.css drives the actual fade-up transition (opacity + translateY).
+  // useInView is not used here because it only tracks a single element.
   useEffect(() => {
     const elements = pageRef.current?.querySelectorAll(".reveal");
     if (!elements) return;

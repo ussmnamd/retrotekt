@@ -16,42 +16,60 @@ const MENU_LINKS = [
   ...NAV_LINKS,
 ] as const;
 
-const DARK_BG_CLASSES = new Set([
-  "bg-primary", "bg-[#2C1F14]", "bg-[#0A0A0A]", "bg-[#0F0A06]", "bg-[#1C1309]",
-]);
-const LIGHT_BG_CLASSES = new Set([
-  "bg-background", "bg-surface", "bg-[#F7F0E3]", "bg-[#EDE3CF]", "bg-[#ECE3CF]",
-  "bg-[#EDE3CE]", "bg-[#E2D5BC]",
-]);
-const DARK_BG_COLORS = ["#1c1309", "#2c1f14", "#0a0a0a", "#0f0a06", "rgb(28,19,9)", "rgb(44,31,20)"];
-const LIGHT_BG_COLORS = ["#f7f0e3", "#ede3cf", "#ece3cf", "#ede3ce", "rgb(247,240,227)", "rgb(237,227,207)"];
+// How far the user must scroll (px) before the navbar collapses to menu-button mode
+const NAV_SCROLL_THRESHOLD = 80;
+
+// Consolidated background detection data: Tailwind class names and inline hex/rgb colors
+// that indicate whether a section has a dark or light background.
+const NAVBAR_BG = {
+  dark: {
+    classes: new Set([
+      "bg-primary", "bg-[#2C1F14]", "bg-[#0A0A0A]", "bg-[#0F0A06]", "bg-[#1C1309]",
+    ]),
+    colors: ["#1c1309", "#2c1f14", "#0a0a0a", "#0f0a06", "rgb(28,19,9)", "rgb(44,31,20)"],
+  },
+  light: {
+    classes: new Set([
+      "bg-background", "bg-surface", "bg-[#F7F0E3]", "bg-[#EDE3CF]", "bg-[#ECE3CF]",
+      "bg-[#EDE3CE]", "bg-[#E2D5BC]",
+    ]),
+    colors: ["#f7f0e3", "#ede3cf", "#ece3cf", "#ede3ce", "rgb(247,240,227)", "rgb(237,227,207)"],
+  },
+};
 
 function classifyEl(el: HTMLElement): "dark" | "light" | null {
   const classes = Array.from(el.classList);
-  if (classes.some(c => DARK_BG_CLASSES.has(c))) return "dark";
-  if (classes.some(c => LIGHT_BG_CLASSES.has(c))) return "light";
+  if (classes.some(c => NAVBAR_BG.dark.classes.has(c))) return "dark";
+  if (classes.some(c => NAVBAR_BG.light.classes.has(c))) return "light";
   const bg = (el.style.background || el.style.backgroundColor || "").toLowerCase().replace(/\s/g, "");
-  if (DARK_BG_COLORS.some(c => bg.includes(c.replace(/\s/g, "")))) return "dark";
-  if (LIGHT_BG_COLORS.some(c => bg.includes(c.replace(/\s/g, "")))) return "light";
+  if (NAVBAR_BG.dark.colors.some(c => bg.includes(c.replace(/\s/g, "")))) return "dark";
+  if (NAVBAR_BG.light.colors.some(c => bg.includes(c.replace(/\s/g, "")))) return "light";
   return null;
 }
 
-function detectIsDark(pathname: string): boolean {
-  const navY = 50;
+function detectIsDark(
+  pathname: string,
+  // Pre-cached document-relative media positions (avoids querySelectorAll on scroll)
+  cachedMediaRects: Array<{ top: number; bottom: number }> = []
+): boolean {
+  // navY is the document-relative Y position of the navbar probe point.
+  // On scroll, window.scrollY shifts the viewport, so we add it here.
+  const navY = window.scrollY + 50;
 
   if (pathname === "/portfolio" || pathname.startsWith("/portfolio/")) {
-    const mediaElements = Array.from(document.querySelectorAll("img, video"));
-    const isOverMedia = mediaElements.some(media => {
-      const rect = media.getBoundingClientRect();
-      return navY >= rect.top && navY <= rect.bottom;
-    });
+    // Use pre-cached positions instead of querying the DOM on every scroll frame
+    const isOverMedia = cachedMediaRects.some(r => navY >= r.top && navY <= r.bottom);
     if (isOverMedia) {
       return true;
     }
   }
 
   const sections = Array.from(document.querySelectorAll("section"));
-  const activeSec = [...sections].reverse().find(s => s.getBoundingClientRect().top <= navY + 20);
+  // getBoundingClientRect() is viewport-relative; add scrollY to convert to document-relative
+  // so the comparison is consistent with the document-relative navY above.
+  const activeSec = [...sections].reverse().find(s =>
+    s.getBoundingClientRect().top + window.scrollY <= navY + 20
+  );
 
   if (activeSec) {
     let el: HTMLElement | null = activeSec;
@@ -79,6 +97,24 @@ export default function Navbar() {
   const menuRef = useRef<HTMLDivElement>(null);
   const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Cache of media element document-relative top/bottom positions for the portfolio page.
+  // Cached on mount and invalidated on resize so the scroll handler never touches the DOM.
+  const mediaRectsCacheRef = useRef<Array<{ top: number; bottom: number }>>([]);
+
+  const cacheMediaRects = useCallback(() => {
+    if (pathname !== "/portfolio" && !pathname.startsWith("/portfolio/")) {
+      mediaRectsCacheRef.current = [];
+      return;
+    }
+    const scrollY = window.scrollY;
+    mediaRectsCacheRef.current = Array.from(document.querySelectorAll("img, video")).map(el => {
+      const r = el.getBoundingClientRect();
+      // Convert viewport-relative rect to document-relative so comparisons stay
+      // valid as the user scrolls (no re-query needed per scroll event).
+      return { top: r.top + scrollY, bottom: r.bottom + scrollY };
+    });
+  }, [pathname]);
+
   useEffect(() => {
     setIsMenuOpen(false);
   }, [pathname]);
@@ -100,9 +136,18 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handler);
   }, [isMenuOpen]);
 
+  // Re-cache media positions on pathname change (new page = new media layout)
+  // and on resize (positions shift when viewport width changes).
+  useEffect(() => {
+    cacheMediaRects();
+    const onResize = () => cacheMediaRects();
+    window.addEventListener("resize", onResize, { passive: true });
+    return () => window.removeEventListener("resize", onResize);
+  }, [cacheMediaRects]);
+
   const detectBg = useCallback(() => {
-    setIsScrolled(window.scrollY > 80);
-    setIsDarkBg(detectIsDark(pathname));
+    setIsScrolled(window.scrollY > NAV_SCROLL_THRESHOLD);
+    setIsDarkBg(detectIsDark(pathname, mediaRectsCacheRef.current));
   }, [pathname]);
 
   // rAF-throttle the scroll handler. detectIsDark() reads layout
