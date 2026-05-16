@@ -28,6 +28,8 @@ const Hero3D = dynamic(() => import("@/components/Hero3D"), {
   loading: () => <div style={{ position: "absolute", inset: 0, background: "var(--color-background, #F7F0E3)" }} />,
 });
 
+const PageLoader = dynamic(() => import("@/components/PageLoader"), { ssr: false });
+
 export default function HomeClient() {
   const pageRef = useRef<HTMLDivElement>(null);
   const [hoveredService, setHoveredService] = useState<number | null>(null);
@@ -181,6 +183,7 @@ export default function HomeClient() {
 
   return (
     <>
+      <PageLoader />
       <DebugPanel />
 <main className="relative w-full bg-background" ref={pageRef}>
 

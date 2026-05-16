@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 
-const DRAW_MS = 150;
-const EXIT_MS = 100;
+const DRAW_MS = 700;
+const EXIT_MS = 500;
+const STORAGE_KEY = "rt_loader_shown";
 
 function Line({ x1, y1, x2, y2, delay = 0, dur = 600, stroke = "#C4A882", sw = 1.2, op = 1 }: {
   x1: number; y1: number; x2: number; y2: number;
@@ -49,16 +50,42 @@ function Label({ x, y, text, delay = 0, size = 9, color = "#C4A882", tracking = 
   );
 }
 
-export default function PageLoader({ onComplete }: { onComplete: () => void }) {
+export default function PageLoader({ onComplete }: { onComplete?: () => void }) {
   const [exiting, setExiting] = useState(false);
   const [gone, setGone] = useState(false);
+  const [skip, setSkip] = useState<boolean | null>(null);
 
   useEffect(() => {
-    const t1 = setTimeout(() => setExiting(true), DRAW_MS);
-    const t2 = setTimeout(() => { setGone(true); onComplete(); }, DRAW_MS + EXIT_MS);
-    return () => { clearTimeout(t1); clearTimeout(t2); };
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const nav = navigator as Navigator & { connection?: { saveData?: boolean } };
+    const saveData = Boolean(nav.connection?.saveData);
+    const alreadyShown = sessionStorage.getItem(STORAGE_KEY) === "1";
+
+    if (reduced || saveData || alreadyShown) {
+      setSkip(true);
+      onComplete?.();
+      return;
+    }
+
+    setSkip(false);
+    sessionStorage.setItem(STORAGE_KEY, "1");
+
+    const raf = requestAnimationFrame(() => {
+      const t1 = window.setTimeout(() => setExiting(true), DRAW_MS);
+      const t2 = window.setTimeout(() => { setGone(true); onComplete?.(); }, DRAW_MS + EXIT_MS);
+      (raf as unknown as { _t1?: number; _t2?: number })._t1 = t1;
+      (raf as unknown as { _t1?: number; _t2?: number })._t2 = t2;
+    });
+    return () => {
+      cancelAnimationFrame(raf);
+      const r = raf as unknown as { _t1?: number; _t2?: number };
+      if (r._t1) clearTimeout(r._t1);
+      if (r._t2) clearTimeout(r._t2);
+    };
   }, [onComplete]);
 
+  if (skip === null) return null;
+  if (skip) return null;
   if (gone) return null;
 
   return (
@@ -71,6 +98,7 @@ export default function PageLoader({ onComplete }: { onComplete: () => void }) {
         transform: exiting ? "translateY(-100%)" : "translateY(0)",
         transition: exiting ? `transform ${EXIT_MS}ms cubic-bezier(0.76,0,0.24,1)` : "none",
         overflow: "hidden",
+        pointerEvents: exiting ? "none" : "auto",
       }}
     >
       {/* Brand — top left */}
