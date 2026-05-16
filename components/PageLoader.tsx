@@ -68,11 +68,14 @@ export default function PageLoader({ onComplete }: { onComplete?: () => void }) 
     }
 
     setSkip(false);
-    sessionStorage.setItem(STORAGE_KEY, "1");
 
     const raf = requestAnimationFrame(() => {
       const t1 = window.setTimeout(() => setExiting(true), DRAW_MS);
-      const t2 = window.setTimeout(() => { setGone(true); onComplete?.(); }, DRAW_MS + EXIT_MS);
+      const t2 = window.setTimeout(() => {
+        sessionStorage.setItem(STORAGE_KEY, "1");
+        setGone(true);
+        onComplete?.();
+      }, DRAW_MS + EXIT_MS);
       (raf as unknown as { _t1?: number; _t2?: number })._t1 = t1;
       (raf as unknown as { _t1?: number; _t2?: number })._t2 = t2;
     });
