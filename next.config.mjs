@@ -11,8 +11,8 @@ const CSP = [
   "default-src 'self'",
   // 'unsafe-inline' required for Next.js inline scripts + JSON-LD script tags.
   // 'unsafe-eval' required in dev only — Next.js react-refresh HMR runtime uses Function().
-  // 'wasm-unsafe-eval' required for Draco/MeshoptDecoder WASM (Three.js / GLB loading).
-  // blob: required for DRACOLoader — it creates a Worker from a blob: URL, and browsers
+  // 'wasm-unsafe-eval' required for KTX2/Basis + MeshoptDecoder WASM (Three.js / GLB loading).
+  // blob: required for KTX2Loader — it creates a Worker from a blob: URL, and browsers
   // that don't fully honour worker-src independently fall back to checking script-src.
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} 'wasm-unsafe-eval' blob: https://cdn.cal.com`,
   "style-src 'self' 'unsafe-inline'",
@@ -64,7 +64,7 @@ const nextConfig = {
         ],
       },
       {
-        source: '/draco/:path*',
+        source: '/basis/:path*',
         headers: [
           { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
         ],
@@ -89,15 +89,17 @@ const nextConfig = {
           { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
         ],
       },
-      // Home route: preload the Draco WASM decoder only. The GLB is intentionally
-      // loaded after the initial text paint so it does not compete with LCP.
+      // Home route: preload the Basis (KTX2) transcoder WASM so it is warmed
+      // before the GLB triggers texture transcoding. The GLB itself is loaded
+      // after the initial text paint so it does not compete with LCP.
       {
         source: '/',
         headers: [
           {
             key: 'Link',
             value: [
-              '</draco/draco_decoder.wasm>; rel=preload; as=fetch; crossorigin=anonymous',
+              '</basis/basis_transcoder.wasm>; rel=preload; as=fetch; crossorigin=anonymous',
+              '</basis/basis_transcoder.js>; rel=preload; as=script; crossorigin=anonymous',
             ].join(', '),
           },
         ],
@@ -145,7 +147,7 @@ const nextConfig = {
     optimizePackageImports: [
       'three',
       'three/examples/jsm/loaders/GLTFLoader',
-      'three/examples/jsm/loaders/DRACOLoader',
+      'three/examples/jsm/loaders/KTX2Loader',
       'three/examples/jsm/libs/meshopt_decoder.module',
       'three/examples/jsm/environments/RoomEnvironment',
       'gsap',

@@ -108,7 +108,12 @@ const ZERO_COLOR = new Color(0, 0, 0);
 let _ktx2Loader: KTX2Loader | null = null;
 function getKTX2Loader(renderer: WebGLRenderer): KTX2Loader {
   if (!_ktx2Loader) {
+    // Parallelise BasisU transcoding across more workers. Hero LODs contain
+    // ~90 textures, so the default workerLimit of 4 becomes the bottleneck
+    // on slower connections (transcode time dominates the 45 s load budget).
+    const workerLimit = Math.min(Math.max(navigator.hardwareConcurrency || 4, 4), 8);
     _ktx2Loader = new KTX2Loader().setTranscoderPath("/basis/");
+    _ktx2Loader.setWorkerLimit(workerLimit);
   }
   _ktx2Loader.detectSupport(renderer);
   return _ktx2Loader;
@@ -375,12 +380,15 @@ export default function Hero3D() {
       });
     };
 
+    // 90 s budget: GLB download (~3-5 MB) plus client-side BasisU transcode
+    // for ~90 KTX2 textures on slow networks / low-core devices.
+    const LOAD_TIMEOUT_MS = 90_000;
     const loadTimeout = window.setTimeout(() => {
       if (!disposed && !model) {
-        console.error("[Hero3D] GLB load timed out after 45s");
+        console.error(`[Hero3D] GLB load timed out after ${LOAD_TIMEOUT_MS / 1000}s`);
         setStatus("error");
       }
-    }, 45000);
+    }, LOAD_TIMEOUT_MS);
 
     const modelVersion = "heromodel-20260517-7";
     const modelPath =
