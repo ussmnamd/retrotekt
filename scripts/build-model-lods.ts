@@ -4,28 +4,20 @@
  * Output: public/models/hero-{mobile,tablet,desktop}.glb
  *
  * Geometry compression: EXT_meshopt_compression (via meshopt).
- * Texture compression:  KTX2/BasisU ETC1S (via toktx CLI).
- *
- * Requires toktx on PATH — install from:
- *   https://github.com/KhronosGroup/KTX-Software/releases
+ * Texture compression:  EXT_texture_webp (via sharp).
  *
  * Skips regeneration if all outputs exist and are newer than the source. If the
  * source is unavailable in CI, existing generated outputs are reused.
  */
 import * as path from 'path';
 import * as fs from 'fs/promises';
-import * as os from 'os';
-import { execFile } from 'child_process';
-import { promisify } from 'util';
 import { Document, NodeIO } from '@gltf-transform/core';
-import { ALL_EXTENSIONS, KHRTextureBasisu } from '@gltf-transform/extensions';
+import { ALL_EXTENSIONS, EXTTextureWebP } from '@gltf-transform/extensions';
 import { dedup, meshopt, prune, quantize, simplify, weld } from '@gltf-transform/functions';
 import { MeshoptEncoder, MeshoptSimplifier } from 'meshoptimizer';
 import sharp from 'sharp';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const draco3d = require('draco3d');
-
-const execFileAsync = promisify(execFile);
 
 const SRC = path.resolve(process.env.HERO_MODEL_SOURCE || 'model-sources/heromodel.glb');
 const SCRIPT = path.resolve('scripts/build-model-lods.ts');
@@ -33,55 +25,13 @@ const SCRIPT = path.resolve('scripts/build-model-lods.ts');
 type MeshoptLevel = 'medium' | 'high';
 const LODS = [
   // Target sizes: mobile 1.5-2 MB, tablet 3-4 MB, desktop 4-5 MB.
-  // qlevel = ETC1S quality (1-255, lower = smaller); mipmaps add ~33% size.
   // meshLevel 'high' = aggressive quantization filter (smaller, slightly lossy).
   // Conservative simplification — aggressive ratios produce visible holes.
   // `error` is the geometric tolerance (lower = stricter = fewer holes).
-  { name: 'hero-mobile',  ratio: 0.15, error: 0.012, resize: [96, 96]   as [number, number], qlevel: 70,  mipmaps: false, meshLevel: 'high'   as MeshoptLevel, posBits: 11, uvBits: 9,  normBits: 8  },
-  { name: 'hero-tablet',  ratio: 0.50, error: 0.005, resize: [256, 256] as [number, number], qlevel: 130, mipmaps: true,  meshLevel: 'high'   as MeshoptLevel, posBits: 13, uvBits: 11, normBits: 9  },
-  { name: 'hero-desktop', ratio: 0.75, error: 0.002, resize: [512, 512] as [number, number], qlevel: 144, mipmaps: true,  meshLevel: 'high'   as MeshoptLevel, posBits: 14, uvBits: 12, normBits: 10 },
+  { name: 'hero-mobile',  ratio: 0.15, error: 0.012, resize: [96, 96]   as [number, number], quality: 56, meshLevel: 'high' as MeshoptLevel, posBits: 11, uvBits: 9,  normBits: 8  },
+  { name: 'hero-tablet',  ratio: 0.50, error: 0.005, resize: [256, 256] as [number, number], quality: 68, meshLevel: 'high' as MeshoptLevel, posBits: 13, uvBits: 11, normBits: 9  },
+  { name: 'hero-desktop', ratio: 0.75, error: 0.002, resize: [512, 512] as [number, number], quality: 76, meshLevel: 'high' as MeshoptLevel, posBits: 14, uvBits: 12, normBits: 10 },
 ] as const;
-
-// ── toktx detection ───────────────────────────────────────────────────────────
-
-async function assertToktxAvailable(): Promise<void> {
-  try {
-    await execFileAsync('toktx', ['--version']);
-  } catch {
-    throw new Error(
-      '[build-model-lods] toktx not found on PATH.\n' +
-      'Install KTX-Software from https://github.com/KhronosGroup/KTX-Software/releases ' +
-      'and ensure `toktx` is on PATH, then re-run.',
-    );
-  }
-}
-
-// ── KTX2 encoding for a single texture ───────────────────────────────────────
-
-/**
- * Encodes a PNG buffer to KTX2 (ETC1S) by shelling out to the toktx CLI.
- * Returns the KTX2 binary buffer.
- */
-async function encodePngToKtx2(pngBuffer: Uint8Array, qlevel: number, mipmaps: boolean): Promise<Uint8Array> {
-  const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ktx2-'));
-  const inFile  = path.join(tmpDir, 'in.png');
-  const outFile = path.join(tmpDir, 'out.ktx2');
-  try {
-    await fs.writeFile(inFile, pngBuffer);
-    const args = [
-      '--encode',  'etc1s',
-      '--qlevel', String(qlevel),
-      '--clevel',  '1',
-      '--assign_oetf', 'srgb',
-    ];
-    if (mipmaps) args.unshift('--genmipmap');
-    args.push(outFile, inFile);
-    await execFileAsync('toktx', args);
-    return new Uint8Array(await fs.readFile(outFile));
-  } finally {
-    await fs.rm(tmpDir, { recursive: true, force: true });
-  }
-}
 
 // ── Degenerate-texture pruning ────────────────────────────────────────────────
 
@@ -90,7 +40,7 @@ async function dropDegenerateTextures(doc: Document) {
   // referenced by materials. Disposing them leaves materials with a null
   // baseColorTexture, which falls back to the baseColorFactor (often black)
   // and renders surfaces as black holes. Instead, upscale them to at least
-  // 4×4 so KTX2/sharp can encode them. KTX2/BasisU requires dimensions ≥ 4.
+  // 4x4 so sharp can encode them consistently.
   for (const texture of doc.getRoot().listTextures()) {
     const image = texture.getImage();
     if (!image) continue;
@@ -119,23 +69,19 @@ async function dropDegenerateTextures(doc: Document) {
   }
 }
 
-// ── KTX2 bulk encode for a document ──────────────────────────────────────────
+// ── WebP bulk encode for a document ──────────────────────────────────────────
 
 /**
  * For every texture in the document:
- *  1. Resize + normalise to PNG (sharp).
- *  2. Encode to KTX2/ETC1S (toktx CLI).
+ *  1. Resize + normalise with sharp.
+ *  2. Encode to WebP.
  *  3. Swap the raw image data and MIME type on the gltf-transform Texture.
  */
-async function compressTexturesToKtx2(doc: Document, resize: [number, number], qlevel: number, mipmaps: boolean): Promise<void> {
-  // Declare KHR_texture_basisu on the doc so writer marks textures as KTX2.
-  // Without this, the glTF lacks "extensionsUsed":["KHR_texture_basisu"] and
-  // GLTFLoader tries to decode the KTX2 bytes as PNG → white materials.
-  doc.createExtension(KHRTextureBasisu).setRequired(true);
+async function compressTexturesToWebP(doc: Document, resize: [number, number], quality: number): Promise<void> {
+  doc.createExtension(EXTTextureWebP).setRequired(true);
 
-  // Resize + KTX2-encode each texture individually. We do the resize manually
-  // (rather than via textureCompress) so we can clamp per-axis to the source
-  // dimension, ensuring extreme aspect ratios (e.g. 598×4 gradient strips)
+  // Resize + WebP-encode each texture individually. We clamp per-axis to the
+  // source dimension, ensuring extreme aspect ratios (e.g. 598x4 gradient strips)
   // can't collapse to height 0 and abort the whole batch.
   const [maxW, maxH] = resize;
   const textures = doc.getRoot().listTextures();
@@ -160,22 +106,21 @@ async function compressTexturesToKtx2(doc: Document, resize: [number, number], q
       const targetW = Math.max(4, Math.round(srcW * scale));
       const targetH = Math.max(4, Math.round(srcH * scale));
 
-      const pngBuffer = await sharp(image)
+      const webpBuffer = await sharp(image)
         .resize(targetW, targetH, { fit: 'fill' })
-        .png()
+        .webp({ quality, effort: 4 })
         .toBuffer();
 
-      const ktx2Buffer = await encodePngToKtx2(new Uint8Array(pngBuffer), qlevel, mipmaps);
-      texture.setImage(ktx2Buffer);
-      texture.setMimeType('image/ktx2');
+      texture.setImage(new Uint8Array(webpBuffer));
+      texture.setMimeType('image/webp');
       encoded++;
     } catch (e) {
-      console.warn(`  [warn] toktx encoding failed for "${texture.getName() || '(unnamed)'}": ${(e as Error).message} — keeping original`);
+      console.warn(`  [warn] WebP encoding failed for "${texture.getName() || '(unnamed)'}": ${(e as Error).message} - keeping original`);
       skipped++;
     }
   }));
 
-  console.log(`  [textures] ${encoded} encoded to KTX2, ${skipped} kept as PNG`);
+  console.log(`  [textures] ${encoded} encoded to WebP, ${skipped} kept original`);
 }
 
 // ── Paths ─────────────────────────────────────────────────────────────────────
@@ -219,9 +164,6 @@ async function main() {
     return;
   }
 
-  // Fail early if toktx is not available — do not proceed without KTX2.
-  await assertToktxAvailable();
-
   await MeshoptEncoder.ready;
   await MeshoptSimplifier.ready;
 
@@ -244,10 +186,10 @@ async function main() {
     const doc = await io.read(SRC);
     await dropDegenerateTextures(doc);
 
-    // Compress + KTX2-encode textures FIRST on the original (valid) texture data.
-    await compressTexturesToKtx2(doc, lod.resize, lod.qlevel, lod.mipmaps);
+    // Compress textures first while the original image data is still available.
+    await compressTexturesToWebP(doc, lod.resize, lod.quality);
 
-    // Deduplicate after texture encode (same KTX2 buffers can now be merged).
+    // Deduplicate after texture encode (same WebP buffers can now be merged).
     try {
       await doc.transform(dedup());
     } catch (e) {

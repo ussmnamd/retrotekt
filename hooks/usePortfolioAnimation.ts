@@ -6,6 +6,8 @@ import { ANIMATION_TIMINGS, ANIMATION_EASING } from "@/lib/animation-config";
 type Gsap = typeof import("gsap").default;
 
 export function setupPortfolioAnimation(gsap: Gsap) {
+  if (!document.querySelector("#portfolio-grid .pitem")) return;
+
   gsap.from("#portfolio-grid .pitem", {
     y: 28,
     opacity: 0,

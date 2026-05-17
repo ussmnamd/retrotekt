@@ -5,7 +5,7 @@ import {
   RepeatWrapping,
   Color,
   WebGLRenderer,
-  PCFSoftShadowMap,
+  PCFShadowMap,
   ACESFilmicToneMapping,
   SRGBColorSpace,
   Scene,
@@ -33,7 +33,6 @@ import {
   TextureLoader,
 } from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { KTX2Loader } from "three/examples/jsm/loaders/KTX2Loader.js";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import gsap from "gsap";
@@ -103,28 +102,6 @@ const TEXTURE_SLOTS = [
 // Reused in traverse loops — avoids per-mesh allocation and GC pressure.
 const ZERO_COLOR = new Color(0, 0, 0);
 
-// Module-level singleton for KTX2Loader — one instance per page.
-// detectSupport() is called each time to be safe (it is a cheap no-op after the first call).
-let _ktx2Loader: KTX2Loader | null = null;
-function getKTX2Loader(renderer: WebGLRenderer): KTX2Loader {
-  if (!_ktx2Loader) {
-    // Absolute origin-qualified path — relative paths can fail to resolve
-    // inside the blob: Worker that KTX2Loader spawns for BasisU transcoding,
-    // depending on browser/host. An absolute URL always resolves.
-    const path = `${window.location.origin}/basis/`;
-    _ktx2Loader = new KTX2Loader().setTranscoderPath(path);
-    // Single worker: spawning ≥2 workers triggers simultaneous WebAssembly
-    // compilation of the 527 KB BASIS module, which silently hangs on some
-    // production hosts (workers receive init+transcode messages and never
-    // respond). One worker means one BASIS instance — slower throughput but
-    // reliable. Textures are transcoded sequentially; for ~90 small textures
-    // total wall time is still a few seconds.
-    _ktx2Loader.setWorkerLimit(1);
-  }
-  _ktx2Loader.detectSupport(renderer);
-  return _ktx2Loader;
-}
-
 export default function Hero3D() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -173,7 +150,7 @@ export default function Hero3D() {
     renderer.setPixelRatio(dprCap);
     renderer.setSize(container.clientWidth, container.clientHeight);
     renderer.shadowMap.enabled = !isPhone;
-    renderer.shadowMap.type = PCFSoftShadowMap;
+    renderer.shadowMap.type = PCFShadowMap;
     renderer.toneMapping = ACESFilmicToneMapping;
     renderer.toneMappingExposure = CONFIG.toneExposure;
     renderer.outputColorSpace = SRGBColorSpace;
@@ -254,7 +231,6 @@ export default function Hero3D() {
 
     // ── Loaders ──────────────────────────────────────────────────────────────
     const loader = new GLTFLoader();
-    loader.setKTX2Loader(getKTX2Loader(renderer));
     loader.setMeshoptDecoder(MeshoptDecoder);
 
     let model: Group | null = null;
@@ -386,9 +362,7 @@ export default function Hero3D() {
       });
     };
 
-    // 90 s budget: GLB download (~3-5 MB) plus client-side BasisU transcode
-    // for ~90 KTX2 textures on slow networks / low-core devices.
-    const LOAD_TIMEOUT_MS = 90_000;
+    const LOAD_TIMEOUT_MS = 45_000;
     const loadTimeout = window.setTimeout(() => {
       if (!disposed && !model) {
         console.error(`[Hero3D] GLB load timed out after ${LOAD_TIMEOUT_MS / 1000}s`);
@@ -396,7 +370,7 @@ export default function Hero3D() {
       }
     }, LOAD_TIMEOUT_MS);
 
-    const modelVersion = "heromodel-20260517-7";
+    const modelVersion = "heromodel-20260517-8";
     const modelPath =
       deviceProfile === "phone"  ? `/models/hero-mobile.glb?v=${modelVersion}`  :
       deviceProfile === "tablet" ? `/models/hero-tablet.glb?v=${modelVersion}`  :
@@ -564,7 +538,7 @@ export default function Hero3D() {
           if (progress.lengthComputable && progress.total > 0) {
             const pct = Math.round((progress.loaded / progress.total) * 100);
             if (pct === 100) {
-              console.log(`[Hero3D] GLB download complete (${progress.total} B) at ${Math.round(performance.now() - loadStartedAt)}ms — transcoding KTX2…`);
+              console.log(`[Hero3D] GLB download complete (${progress.total} B) at ${Math.round(performance.now() - loadStartedAt)}ms`);
             }
           }
         },
