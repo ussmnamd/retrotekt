@@ -108,12 +108,15 @@ const ZERO_COLOR = new Color(0, 0, 0);
 let _ktx2Loader: KTX2Loader | null = null;
 function getKTX2Loader(renderer: WebGLRenderer): KTX2Loader {
   if (!_ktx2Loader) {
-    // Parallelise BasisU transcoding across more workers. Hero LODs contain
-    // ~90 textures, so the default workerLimit of 4 becomes the bottleneck
-    // on slower connections (transcode time dominates the 45 s load budget).
-    const workerLimit = Math.min(Math.max(navigator.hardwareConcurrency || 4, 4), 8);
-    _ktx2Loader = new KTX2Loader().setTranscoderPath("/basis/");
-    _ktx2Loader.setWorkerLimit(workerLimit);
+    // Absolute origin-qualified path — relative paths can fail to resolve
+    // inside the blob: Worker that KTX2Loader spawns for BasisU transcoding,
+    // depending on browser/host. An absolute URL always resolves.
+    const path = `${window.location.origin}/basis/`;
+    _ktx2Loader = new KTX2Loader().setTranscoderPath(path);
+    // Cap workers conservatively — too many parallel BASIS inits add overhead
+    // on cold load. Default (4) is fine; we keep it explicit to make the
+    // intent clear and stable across Three.js minor versions.
+    _ktx2Loader.setWorkerLimit(4);
   }
   _ktx2Loader.detectSupport(renderer);
   return _ktx2Loader;
@@ -399,10 +402,14 @@ export default function Hero3D() {
     let floorIdleId: number | undefined;
     let floorTimeoutId: ReturnType<typeof setTimeout> | undefined;
 
+    let loadStartedAt = 0;
     const loadModel = () => {
+      loadStartedAt = performance.now();
+      console.log(`[Hero3D] Starting load: ${modelPath}`);
       loader.load(
         modelPath,
         (gltf) => {
+          console.log(`[Hero3D] GLB loaded in ${Math.round(performance.now() - loadStartedAt)}ms`);
           window.clearTimeout(loadTimeout);
           if (disposed) {
             disposeMeshTree(gltf.scene);
@@ -550,7 +557,14 @@ export default function Hero3D() {
             });
           }
         },
-        undefined,
+        (progress) => {
+          if (progress.lengthComputable && progress.total > 0) {
+            const pct = Math.round((progress.loaded / progress.total) * 100);
+            if (pct === 100) {
+              console.log(`[Hero3D] GLB download complete (${progress.total} B) at ${Math.round(performance.now() - loadStartedAt)}ms — transcoding KTX2…`);
+            }
+          }
+        },
         (err) => {
           window.clearTimeout(loadTimeout);
           if (disposed) return;

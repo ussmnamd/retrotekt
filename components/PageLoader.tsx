@@ -69,21 +69,20 @@ export default function PageLoader({ onComplete }: { onComplete?: () => void }) 
 
     setSkip(false);
 
+    let t1: number | undefined;
+    let t2: number | undefined;
     const raf = requestAnimationFrame(() => {
-      const t1 = window.setTimeout(() => setExiting(true), DRAW_MS);
-      const t2 = window.setTimeout(() => {
+      t1 = window.setTimeout(() => setExiting(true), DRAW_MS);
+      t2 = window.setTimeout(() => {
         sessionStorage.setItem(STORAGE_KEY, "1");
         setGone(true);
         onComplete?.();
       }, DRAW_MS + EXIT_MS);
-      (raf as unknown as { _t1?: number; _t2?: number })._t1 = t1;
-      (raf as unknown as { _t1?: number; _t2?: number })._t2 = t2;
     });
     return () => {
       cancelAnimationFrame(raf);
-      const r = raf as unknown as { _t1?: number; _t2?: number };
-      if (r._t1) clearTimeout(r._t1);
-      if (r._t2) clearTimeout(r._t2);
+      if (t1 !== undefined) clearTimeout(t1);
+      if (t2 !== undefined) clearTimeout(t2);
     };
   }, [onComplete]);
 
