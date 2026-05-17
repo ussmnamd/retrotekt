@@ -15,6 +15,7 @@ import { setupShowcaseAnimation } from "@/hooks/useShowcaseAnimation";
 import { setupProcessAnimation } from "@/hooks/useProcessAnimation";
 import { setupPortfolioAnimation } from "@/hooks/usePortfolioAnimation";
 import { setupGenericAnimations, setupGenericAnimationsReduced } from "@/hooks/useGenericAnimationTriggers";
+import PageLoader from "@/components/PageLoader";
 
 const ModelShowcase = dynamic(() => import("@/components/ModelShowcase"), { 
   ssr: false,
@@ -28,7 +29,6 @@ const Hero3D = dynamic(() => import("@/components/Hero3D"), {
   loading: () => <div style={{ position: "absolute", inset: 0, background: "var(--color-background, #F7F0E3)" }} />,
 });
 
-const PageLoader = dynamic(() => import("@/components/PageLoader"), { ssr: false });
 
 export default function HomeClient() {
   const pageRef = useRef<HTMLDivElement>(null);

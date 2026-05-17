@@ -33,7 +33,7 @@ import {
   TextureLoader,
 } from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
+import { KTX2Loader } from "three/examples/jsm/loaders/KTX2Loader.js";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import gsap from "gsap";
@@ -46,7 +46,7 @@ gsap.registerPlugin(ScrollTrigger);
 // CONFIG — Premium 3D Hero Settings
 // ─────────────────────────────────────────────────────────────────────────────
 const CONFIG = {
-  modelPath: "/models/updatedmodel.draco.glb", // fallback; overridden per-device in useEffect
+  modelPath: "/models/hero-desktop.glb", // fallback; overridden per-device in useEffect
 
   targetSize: 8.5,
   framePadding: 0.92,
@@ -103,16 +103,15 @@ const TEXTURE_SLOTS = [
 // Reused in traverse loops — avoids per-mesh allocation and GC pressure.
 const ZERO_COLOR = new Color(0, 0, 0);
 
-// Module-level singleton — one DRACOLoader per page, not per mount.
-// Avoids spawning a new Draco worker on every Hero3D remount (React StrictMode, HMR).
-let _dracoLoader: DRACOLoader | null = null;
-function getDracoLoader(): DRACOLoader {
-  if (!_dracoLoader) {
-    _dracoLoader = new DRACOLoader();
-    _dracoLoader.setDecoderPath("/draco/");
-    _dracoLoader.preload();
+// Module-level singleton for KTX2Loader — one instance per page.
+// detectSupport() is called each time to be safe (it is a cheap no-op after the first call).
+let _ktx2Loader: KTX2Loader | null = null;
+function getKTX2Loader(renderer: WebGLRenderer): KTX2Loader {
+  if (!_ktx2Loader) {
+    _ktx2Loader = new KTX2Loader().setTranscoderPath("/basis/");
   }
-  return _dracoLoader;
+  _ktx2Loader.detectSupport(renderer);
+  return _ktx2Loader;
 }
 
 export default function Hero3D() {
@@ -244,7 +243,7 @@ export default function Hero3D() {
 
     // ── Loaders ──────────────────────────────────────────────────────────────
     const loader = new GLTFLoader();
-    loader.setDRACOLoader(getDracoLoader());
+    loader.setKTX2Loader(getKTX2Loader(renderer));
     loader.setMeshoptDecoder(MeshoptDecoder);
 
     let model: Group | null = null;
@@ -383,7 +382,7 @@ export default function Hero3D() {
       }
     }, 45000);
 
-    const modelVersion = "heromodel-20260515";
+    const modelVersion = "heromodel-20260517-7";
     const modelPath =
       deviceProfile === "phone"  ? `/models/hero-mobile.glb?v=${modelVersion}`  :
       deviceProfile === "tablet" ? `/models/hero-tablet.glb?v=${modelVersion}`  :
@@ -849,7 +848,6 @@ export default function Hero3D() {
 
       envTexture.dispose();
       pmrem.dispose();
-      // dracoLoader is a module singleton — not disposed on unmount.
       renderer.dispose();
       mixer = null;
       model = null;
