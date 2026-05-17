@@ -113,10 +113,13 @@ function getKTX2Loader(renderer: WebGLRenderer): KTX2Loader {
     // depending on browser/host. An absolute URL always resolves.
     const path = `${window.location.origin}/basis/`;
     _ktx2Loader = new KTX2Loader().setTranscoderPath(path);
-    // Cap workers conservatively — too many parallel BASIS inits add overhead
-    // on cold load. Default (4) is fine; we keep it explicit to make the
-    // intent clear and stable across Three.js minor versions.
-    _ktx2Loader.setWorkerLimit(4);
+    // Single worker: spawning ≥2 workers triggers simultaneous WebAssembly
+    // compilation of the 527 KB BASIS module, which silently hangs on some
+    // production hosts (workers receive init+transcode messages and never
+    // respond). One worker means one BASIS instance — slower throughput but
+    // reliable. Textures are transcoded sequentially; for ~90 small textures
+    // total wall time is still a few seconds.
+    _ktx2Loader.setWorkerLimit(1);
   }
   _ktx2Loader.detectSupport(renderer);
   return _ktx2Loader;
