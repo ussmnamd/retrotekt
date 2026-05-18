@@ -4,8 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "prebuild": "npm run build:model-lods && npm run build:marble",
-    "build:marble": "tsx scripts/build-marble-texture.ts",
+    "prebuild": "npm run build:model-lods",
     "build": "next build",
     "build:model-lods": "tsx scripts/build-model-lods.ts",
     "start": "next start",
