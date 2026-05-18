@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import {
-  RepeatWrapping,
   Color,
   WebGLRenderer,
   PCFShadowMap,
@@ -30,7 +29,7 @@ import {
   Raycaster,
   Vector2,
   Texture,
-  TextureLoader,
+  CanvasTexture,
 } from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
@@ -69,9 +68,13 @@ const CONFIG = {
   breathSpeed: 0.5,
 
   parallaxDeg: 12,
-  parallaxSmoothing: 0.055,
+  parallaxSmoothing: 0.14,
 
   scrollSpinTurns: 1.2,
+  // End-of-hero scroll lands the model near top-down so users see the
+  // architectural plan view as they scroll past the hero. For this model's
+  // axis convention, negative rotation.x is the top-down direction.
+  scrollTopDownTiltX: -1.25,
 
   envIntensity: 0.4,
   toneExposure: 1.15,
@@ -237,7 +240,7 @@ export default function Hero3D() {
     let mixer: AnimationMixer | null = null;
     let elapsed = 0;
     let lastFrameTime = performance.now();
-    const TARGET_INTERVAL = isMobile ? 1000 / 15 : 1000 / 30; // 15 fps mobile, 30 fps desktop
+    const TARGET_INTERVAL = isPhone ? 1000 / 30 : isTablet ? 1000 / 45 : 1000 / 60; // 60 fps desktop for smooth motion
     const IDLE_SLEEP_MS = 3000; // park 3 s after entrance if no interaction
     let lastInteractionTime = performance.now();
     let autoSlept = false;
@@ -376,9 +379,6 @@ export default function Hero3D() {
       deviceProfile === "tablet" ? `/models/hero-tablet.glb?v=${modelVersion}`  :
                                    `/models/hero-desktop.glb?v=${modelVersion}`;
 
-    let floorIdleId: number | undefined;
-    let floorTimeoutId: ReturnType<typeof setTimeout> | undefined;
-
     let loadStartedAt = 0;
     const loadModel = () => {
       loadStartedAt = performance.now();
@@ -405,46 +405,98 @@ export default function Hero3D() {
 
           const finalBox = new Box3().setFromObject(model);
           const finalCenter = finalBox.getCenter(new Vector3());
+          const finalSize = finalBox.getSize(new Vector3());
           model.position.sub(finalCenter);
 
           modelGroup.add(model);
 
           frameCamera(modelGroup);
 
+          // Procedural floor — drawn once on a 256×256 canvas, no network.
+          // Layers (back→front): warm cream base, subtle architectural grid,
+          // edge vignette to recede the floor, central soft contact shadow.
+          // MeshBasicMaterial keeps lighting cost at zero.
           const buildFloor = () => {
             if (disposed || !model) return;
 
-            const floorBox = new Box3().setFromObject(modelGroup);
-            new TextureLoader().load("/textures/marble.png", (marbleTex) => {
-              if (disposed) {
-                marbleTex.dispose();
-                return;
-              }
+            const size = 256;
+            const cvs = document.createElement("canvas");
+            cvs.width = cvs.height = size;
+            const ctx = cvs.getContext("2d");
+            if (!ctx) return;
 
-              marbleTex.colorSpace = SRGBColorSpace;
-              marbleTex.wrapS = marbleTex.wrapT = RepeatWrapping;
-              marbleTex.repeat.set(2.5, 2.5);
+            // 1) Warm cream base — picks up the brand background tone.
+            ctx.fillStyle = "#f5ede0";
+            ctx.fillRect(0, 0, size, size);
 
-              const floorMat = new MeshBasicMaterial({
-                map: marbleTex,
-                transparent: true,
-                opacity: 0.42,
-                depthWrite: false,
-              });
-              const floor = new Mesh(new PlaneGeometry(72, 72), floorMat);
-              floor.rotation.x = -Math.PI / 2;
-              floor.position.y = floorBox.min.y - 0.02;
-              floor.renderOrder = -1;
-              scene.add(floor);
-              requestTick();
+            // 2) Architectural grid — 16 cells, 1px lines, very low contrast.
+            ctx.strokeStyle = "rgba(60, 50, 35, 0.07)";
+            ctx.lineWidth = 1;
+            const step = size / 16;
+            ctx.beginPath();
+            for (let i = 1; i < 16; i++) {
+              const p = Math.round(i * step) + 0.5;
+              ctx.moveTo(p, 0); ctx.lineTo(p, size);
+              ctx.moveTo(0, p); ctx.lineTo(size, p);
+            }
+            ctx.stroke();
+
+            // 3) Edge vignette — fade alpha to 0 at the corners so the floor
+            //    blends into the page background instead of ending in a hard line.
+            const vignette = ctx.createRadialGradient(size / 2, size / 2, size * 0.25, size / 2, size / 2, size * 0.55);
+            vignette.addColorStop(0, "rgba(245, 237, 224, 0)");
+            vignette.addColorStop(1, "rgba(245, 237, 224, -1)"); // negative alpha clamps to 0
+            ctx.globalCompositeOperation = "destination-out";
+            const fade = ctx.createRadialGradient(size / 2, size / 2, size * 0.3, size / 2, size / 2, size * 0.55);
+            fade.addColorStop(0, "rgba(0,0,0,0)");
+            fade.addColorStop(1, "rgba(0,0,0,1)");
+            ctx.fillStyle = fade;
+            ctx.fillRect(0, 0, size, size);
+            ctx.globalCompositeOperation = "source-over";
+            void vignette;
+
+            // 4) Central contact shadow — soft circular dark spot under the model.
+            const shadow = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size * 0.22);
+            shadow.addColorStop(0,   "rgba(40, 30, 20, 0.32)");
+            shadow.addColorStop(0.6, "rgba(40, 30, 20, 0.10)");
+            shadow.addColorStop(1,   "rgba(40, 30, 20, 0)");
+            ctx.fillStyle = shadow;
+            ctx.fillRect(0, 0, size, size);
+
+            const floorTex = new CanvasTexture(cvs);
+            floorTex.colorSpace = SRGBColorSpace;
+            floorTex.anisotropy = 4;
+
+            const floorMat = new MeshBasicMaterial({
+              map: floorTex,
+              transparent: true,
+              opacity: 1.0,
+              depthWrite: false,
             });
+
+            // Worst-case sink: when modelGroup rotates around X by some angle,
+            // the corner of the bbox that ends up lowest in world Y traces a
+            // circle of radius sqrt((h/2)² + (d/2)²) around the group origin.
+            // Place the floor at that radius (plus float + breath margins) so
+            // the model never sinks regardless of rotation or animation phase.
+            const halfH = finalSize.y / 2;
+            const halfD = finalSize.z / 2;
+            const worstCaseDip = Math.hypot(halfH, halfD);
+            const breathSlack = halfH * breathAmplitude;
+            const groundY = -(worstCaseDip + floatAmplitude + breathSlack + 0.04);
+            const floorDiameter = Math.max(finalSize.x, finalSize.z) * 2.4;
+
+            const floor = new Mesh(new PlaneGeometry(floorDiameter, floorDiameter), floorMat);
+            floor.rotation.x = -Math.PI / 2;
+            floor.position.y = groundY;
+            floor.renderOrder = -1;
+            scene.add(floor);
+            requestTick();
           };
 
-          if (typeof requestIdleCallback !== "undefined") {
-            floorIdleId = requestIdleCallback(buildFloor, { timeout: 1200 });
-          } else {
-            floorTimeoutId = setTimeout(buildFloor, 0);
-          }
+          // Defer floor build until the entrance scale animation finishes —
+          // measuring bbox mid-scale produces a floor that hovers above ground.
+          gsap.delayedCall(CONFIG.entranceDuration, buildFloor);
 
           // ── Bulb lighting — find light meshes, glow them, place point lights ──
           // Cap the number of dynamic point lights — every extra real-time light
@@ -520,7 +572,7 @@ export default function Hero3D() {
           const heroSection = document.getElementById("hero-section");
           if (heroSection) {
             gsap.to(rotTarget, {
-              x: CONFIG.endRotationX,
+              x: CONFIG.scrollTopDownTiltX,
               y: CONFIG.endRotationY - Math.PI * 2 * CONFIG.scrollSpinTurns,
               ease: "none",
               delay: CONFIG.entranceDuration * 0.7,
@@ -625,7 +677,10 @@ export default function Hero3D() {
       const dx = (e.clientX - dragStartX) * 0.007;
       const dy = (e.clientY - dragStartY) * 0.004;
       rotTarget.y = dragStartRotY + dx;
-      rotTarget.x = Math.max(-0.7, Math.min(0.1, dragStartRotX + dy));
+      // For this model's axis convention: negative rotation.x = top-down,
+      // positive = bottom-up. Allow full top-down reach; cap bottom-up
+      // moderately so users don't lose the model behind the floor.
+      rotTarget.x = Math.max(-Math.PI / 2 + 0.05, Math.min(0.7, dragStartRotX + dy));
       autoSlept = false;
       lastInteractionTime = performance.now();
       requestTick();
@@ -819,10 +874,6 @@ export default function Hero3D() {
       clearTimeout(resizeTimer);
       window.clearTimeout(loadTimeout);
       window.clearTimeout(safetyTimer);
-      if (floorIdleId !== undefined && typeof cancelIdleCallback !== "undefined") {
-        cancelIdleCallback(floorIdleId);
-      }
-      if (floorTimeoutId !== undefined) clearTimeout(floorTimeoutId);
 
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("scroll", scrollHandler);
