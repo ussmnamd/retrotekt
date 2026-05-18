@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
   const resend = new Resend(process.env.RESEND_API_KEY);
 
   try {
-    await resend.emails.send({
+    const { error: sendError } = await resend.emails.send({
       from: 'Retrotekt <no-reply@retrotekt.com>',
       to,
       replyTo: data.email,
@@ -56,11 +56,26 @@ export async function POST(req: NextRequest) {
       html: inquiryEmailHtml(data),
     });
 
+    if (sendError) {
+      console.error('[api/contact] Resend rejected:', sendError);
+      return NextResponse.json(
+        {
+          error: 'Failed to send. Please email shahan@retrotekt.com directly.',
+          ...(process.env.NODE_ENV !== 'production' ? { debug: sendError.message ?? String(sendError) } : {}),
+        },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json({ ok: true });
   } catch (err) {
-    console.error('[api/contact]', err);
+    const message = err instanceof Error ? err.message : String(err);
+    console.error('[api/contact] Resend send failed:', message, err);
     return NextResponse.json(
-      { error: 'Failed to send. Please email shahan@retrotekt.com directly.' },
+      {
+        error: 'Failed to send. Please email shahan@retrotekt.com directly.',
+        ...(process.env.NODE_ENV !== 'production' ? { debug: message } : {}),
+      },
       { status: 500 }
     );
   }

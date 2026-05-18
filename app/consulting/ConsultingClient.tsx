@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { validators, hasErrors, type FieldError } from "@/lib/validate";
 
+const SHOW_WOW = true;
+
 // ── Icons ─────────────────────────────────────────────────────────────────────
 
 function IconWhatsApp() {
@@ -24,9 +26,147 @@ function SelectChevron() {
 function FieldErrorMsg({ error }: { error: FieldError }) {
   if (!error) return null;
   return (
-    <p role="alert" className="font-body text-[11px] text-red-400 mt-1.5">
+    <p role="alert" className="font-body text-[11px] text-red-500 mt-1.5">
       {error}
     </p>
+  );
+}
+
+// ── Hero Flourish — Animated isometric architectural blueprint ─────────────
+
+function HeroFlourish() {
+  const svgRef = useRef<SVGSVGElement>(null);
+
+  useEffect(() => {
+    let ctx: { revert: () => void } | null = null;
+
+    import("gsap").then(({ gsap }) => {
+      const svg = svgRef.current;
+      if (!svg) return;
+
+      const paths = svg.querySelectorAll<SVGPathElement | SVGLineElement | SVGRectElement | SVGPolygonElement>("path, line, rect, polygon");
+      paths.forEach((p) => {
+        const len = (p as SVGGeometryElement).getTotalLength?.() ?? 200;
+        p.style.strokeDasharray = String(len);
+        p.style.strokeDashoffset = String(len);
+      });
+
+      ctx = gsap.context(() => {
+        const mm = gsap.matchMedia();
+
+        mm.add("(prefers-reduced-motion: no-preference)", () => {
+          const tl = gsap.timeline({ defaults: { ease: "power2.inOut" } });
+
+          tl.to(paths, {
+            strokeDashoffset: 0,
+            duration: 2.4,
+            stagger: 0.08,
+          });
+
+          tl.to(svg, {
+            y: 4,
+            duration: 6,
+            ease: "sine.inOut",
+            repeat: -1,
+            yoyo: true,
+          }, ">");
+        });
+
+        mm.add("(prefers-reduced-motion: reduce)", () => {
+          paths.forEach((p) => { p.style.strokeDashoffset = "0"; });
+        });
+      }, svg);
+    });
+
+    return () => { ctx?.revert(); };
+  }, []);
+
+  return (
+    <div className="pointer-events-none absolute right-0 top-0 h-full w-[55%] overflow-hidden select-none z-0" aria-hidden="true">
+      <svg
+        ref={svgRef}
+        viewBox="0 0 600 700"
+        fill="none"
+        preserveAspectRatio="xMaxYMid meet"
+        className="absolute right-[-60px] top-0 h-full w-full"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        {/* Isometric building — footprint base */}
+        <polygon
+          points="300,420 480,320 480,200 300,300"
+          stroke="#A8843C" strokeWidth="0.9" strokeOpacity="0.30" fill="none"
+        />
+        <polygon
+          points="300,420 120,320 120,200 300,300"
+          stroke="#A8843C" strokeWidth="0.9" strokeOpacity="0.22" fill="none"
+        />
+        <polygon
+          points="120,200 300,100 480,200 300,300"
+          stroke="#A8843C" strokeWidth="1.1" strokeOpacity="0.35" fill="none"
+        />
+
+        {/* Roof ridge */}
+        <line x1="300" y1="100" x2="300" y2="300" stroke="#A8843C" strokeWidth="0.7" strokeOpacity="0.25" />
+
+        {/* Interior floor partition — left face */}
+        <line x1="120" y1="275" x2="300" y2="375" stroke="#A8843C" strokeWidth="0.6" strokeOpacity="0.18" />
+        <line x1="120" y1="250" x2="300" y2="350" stroke="#A8843C" strokeWidth="0.5" strokeOpacity="0.12" />
+
+        {/* Interior floor partition — right face */}
+        <line x1="300" y1="375" x2="480" y2="275" stroke="#A8843C" strokeWidth="0.6" strokeOpacity="0.18" />
+        <line x1="300" y1="350" x2="480" y2="250" stroke="#A8843C" strokeWidth="0.5" strokeOpacity="0.12" />
+
+        {/* Vertical corner columns */}
+        <line x1="120" y1="200" x2="120" y2="320" stroke="#A8843C" strokeWidth="1.0" strokeOpacity="0.28" />
+        <line x1="480" y1="200" x2="480" y2="320" stroke="#A8843C" strokeWidth="1.0" strokeOpacity="0.28" />
+        <line x1="300" y1="300" x2="300" y2="420" stroke="#A8843C" strokeWidth="1.0" strokeOpacity="0.28" />
+
+        {/* Window openings — right face */}
+        <rect x="370" y="230" width="50" height="38" stroke="#A8843C" strokeWidth="0.7" strokeOpacity="0.22" fill="none" />
+        <line x1="395" y1="230" x2="395" y2="268" stroke="#A8843C" strokeWidth="0.4" strokeOpacity="0.15" />
+
+        {/* Window openings — left face */}
+        <rect x="168" y="240" width="45" height="35" stroke="#A8843C" strokeWidth="0.7" strokeOpacity="0.18" fill="none" />
+        <line x1="190" y1="240" x2="190" y2="275" stroke="#A8843C" strokeWidth="0.4" strokeOpacity="0.13" />
+
+        {/* Door — left face */}
+        <rect x="230" y="350" width="30" height="42" stroke="#A8843C" strokeWidth="0.7" strokeOpacity="0.20" fill="none" />
+
+        {/* Ground plane perspective lines */}
+        <line x1="120" y1="320" x2="60" y2="380" stroke="#A8843C" strokeWidth="0.5" strokeOpacity="0.12" />
+        <line x1="480" y1="320" x2="540" y2="380" stroke="#A8843C" strokeWidth="0.5" strokeOpacity="0.12" />
+        <line x1="300" y1="420" x2="300" y2="480" stroke="#A8843C" strokeWidth="0.5" strokeOpacity="0.12" />
+        <line x1="60" y1="380" x2="300" y2="480" stroke="#A8843C" strokeWidth="0.5" strokeOpacity="0.10" />
+        <line x1="540" y1="380" x2="300" y2="480" stroke="#A8843C" strokeWidth="0.5" strokeOpacity="0.10" />
+
+        {/* Dimension annotation lines */}
+        <line x1="100" y1="200" x2="100" y2="320" stroke="#A8843C" strokeWidth="0.5" strokeOpacity="0.18" />
+        <line x1="96" y1="200" x2="104" y2="200" stroke="#A8843C" strokeWidth="0.5" strokeOpacity="0.18" />
+        <line x1="96" y1="320" x2="104" y2="320" stroke="#A8843C" strokeWidth="0.5" strokeOpacity="0.18" />
+        <text x="84" y="265" fill="#A8843C" fillOpacity="0.22" fontSize="9" fontFamily="monospace" letterSpacing="1">24'-0"</text>
+
+        {/* Crosshair registration mark */}
+        <circle cx="300" cy="300" r="4" stroke="#A8843C" strokeWidth="0.7" strokeOpacity="0.20" fill="none" />
+        <line x1="300" y1="288" x2="300" y2="312" stroke="#A8843C" strokeWidth="0.5" strokeOpacity="0.18" />
+        <line x1="288" y1="300" x2="312" y2="300" stroke="#A8843C" strokeWidth="0.5" strokeOpacity="0.18" />
+
+        {/* Fine guide grid — background plane */}
+        {Array.from({ length: 10 }, (_, i) => (
+          <line key={`gh${i}`} x1={60} y1={140 + i * 40} x2={540} y2={140 + i * 40} stroke="#A8843C" strokeWidth="0.3" strokeOpacity="0.05" />
+        ))}
+        {Array.from({ length: 13 }, (_, i) => (
+          <line key={`gv${i}`} x1={60 + i * 40} y1={140} x2={60 + i * 40} y2={500} stroke="#A8843C" strokeWidth="0.3" strokeOpacity="0.05" />
+        ))}
+
+        {/* Title block */}
+        <rect x="400" y="560" width="160" height="70" stroke="#A8843C" strokeWidth="0.6" strokeOpacity="0.18" fill="none" />
+        <line x1="400" y1="580" x2="560" y2="580" stroke="#A8843C" strokeWidth="0.4" strokeOpacity="0.14" />
+        <text x="480" y="575" fill="#A8843C" fillOpacity="0.20" fontSize="7" fontFamily="monospace" letterSpacing="2" textAnchor="middle">RETROTEKT STUDIO</text>
+        <text x="480" y="598" fill="#A8843C" fillOpacity="0.16" fontSize="6" fontFamily="monospace" letterSpacing="1" textAnchor="middle">ARCHITECTURAL VIZ</text>
+        <text x="480" y="614" fill="#A8843C" fillOpacity="0.13" fontSize="6" fontFamily="monospace" letterSpacing="1" textAnchor="middle">SCALE 1:100</text>
+      </svg>
+    </div>
   );
 }
 
@@ -68,14 +208,24 @@ type FormErrors = {
   message: FieldError;
 };
 
+const EMPTY_FORM: MessageForm = {
+  name: "",
+  email: "",
+  company: "",
+  projectType: "",
+  budget: "",
+  message: "",
+};
+
+const EMPTY_ERRORS: FormErrors = { name: null, email: null, message: null };
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function ConsultingClient() {
   const pageRef = useRef<HTMLDivElement>(null);
+  const glowRef = useRef<HTMLDivElement>(null);
 
-  // Observes multiple .reveal elements and adds .revealed when they enter viewport.
-  // CSS in globals.css drives the actual fade-up transition (opacity + translateY).
-  // useInView is not used here because it only tracks a single element.
+  // Scroll reveal — observes .reveal elements and adds .revealed on viewport entry
   useEffect(() => {
     const elements = pageRef.current?.querySelectorAll(".reveal");
     if (!elements) return;
@@ -94,21 +244,28 @@ export default function ConsultingClient() {
     return () => obs.disconnect();
   }, []);
 
-  const [form, setForm] = useState<MessageForm>({
-    name: "",
-    email: "",
-    company: "",
-    projectType: "",
-    budget: "",
-    message: "",
-  });
+  // Cursor-tracked radial glow — writes to CSS vars via rAF to avoid re-renders
+  useEffect(() => {
+    let pending = false;
+    let nx = 0, ny = 0;
+    const flush = () => {
+      pending = false;
+      const el = glowRef.current;
+      if (el) {
+        el.style.setProperty("--mx", `${nx}px`);
+        el.style.setProperty("--my", `${ny}px`);
+      }
+    };
+    const handleMouseMove = (e: MouseEvent) => {
+      nx = e.pageX; ny = e.pageY;
+      if (!pending) { pending = true; requestAnimationFrame(flush); }
+    };
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
 
-  const [errors, setErrors] = useState<FormErrors>({
-    name: null,
-    email: null,
-    message: null,
-  });
-
+  const [form, setForm] = useState<MessageForm>(EMPTY_FORM);
+  const [errors, setErrors] = useState<FormErrors>(EMPTY_ERRORS);
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -156,92 +313,79 @@ export default function ConsultingClient() {
     }
   };
 
-  if (sent) {
-    return (
-      <main className="bg-primary pt-24 md:pt-32 min-h-screen flex items-center justify-center px-6">
-        <div className="text-center max-w-lg">
-          <div className="w-20 h-20 border border-[#C4A882]/40 rounded-full flex items-center justify-center mx-auto mb-10">
-            <span className="text-[#C4A882] text-3xl">✓</span>
-          </div>
-          <h2 className="font-heading text-[clamp(2rem,5vw,3.5rem)] leading-[1.05] text-[#F7F0E3] mb-6">
-            Message Sent.
-          </h2>
-          <p className="font-body text-[16px] text-[#F7F0E3]/60 leading-relaxed mb-10">
-            We&apos;ve received your inquiry and will respond within 24 hours with a custom quote.
-          </p>
-          <button
-            onClick={() => setSent(false)}
-            className="group inline-flex items-center gap-4 px-6 py-[14px] rounded-[3px] border border-[#C4A882]/20 bg-[#F7F0E3]/[0.05] hover:bg-[#F7F0E3]/10 hover:border-[#C4A882]/35 transition-colors duration-300"
-          >
-            <div className="w-8 h-[1.5px] bg-[#C4A882]/60 group-hover:w-16 group-hover:bg-[#C4A882] transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]" />
-            <span className="font-body font-medium text-[12px] tracking-[0.3em] uppercase text-[#F7F0E3]/70 group-hover:text-[#F7F0E3] transition-colors duration-300">Submit Another</span>
-          </button>
-        </div>
-      </main>
-    );
-  }
-
   const inputCls =
-    "w-full bg-transparent border-b border-[#F7F0E3]/15 px-2 py-4 font-body text-[16px] text-[#F7F0E3] placeholder:text-[#F7F0E3]/25 focus:border-[#C4A882] focus:outline-none transition-colors duration-300";
+    "w-full bg-transparent border-b border-primary/15 px-2 py-4 font-body text-[16px] text-primary placeholder:text-primary/25 focus:border-[#A8843C] focus:outline-none transition-colors duration-300";
 
   const labelCls =
-    "block font-body text-[11px] tracking-[0.3em] uppercase text-[#F7F0E3]/50 mb-1";
+    "block font-body text-[11px] tracking-[0.3em] uppercase text-primary/50 mb-1";
 
   return (
-    <main ref={pageRef} className="bg-primary text-[#F7F0E3] min-h-screen">
+    <main ref={pageRef} className="bg-[#F7F0E3] text-primary min-h-screen overflow-hidden relative rounded-b-[2.5rem]">
+
+      {/* Cursor-tracked gold glow */}
+      <div
+        ref={glowRef}
+        className="pointer-events-none absolute inset-0 z-0 mix-blend-multiply opacity-100 transition-opacity duration-300"
+        style={{
+          background: "radial-gradient(600px circle at var(--mx,50%) var(--my,50%), rgba(168,132,60,0.28), transparent 55%)"
+        }}
+        aria-hidden="true"
+      />
+
+      {/* Noise grain overlay */}
+      <svg className="pointer-events-none absolute inset-0 h-full w-full opacity-[0.07] mix-blend-multiply z-0" aria-hidden="true">
+        <filter id="consulting-noise">
+          <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" stitchTiles="stitch" />
+        </filter>
+        <rect width="100%" height="100%" filter="url(#consulting-noise)" />
+      </svg>
+
       {/* ── Hero & Intro ──────────────────────────────────────────────────────── */}
-      <section className="relative pt-32 pb-24 md:pt-48 md:pb-32 overflow-hidden border-b border-[#F7F0E3]/10">
-        <div className="absolute inset-0 pointer-events-none opacity-5">
-            <svg width="100%" height="100%" className="mix-blend-overlay">
-                <filter id="noise">
-                    <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" stitchTiles="stitch" />
-                </filter>
-                <rect width="100%" height="100%" filter="url(#noise)" />
-            </svg>
-        </div>
-        
+      <section className="relative pt-32 pb-24 md:pt-48 md:pb-32 overflow-hidden border-b border-primary/10">
+        {SHOW_WOW && <HeroFlourish />}
+
         <div className="px-6 md:px-12 lg:px-16 max-w-[1600px] mx-auto relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8">
             <div className="lg:col-span-7 xl:col-span-8 flex flex-col justify-center">
                 <div className="flex items-center gap-4 mb-8 md:mb-12">
-                    <div className="h-px w-12 bg-[#C4A882]/50" />
-                    <span className="font-body text-[11px] tracking-[0.4em] uppercase text-[#C4A882]">Start a Project</span>
+                    <div className="h-px w-12 bg-[#A8843C]/50" />
+                    <span className="font-body text-[11px] tracking-[0.4em] uppercase text-[#A8843C]">Start a Project</span>
                 </div>
-                <h1 className="reveal font-heading text-[clamp(4rem,10vw,9rem)] leading-[0.85] tracking-[-0.03em] text-[#F7F0E3]">
+                <h1 className="reveal font-heading text-[clamp(3rem,7.5vw,6.5rem)] leading-[0.9] tracking-[-0.03em] text-primary">
                     Pre-Sell<br/>
-                    <span className="text-[#C4A882] italic font-serif opacity-90 pr-2">the</span>Unbuilt.
+                    <span className="text-[#A8843C] italic font-serif opacity-90 pr-2">the</span>Unbuilt.
                 </h1>
-                <p className="reveal reveal-delay-1 font-body text-[clamp(1.1rem,2vw,1.4rem)] text-[#F7F0E3]/60 max-w-2xl mt-10 leading-[1.6]">
-                    Next-Level Architectural Visualization Consulting for Developers & Contractors. 
-                    We operate globally to give you an unfair advantage. 
+                <p className="reveal reveal-delay-1 font-body text-[clamp(1.1rem,2vw,1.4rem)] text-primary/60 max-w-2xl mt-10 leading-[1.6]">
+                    Next-Level Architectural Visualization Consulting for Developers & Contractors.
+                    We operate globally to give you an unfair advantage.
                 </p>
             </div>
-            
-            <div className="lg:col-span-5 xl:col-span-4 flex flex-col justify-end lg:pl-10 lg:border-l border-[#F7F0E3]/10">
-                 <div className="reveal reveal-delay-2 p-8 md:p-10 bg-[#F7F0E3]/[0.03] border border-[#F7F0E3]/10 rounded-sm">
-                    <p className="font-heading text-2xl text-[#C4A882] mb-6">The Retrotekt Advantage</p>
+
+            <div className="lg:col-span-5 xl:col-span-4 flex flex-col justify-end lg:pl-10 lg:border-l border-primary/10">
+                 <div className="reveal reveal-delay-2 p-8 md:p-10 bg-primary/[0.03] border border-primary/10 rounded-sm">
+                    <p className="font-heading text-2xl text-[#A8843C] mb-6">The Retrotekt Advantage</p>
                     <ul className="flex flex-col gap-5">
                         <li className="flex items-start gap-4">
-                            <span className="text-[#C4A882] mt-1">✦</span>
-                            <p className="font-body text-[14px] text-[#F7F0E3]/70 leading-relaxed">
-                                Up to <strong className="text-[#F7F0E3] font-medium">60% leaner</strong> than comparable US rates
+                            <span className="text-[#A8843C] mt-1">✦</span>
+                            <p className="font-body text-[14px] text-primary/70 leading-relaxed">
+                                Up to <strong className="text-primary font-medium">60% leaner</strong> than comparable US rates
                             </p>
                         </li>
                         <li className="flex items-start gap-4">
-                            <span className="text-[#C4A882] mt-1">✦</span>
-                            <p className="font-body text-[14px] text-[#F7F0E3]/70 leading-relaxed">
-                                Lightning-fast <strong className="text-[#F7F0E3] font-medium">3–5 day</strong> standard delivery
+                            <span className="text-[#A8843C] mt-1">✦</span>
+                            <p className="font-body text-[14px] text-primary/70 leading-relaxed">
+                                Lightning-fast <strong className="text-primary font-medium">3–5 day</strong> standard delivery
                             </p>
                         </li>
                         <li className="flex items-start gap-4">
-                            <span className="text-[#C4A882] mt-1">✦</span>
-                            <p className="font-body text-[14px] text-[#F7F0E3]/70 leading-relaxed">
+                            <span className="text-[#A8843C] mt-1">✦</span>
+                            <p className="font-body text-[14px] text-primary/70 leading-relaxed">
                                 Generous revision rounds included out of the box
                             </p>
                         </li>
                         <li className="flex items-start gap-4">
-                            <span className="text-[#C4A882] mt-1">✦</span>
-                            <p className="font-body text-[14px] text-[#F7F0E3]/70 leading-relaxed">
+                            <span className="text-[#A8843C] mt-1">✦</span>
+                            <p className="font-body text-[14px] text-primary/70 leading-relaxed">
                                 100% custom-scoped for your exact blueprint
                             </p>
                         </li>
@@ -253,21 +397,21 @@ export default function ConsultingClient() {
       </section>
 
       {/* ── Stats Marquee ──────────────────────────────────────────────────────── */}
-      <section className="border-b border-[#F7F0E3]/10 py-10 overflow-hidden bg-[#F7F0E3]/[0.02]">
+      <section className="border-b border-primary/10 py-10 overflow-hidden bg-primary/[0.03]">
         <div className="flex gap-16 md:gap-32 w-max px-6 animate-[ticker-scroll_40s_linear_infinite] hover:[animation-play-state:paused]">
             {[...Array(4)].map((_, i) => (
                 <div key={i} className="flex gap-16 md:gap-32 flex-nowrap shrink-0">
                     <div className="flex items-baseline gap-4">
-                        <span className="font-heading text-4xl md:text-5xl text-[#C4A882]">3×</span>
-                        <span className="font-body text-[12px] uppercase tracking-[0.2em] text-[#F7F0E3]/50">Faster Approvals</span>
+                        <span className="font-heading text-4xl md:text-5xl text-[#A8843C]">3×</span>
+                        <span className="font-body text-[12px] uppercase tracking-[0.2em] text-primary/50">Faster Approvals</span>
                     </div>
                     <div className="flex items-baseline gap-4">
-                        <span className="font-heading text-4xl md:text-5xl text-[#C4A882]">40%</span>
-                        <span className="font-body text-[12px] uppercase tracking-[0.2em] text-[#F7F0E3]/50">More Bids Won</span>
+                        <span className="font-heading text-4xl md:text-5xl text-[#A8843C]">40%</span>
+                        <span className="font-body text-[12px] uppercase tracking-[0.2em] text-primary/50">More Bids Won</span>
                     </div>
                     <div className="flex items-baseline gap-4">
-                        <span className="font-heading text-4xl md:text-5xl text-[#C4A882]">5–7×</span>
-                        <span className="font-body text-[12px] uppercase tracking-[0.2em] text-[#F7F0E3]/50">ROI Per Render</span>
+                        <span className="font-heading text-4xl md:text-5xl text-[#A8843C]">5–7×</span>
+                        <span className="font-body text-[12px] uppercase tracking-[0.2em] text-primary/50">ROI Per Render</span>
                     </div>
                 </div>
             ))}
@@ -275,52 +419,77 @@ export default function ConsultingClient() {
       </section>
 
       {/* ── Form Section ──────────────────────────────────────────────────────── */}
-      <section className="py-24 md:py-32 relative">
+      <section className="py-24 md:py-32 relative z-10">
         <div className="px-6 md:px-12 lg:px-16 max-w-[1600px] mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24">
-            
+
             {/* LEFT: Context */}
             <div className="lg:col-span-5 flex flex-col gap-12 reveal">
                 <div>
-                    <h2 className="font-heading text-[clamp(2.5rem,5vw,4rem)] leading-[0.9] tracking-[-0.02em] text-[#F7F0E3] mb-6">
+                    <h2 className="font-heading text-[clamp(2.5rem,5vw,4rem)] leading-[0.9] tracking-[-0.02em] text-primary mb-6">
                         Stop Leaving<br/>Money on<br/>The Table.
                     </h2>
-                    <p className="font-body text-[15px] text-[#F7F0E3]/60 leading-relaxed max-w-md">
+                    <p className="font-body text-[15px] text-primary/60 leading-relaxed max-w-md">
                         We turn blueprints into your most powerful sales asset. Tell us what you&apos;re building, and we&apos;ll engineer the visuals that close the deal.
                     </p>
                 </div>
 
-                <div className="h-px bg-[#F7F0E3]/10 w-full" />
+                <div className="h-px bg-primary/10 w-full" />
 
                 <div>
-                    <p className="font-body text-[11px] tracking-[0.3em] uppercase text-[#C4A882] mb-6">Direct Connect</p>
+                    <p className="font-body text-[11px] tracking-[0.3em] uppercase text-[#A8843C] mb-6">Direct Connect</p>
                     <div className="flex flex-col gap-6">
                         <a href="mailto:shahan@retrotekt.com" className="group flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-full border border-[#F7F0E3]/15 flex items-center justify-center group-hover:border-[#C4A882] group-hover:bg-[#C4A882]/10 transition-all duration-300">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#F7F0E3]/50 group-hover:text-[#C4A882] transition-colors">
+                            <div className="w-12 h-12 rounded-full border border-primary/15 flex items-center justify-center group-hover:border-[#A8843C] group-hover:bg-[#A8843C]/10 transition-all duration-300">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary/50 group-hover:text-[#A8843C] transition-colors">
                                     <rect x="2" y="4" width="20" height="16" rx="2" />
                                     <path d="M2 7l10 7 10-7" />
                                 </svg>
                             </div>
-                            <span className="font-body text-[15px] text-[#F7F0E3]/70 group-hover:text-[#F7F0E3] transition-colors">shahan@retrotekt.com</span>
+                            <span className="font-body text-[15px] text-primary/70 group-hover:text-primary transition-colors">shahan@retrotekt.com</span>
                         </a>
                         <a href="https://wa.me/14406408735" target="_blank" rel="noopener noreferrer" className="group flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-full border border-[#F7F0E3]/15 flex items-center justify-center group-hover:border-[#C4A882] group-hover:bg-[#C4A882]/10 transition-all duration-300">
-                                <span className="text-[#F7F0E3]/50 group-hover:text-[#C4A882] transition-colors">
+                            <div className="w-12 h-12 rounded-full border border-primary/15 flex items-center justify-center group-hover:border-[#A8843C] group-hover:bg-[#A8843C]/10 transition-all duration-300">
+                                <span className="text-primary/50 group-hover:text-[#A8843C] transition-colors">
                                     <IconWhatsApp />
                                 </span>
                             </div>
-                            <span className="font-body text-[15px] text-[#F7F0E3]/70 group-hover:text-[#F7F0E3] transition-colors">WhatsApp Direct Line</span>
+                            <span className="font-body text-[15px] text-primary/70 group-hover:text-primary transition-colors">WhatsApp Direct Line</span>
                         </a>
                     </div>
                 </div>
             </div>
 
-            {/* RIGHT: Form */}
+            {/* RIGHT: Form card or success */}
             <div className="lg:col-span-7 reveal reveal-delay-1">
-                <div className="bg-[#F7F0E3]/[0.02] border border-[#F7F0E3]/10 p-8 md:p-14 lg:p-16 rounded-md shadow-2xl">
+                <div className="bg-white/50 border border-primary/10 p-8 md:p-14 lg:p-16 rounded-md shadow-2xl shadow-primary/5">
+                    {sent ? (
+                      <div className="text-center py-8">
+                        <div className="w-20 h-20 border border-[#A8843C]/40 rounded-full flex items-center justify-center mx-auto mb-10">
+                          <span className="text-[#A8843C] text-3xl">✓</span>
+                        </div>
+                        <h2 className="font-heading text-[clamp(2rem,5vw,3.5rem)] leading-[1.05] text-primary mb-6">
+                          Message Sent.
+                        </h2>
+                        <p className="font-body text-[16px] text-primary/60 leading-relaxed mb-10">
+                          We&apos;ve received your inquiry and will respond within 24 hours with a custom quote.
+                        </p>
+                        <button
+                          onClick={() => {
+                            setSent(false);
+                            setForm(EMPTY_FORM);
+                            setErrors(EMPTY_ERRORS);
+                            setSubmitError(null);
+                          }}
+                          className="group inline-flex items-center gap-4 px-6 py-[14px] rounded-[3px] border border-[#A8843C]/20 bg-primary/[0.04] hover:bg-primary/[0.08] hover:border-[#A8843C]/35 transition-colors duration-300"
+                        >
+                          <div className="w-8 h-[1.5px] bg-[#A8843C]/60 group-hover:w-16 group-hover:bg-[#A8843C] transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]" />
+                          <span className="font-body font-medium text-[12px] tracking-[0.3em] uppercase text-primary/70 group-hover:text-primary transition-colors duration-300">Submit Another</span>
+                        </button>
+                      </div>
+                    ) : (
                     <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-10">
-                        
+
                         {/* Intro Row */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                             <div className="flex flex-col">
@@ -331,7 +500,7 @@ export default function ConsultingClient() {
                                     value={form.name}
                                     onChange={(e) => update("name", e.target.value)}
                                     onBlur={() => setErrors((prev) => ({ ...prev, name: validators.name(form.name) }))}
-                                    className={`${inputCls} ${errors.name ? "border-red-400 focus:border-red-500" : ""}`}
+                                    className={`${inputCls} ${errors.name ? "border-red-500 focus:border-red-600" : ""}`}
                                     placeholder="John Smith"
                                 />
                                 <FieldErrorMsg error={errors.name} />
@@ -344,7 +513,7 @@ export default function ConsultingClient() {
                                     value={form.email}
                                     onChange={(e) => update("email", e.target.value)}
                                     onBlur={() => setErrors((prev) => ({ ...prev, email: validators.email(form.email) }))}
-                                    className={`${inputCls} ${errors.email ? "border-red-400 focus:border-red-500" : ""}`}
+                                    className={`${inputCls} ${errors.email ? "border-red-500 focus:border-red-600" : ""}`}
                                     placeholder="john@company.com"
                                 />
                                 <FieldErrorMsg error={errors.email} />
@@ -374,12 +543,12 @@ export default function ConsultingClient() {
                                         className={`${inputCls} appearance-none cursor-pointer pr-10`}
                                         style={{ backgroundColor: "transparent" }}
                                     >
-                                        <option value="" disabled className="text-primary bg-primary">Select a package…</option>
+                                        <option value="" disabled style={{ color: '#2C1F14', backgroundColor: '#F7F0E3' }}>Select a package…</option>
                                         {PROJECT_TYPES.map((t) => (
-                                            <option key={t} value={t} className="text-primary bg-primary">{t}</option>
+                                            <option key={t} value={t} style={{ color: '#2C1F14', backgroundColor: '#F7F0E3' }}>{t}</option>
                                         ))}
                                     </select>
-                                    <div className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[#C4A882]">
+                                    <div className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[#A8843C]">
                                         <SelectChevron />
                                     </div>
                                 </div>
@@ -397,8 +566,8 @@ export default function ConsultingClient() {
                                         onClick={() => update("budget", b)}
                                         className="group flex items-center gap-3"
                                     >
-                                        <div className={`h-[2px] transition-all duration-300 ${form.budget === b ? "w-6 bg-[#C4A882]" : "w-3 bg-[#F7F0E3]/20 group-hover:w-6 group-hover:bg-[#C4A882]/60"}`} />
-                                        <span className={`font-body text-[12px] tracking-[0.1em] uppercase transition-colors duration-300 ${form.budget === b ? "text-[#C4A882]" : "text-[#F7F0E3]/40 group-hover:text-[#F7F0E3]/80"}`}>{b}</span>
+                                        <div className={`h-[2px] transition-all duration-300 ${form.budget === b ? "w-6 bg-[#A8843C]" : "w-3 bg-primary/20 group-hover:w-6 group-hover:bg-[#A8843C]/60"}`} />
+                                        <span className={`font-body text-[12px] tracking-[0.1em] uppercase transition-colors duration-300 ${form.budget === b ? "text-[#A8843C]" : "text-primary/40 group-hover:text-primary/80"}`}>{b}</span>
                                     </button>
                                 ))}
                             </div>
@@ -413,36 +582,37 @@ export default function ConsultingClient() {
                                 value={form.message}
                                 onChange={(e) => update("message", e.target.value)}
                                 onBlur={() => setErrors((prev) => ({ ...prev, message: validators.message(form.message) }))}
-                                className={`${inputCls} resize-none pt-4 pb-2 ${errors.message ? "border-red-400 focus:border-red-500" : ""}`}
+                                className={`${inputCls} resize-none pt-4 pb-2 ${errors.message ? "border-red-500 focus:border-red-600" : ""}`}
                                 placeholder="Describe your project — space type, style, references, timeline…"
                             />
                             <div className="flex items-start justify-between gap-4 mt-2">
                                 <FieldErrorMsg error={errors.message} />
-                                <p className="font-body text-[11px] text-[#F7F0E3]/30 shrink-0 ml-auto">{form.message.length}/5000</p>
+                                <p className="font-body text-[11px] text-primary/30 shrink-0 ml-auto">{form.message.length}/5000</p>
                             </div>
                         </div>
 
                         {submitError && (
-                          <p role="alert" className="font-body text-[12px] text-red-400 -mt-4">
+                          <p role="alert" className="font-body text-[12px] text-red-500 -mt-4">
                             {submitError}
                           </p>
                         )}
 
-                        <div className="pt-6 border-t border-[#F7F0E3]/10 flex flex-col sm:flex-row items-center justify-between gap-6">
+                        <div className="pt-6 border-t border-primary/10 flex flex-col sm:flex-row items-center justify-between gap-6">
                             <button
                                 type="submit"
                                 disabled={sending}
-                                className="group w-full sm:w-auto inline-flex justify-center items-center gap-4 px-8 py-4 bg-[#C4A882] hover:bg-[#b39771] text-primary transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="group w-full sm:w-auto inline-flex justify-center items-center gap-4 px-8 py-4 bg-[#A8843C] hover:bg-[#8a6a2e] text-[#F7F0E3] transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 <span className="font-body font-bold text-[12px] tracking-[0.3em] uppercase">
                                     {sending ? "Sending…" : "Submit Inquiry"}
                                 </span>
                             </button>
-                            <p className="font-body text-[12px] text-[#F7F0E3]/40 text-center sm:text-right max-w-[200px]">
+                            <p className="font-body text-[12px] text-primary/40 text-center sm:text-right max-w-[200px]">
                                 We hit the ground running and respond within hours.
                             </p>
                         </div>
                     </form>
+                    )}
                 </div>
             </div>
 
