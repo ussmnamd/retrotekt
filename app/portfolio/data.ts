@@ -61,15 +61,15 @@ export const projects: Project[] = [
   {
     slug: 'chocolate-fish-sacramento',
     assetKey: 'sacramento',
-    name: 'Chocolate Fish — UC Davis',
+    name: 'Chocolate Fish — Sacramento',
     client: 'Chocolate Fish Coffee Roasters',
-    city: 'UC Davis, CA',
+    city: 'Sacramento, CA',
     year: '2025',
     type: 'Renders + Construction',
     tags: ['Hospitality', 'Cafe'],
     scope: ['Pre-construction renders', 'Construction documentation'],
     description:
-      "Third location, same trusted process. Five photoreal renders locked the UC Davis design before construction began. Ten construction photographs document every stage — confirming the renders weren't aspirational, they were a specification.",
+      "Third location, same trusted process. Five photoreal renders locked the Sacramento design before construction began. Ten construction photographs document every stage — confirming the renders weren't aspirational, they were a specification.",
     filterCategory: 'Renders',
     isFlagship: false,
   },
