@@ -14,8 +14,8 @@ export const showcase = [
     src: "/showcase/model-02.webp",
     ghost: "/showcase/model-02-ghost.webp",
     role: "Retail / Roastery",
-    title: "Chocolate Fish — Sacramento",
-    location: "Sacramento, CA · 2025",
+    title: "Chocolate Fish — UC Davis",
+    location: "UC Davis, CA · 2025",
     href: "/portfolio/chocolate-fish-sacramento",
     links: [
       { label: "View Project Case Study", href: "/portfolio/chocolate-fish-sacramento" },
