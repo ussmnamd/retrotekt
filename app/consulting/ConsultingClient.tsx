@@ -144,7 +144,7 @@ function HeroFlourish() {
         <line x1="100" y1="200" x2="100" y2="320" stroke="#A8843C" strokeWidth="0.5" strokeOpacity="0.18" />
         <line x1="96" y1="200" x2="104" y2="200" stroke="#A8843C" strokeWidth="0.5" strokeOpacity="0.18" />
         <line x1="96" y1="320" x2="104" y2="320" stroke="#A8843C" strokeWidth="0.5" strokeOpacity="0.18" />
-        <text x="84" y="265" fill="#A8843C" fillOpacity="0.22" fontSize="9" fontFamily="monospace" letterSpacing="1">24'-0"</text>
+        <text x="84" y="265" fill="#A8843C" fillOpacity="0.22" fontSize="9" fontFamily="monospace" letterSpacing="1">24&apos;-0&quot;</text>
 
         {/* Crosshair registration mark */}
         <circle cx="300" cy="300" r="4" stroke="#A8843C" strokeWidth="0.7" strokeOpacity="0.20" fill="none" />
