@@ -6,7 +6,6 @@ import { useEffect, useRef, useState } from "react";
 import { useInView } from "@/lib/use-in-view";
 import { ServiceCard } from "@/components/ServiceCard";
 import { ProcessCard } from "@/components/ProcessCard";
-import DebugPanel from "@/components/DebugPanel";
 import { portfolioAssets } from "@/app/portfolio/assets";
 import CTASection from "@/components/CTASection";
 import { setupHeroAnimation } from "@/hooks/useHeroAnimation";
@@ -184,7 +183,6 @@ export default function HomeClient() {
   return (
     <>
       <PageLoader />
-      <DebugPanel />
 <main className="relative w-full bg-background" ref={pageRef}>
 
         {/* ── HERO ───────────────────────────────────────────────────────── */}

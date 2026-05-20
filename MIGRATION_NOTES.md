@@ -64,11 +64,43 @@ Only top-level differences:
 - new tree has: `KILL_LIST.md`, `MIGRATION_NOTES.md`, `MEGA_PLAN.md`
 - new tree's `.env.example` is shorter (Sentry block removed)
 
-## Deferred work (intentional, requires user sign-off)
+## Purge pass (applied after baseline)
 
-1. **Remove `components/DebugPanel.tsx` + its import in `app/HomeClient.tsx`** — currently dead-code-eliminated in prod via `IS_PROD` guard, so removing it shrinks the source tree but not the production bundle. Deferred until parity is proven; user can request as a follow-up.
-2. **Move `playwright` / `@playwright/test` to a separate test-only install** — large devDeps not needed for production builds. Current setup is functional; deferred.
-3. **Audit `public/`** for orphaned assets — would require matching every literal asset path in source against `public/` listing including dynamically-constructed paths (`/portfolio/${slug}/...`). Deferred to a follow-up pass.
+After baseline parity was proven, ran an evidence-based source-purge pass. All removals had grep-confirmed zero usage outside the deleted site.
+
+| Removal | Evidence | Effect |
+|---|---|---|
+| `components/DebugPanel.tsx` (deleted) | grep `DebugPanel` across source returned only the def site + its sole import in `app/HomeClient.tsx`. Was dead-code-eliminated in prod via `IS_PROD` guard. | Source surface −65 lines. Bundle unchanged (already DCE'd). |
+| `DebugPanel` import + JSX in `app/HomeClient.tsx` | Followed from above. | Source surface −2 lines. |
+| `@testing-library/react` (devDependency) | grep across source/tests/configs returned only `package.json`. Tests don't render React. | 17 transitive packages dropped on `npm install`. |
+
+### Post-purge verification
+```
+[x] npx tsc --noEmit             — 0 errors
+[x] npm run lint                 — 0 errors
+[x] npm test (vitest)            — 28/28 passed
+[x] npm run build                — exit 0, 14 routes, identical byte sizes to pre-purge build
+[x] curl every route             — same status codes (200/308/404)
+[x] homepage HTML size           — 135351 bytes — IDENTICAL to pre-purge
+[x] security headers intact      — CSP, HSTS, X-Frame-Options, etc.
+[x] "DebugPanel" in served HTML  — 0 hits (confirmed gone)
+```
+
+The byte-identical homepage HTML proves the purge had **zero observable effect** on the rendered output.
+
+## Audited and intentionally kept
+
+- `@testing-library/jest-dom` — referenced by `vitest.setup.ts` (harmless devDep).
+- `@vitejs/plugin-react`, `jsdom` — referenced by `vitest.config.ts`.
+- `critters` — transitive runtime dep of Next.js `experimental.optimizeCss`.
+- `playwright` — peer of `@playwright/test`, used by `playwright.config.ts` + `e2e/*.spec.ts`.
+- `tsx` — runs every `build:*` script in `package.json`.
+- `public/showcase/*.avif` — produced by `scripts/build-showcase.ts`; pipeline asset.
+- Type exports `ProjectAssets`, `ProjectSlug`, `ProcessCardProps`, `ServiceCardProps` — internal-only but stripping `export` keyword is TS-only churn with zero runtime effect.
+
+## Still deferred
+
+1. **Split test deps into a separate install group** — `playwright`, vitest, etc. are large devDeps. Only worth doing if CI image size matters.
 
 ## Rollback
 
