@@ -1,0 +1,415 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+::selection {
+  background-color: var(--color-accent);
+  color: var(--color-ink);
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    transform: scale(0.95);
+    opacity: 0.6;
+  }
+
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+}
+
+/* ── Architectural drawing animations ─────────────────────────────────────── */
+@keyframes arch-draw {
+  from { stroke-dashoffset: 1; }
+  to   { stroke-dashoffset: 0; }
+}
+
+@keyframes arch-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes arch-progress {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+/* ── Hero front-layer reveal (replaces GSAP fromTo — no JS dependency) ──────── */
+@keyframes hero-reveal {
+  from { transform: translateY(30px); }
+  to   { transform: translateY(0); }
+}
+[data-hero-front] {
+  animation: hero-reveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+[data-hero-front]:nth-of-type(2) { animation-delay: 0.2s; }
+@media (prefers-reduced-motion: reduce) {
+  [data-hero-front] { animation: none; transform: none; }
+}
+
+/* placeholder dots trick via clip */
+@keyframes placeholder-dots {
+  0%   { clip-path: inset(0 66% 0 0); }
+  33%  { clip-path: inset(0 33% 0 0); }
+  66%  { clip-path: inset(0 0% 0 0);  }
+  100% { clip-path: inset(0 66% 0 0); }
+}
+
+:root {
+  /* Legacy tokens — kept for backwards compat with existing Tailwind classes */
+  --background: #F7F0E3;
+  --foreground: #2C1F14;
+  /* ── New design token system ──────────────────────────────────────────── */
+
+  /* Backgrounds */
+  --color-bg: #F7F0E3;
+  --color-surface: #EDE3CE;
+  --color-surface-2: #E2D5BC;
+
+  /* Brand hierarchy */
+  --color-accent: #C4A882;
+  /* sandy accent — lines, icon strokes, badges */
+  --color-mid: #8C6E4B;
+  /* section labels, UI metadata — 4.7:1 on bg (AA) */
+  --color-deep: #4A3322;
+  /* body text, secondary headings — 8.9:1 (AAA) */
+  --color-ink: #2C1F14;
+  /* primary headlines, dark CTAs — 14.2:1 (AAA) */
+
+  /* Dark sections */
+  --color-dark-bg: #2C1F14;
+  --color-dark-surface: #3D2A1A;
+  --color-dark-accent: #C4A882;
+  --color-dark-text: #F7F0E3;
+
+  /* Borders */
+  --color-border: #D4C5A9;
+  --color-border-strong: #B59E7D;
+
+  /* Focus rings */
+  --color-focus: #8C6E4B;
+
+  /* Type scale */
+  --text-xs: 0.6875rem;
+  /* 11px */
+  --text-sm: 0.8125rem;
+  /* 13px */
+  --text-base: 1rem;
+  /* 16px */
+  --text-lg: 1.125rem;
+  /* 18px */
+  --text-xl: 1.375rem;
+  /* 22px */
+  --text-2xl: 1.75rem;
+  /* 28px */
+  --text-3xl: 2.5rem;
+  /* 40px */
+  --text-display: clamp(4rem, 9vw, 8rem);
+
+  /* Frame */
+  --frame-strip: 16px;
+
+  /* Section spacing */
+  --section-padding-y: clamp(5rem, 10vw, 9rem);
+  --section-padding-x: clamp(1.5rem, 6vw, 7rem);
+
+  /* Button tokens */
+  --btn-radius: 2px;
+  --btn-height: 48px;
+  --btn-height-sm: 38px;
+  --btn-font-size: 0.8125rem;
+  --btn-tracking: 0.1em;
+  --btn-duration: 0.28s;
+  --btn-ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Touch: eliminate 300 ms tap delay on iOS (safe on all target browsers) ── */
+a,
+button,
+[role="button"] {
+  touch-action: manipulation;
+}
+
+/* ── Safari: -webkit-backdrop-filter prefix for backdrop-blur utilities ────── */
+/* Tailwind's backdrop-blur-* compiles to backdrop-filter only; Safari < 15.4  */
+/* needs the -webkit- prefix. iOS 15+ supports both, but the prefix is harmless.*/
+[class*="backdrop-blur"],
+[class*="backdrop-filter"] {
+  -webkit-backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);
+  backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  color: var(--color-ink);
+  background: var(--color-dark-bg);
+  font-family: var(--font-geist-sans), sans-serif;
+  width: 100%;
+  overflow-x: hidden;
+  position: relative;
+}
+
+.frame-strip-left,
+.frame-strip-right {
+  width: var(--frame-strip);
+  background: var(--color-dark-bg);
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  :root {
+    --frame-strip: 8px;
+  }
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-geist-sans), sans-serif;
+}
+
+/* ── Focus states (WCAG 2.1 AA) ───────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ── Scroll reveal ─────────────────────────────────────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Both class names supported: .revealed (JS-added) and .visible (alias) */
+.reveal.revealed,
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-delay-1 {
+  transition-delay: 80ms;
+}
+
+.reveal-delay-2 {
+  transition-delay: 160ms;
+}
+
+.reveal-delay-3 {
+  transition-delay: 240ms;
+}
+
+/* ── Hero scroll indicator ─────────────────────────────────────────────────── */
+@keyframes scroll-drop {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+
+  20% {
+    opacity: 1;
+  }
+
+  80% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(200%);
+    opacity: 0;
+  }
+}
+
+.animate-scroll-drop {
+  animation: scroll-drop 2s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+/* ── Card hover — premium lift ────────────────────────────────────────────── */
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 2px;
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.32s ease,
+    box-shadow 0.32s ease;
+}
+
+.card:hover,
+.card:active {
+  transform: translateY(-4px);
+  border-color: var(--color-border-strong);
+  box-shadow: 0 16px 40px rgba(44, 31, 20, 0.08);
+}
+
+/* ── Nav link underline animation ─────────────────────────────────────────── */
+.nav-link {
+  position: relative;
+  text-decoration: none;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--color-ink);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-link:hover::after,
+.nav-link:active::after {
+  transform: scaleX(1);
+}
+
+/* ── Custom scrollbar ──────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-surface);
+  border-radius: 2px;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@layer components {
+  .section-label {
+    @apply text-[11px] tracking-[0.14em] uppercase text-[#8C6E4B];
+  }
+
+  .heading-display {
+    @apply text-[clamp(2.5rem, 6vw, 5rem)] font-bold leading-[0.95] tracking-[-0.02em] text-[#2C1F14];
+  }
+
+  .heading-section {
+    @apply text-[clamp(2rem, 4vw, 3rem)] font-semibold leading-[1.1] tracking-[-0.01em] text-[#2C1F14];
+  }
+
+  .body-text {
+    @apply text-base leading-[1.75] text-[#4A3322] max-w-[60ch];
+  }
+
+  .stat-number {
+    @apply text-5xl font-light text-[#2C1F14] tabular-nums;
+  }
+
+  .stat-label {
+    @apply text-[11px] tracking-[0.1em] uppercase text-[#8C6E4B] mt-1;
+  }
+}
+
+/* ── Footer scan line ───────────────────────────────────────────────────────── */
+@keyframes footer-scan {
+  from { transform: translateY(0); }
+  to   { transform: translateY(100%); }
+}
+
+/* ── Live Projects Ticker ───────────────────────────────────────────────────── */
+@keyframes ticker-scroll {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+
+.ticker-track {
+  animation: ticker-scroll 60s linear infinite;
+  will-change: transform;
+}
+
+.ticker-root:hover .ticker-track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .ticker-track {
+    animation-play-state: paused !important;
+  }
+
+  /* Disable scroll-reveal transitions — make elements immediately visible */
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  /* Disable hero scroll-drop animation */
+  .animate-scroll-drop {
+    animation: none !important;
+  }
+
+  /* Disable card hover lift */
+  .card:hover {
+    transform: none;
+  }
+}
+
+.showcase-img-ghost {
+  /* Desaturated warm bleach — matches the cream mist overlay */
+  filter: brightness(1.55) saturate(0.12) contrast(0.82) sepia(0.18);
+  /* Ghost sits directly above the colour image in the same figure */
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  z-index: 1;
+  pointer-events: none;
+  transform-origin: center center;
+  /* Hidden at rest — GSAP sets visibility:visible only during the swap */
+  visibility: hidden;
+  /* GPU layer hint — GSAP animates opacity/transform on this */
+  will-change: transform, opacity;
+}
+
+/* Hero canvas — isolated GPU compositing layer */
+.hero-canvas-container {
+  contain: layout style;
+  will-change: transform;
+}
+
+/* Showcase section — pin creates a complex stacking context */
+.showcase-pin {
+  contain: layout style;
+}
+
+/* When the mist overlay is visible, ensure it reads above slides */
+#showcase-mist {
+  z-index: 10;
+}
