@@ -35,12 +35,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Dev tooling
-.claude/
-.agents/
-.codex/
-CLAUDE.md
-
 # Performance baselines / measurement artifacts
 /_perf/
 

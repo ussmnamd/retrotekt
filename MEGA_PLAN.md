@@ -11,16 +11,6 @@
 
 ---
 
-## Skills you will lean on
-
-- **`dead-code-detector`** — produces an evidence-backed kill-list before any deletion.
-- **`hallucination-guard`** — verifies imports/packages/files/env vars/routes resolve to real things.
-- **`safe-migrate`** — copy mechanics, exclude rules, verification gates.
-
-(All three live at `.claude/skills/<name>/SKILL.md` in the source repo.)
-
----
-
 ## Phase 0 — Source must be green first
 
 Before any copy, the source repo at `H:\New folder\retrotekt-web-2\` MUST:
@@ -211,8 +201,6 @@ If anything fails after deployment:
 ```
 Produce a production-ready cut of the Next.js project at H:\New folder\retrotekt-web-2\
 into H:\New folder\retrotektwebnew\.
-
-Use the skills .claude/skills/dead-code-detector, hallucination-guard, and safe-migrate.
 
 Rules:
 1. No visual or behavioral change in the browser. Every page renders identically.

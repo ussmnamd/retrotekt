@@ -17,7 +17,6 @@
 | `tmp/hero-mobile-draco-test.glb` | scratch artifact, no references |
 | `_perf/baseline.md` | perf scratch note, no references |
 | `tsconfig.tsbuildinfo` | incremental-compile cache |
-| `.claude/` | Claude Code config, not part of the deployable site |
 
 ### Config changes
 | File | Change |
