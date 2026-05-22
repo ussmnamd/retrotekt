@@ -397,10 +397,11 @@ export default function ConsultingClient() {
       </section>
 
       {/* ── Stats Marquee ──────────────────────────────────────────────────────── */}
-      <section className="border-b border-primary/10 py-10 overflow-hidden bg-primary/[0.03]">
-        <div className="flex gap-16 md:gap-32 w-max px-6 animate-[ticker-scroll_40s_linear_infinite] hover:[animation-play-state:paused]">
-            {[...Array(4)].map((_, i) => (
-                <div key={i} className="flex gap-16 md:gap-32 flex-nowrap shrink-0">
+      <section className="border-b border-primary/10 py-10 overflow-hidden bg-primary/[0.03]" aria-label="Results: 3x faster approvals, 40 percent more bids won, and 5 to 7 times ROI per render.">
+        <span className="sr-only">Results: 3x faster approvals, 40 percent more bids won, and 5 to 7 times ROI per render.</span>
+        <div className="flex w-max px-6 animate-[ticker-scroll_40s_linear_infinite] hover:[animation-play-state:paused]" aria-hidden="true">
+            {[0, 1].map((segment) => (
+                <div key={segment} className="flex gap-16 md:gap-32 flex-nowrap shrink-0">
                     <div className="flex items-baseline gap-4">
                         <span className="font-heading text-4xl md:text-5xl text-[#A8843C]">3×</span>
                         <span className="font-body text-[12px] uppercase tracking-[0.2em] text-primary/50">Faster Approvals</span>

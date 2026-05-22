@@ -102,7 +102,7 @@ export default function ModelShowcase() {
                   sizes="70vw"
                 />
               </div>
-              
+
             </figure>
           ))}
         </div>
@@ -211,7 +211,7 @@ export default function ModelShowcase() {
             aria-label="Previous project"
             className="pointer-events-auto group flex items-center justify-center w-12 h-12 transition-all duration-300 active:scale-90"
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="opacity-30 group-hover:opacity-100 transition-opacity duration-300">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="opacity-60 md:opacity-30 group-hover:opacity-100 transition-opacity duration-300">
               <path d="M15 19L8 12L15 5" stroke="#2C1F14" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
@@ -220,7 +220,7 @@ export default function ModelShowcase() {
             aria-label="Next project"
             className="pointer-events-auto group flex items-center justify-center w-12 h-12 transition-all duration-300 active:scale-90"
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="opacity-30 group-hover:opacity-100 transition-opacity duration-300">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="opacity-60 md:opacity-30 group-hover:opacity-100 transition-opacity duration-300">
               <path d="M9 5L16 12L9 19" stroke="#2C1F14" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>

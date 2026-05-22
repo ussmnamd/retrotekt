@@ -62,3 +62,32 @@ test.describe('SEO — robots.txt', () => {
     expect(content).toContain('sitemap');
   });
 });
+
+test.describe('SEO — portfolio images', () => {
+  test('project images use descriptive alt text', async ({ page }) => {
+    await page.goto('/portfolio/chocolate-fish-modesto');
+
+    await expect(
+      page.getByAltText(
+        'Photorealistic 3D interior render of Chocolate Fish Cafe Modesto California, view 1'
+      )
+    ).toBeAttached();
+
+    const genericAltCount = await page
+      .locator('img[alt^="Chocolate Fish"][alt*="render "]')
+      .count();
+    expect(genericAltCount).toBe(0);
+  });
+});
+
+test.describe('SEO — footer crawl links', () => {
+  test('footer exposes clean service and portfolio hrefs', async ({ page }) => {
+    await page.goto('/');
+
+    await expect(page.locator('footer a[href="/services#renders"]')).toHaveCount(1);
+    await expect(page.locator('footer a[href="/services#walkthroughs"]')).toHaveCount(1);
+    await expect(page.locator('footer a[href="/services#floor-plans"]')).toHaveCount(1);
+    await expect(page.locator('footer a[href="/portfolio"]')).toHaveCount(1);
+    await expect(page.locator('footer a[href="/consulting"]')).toHaveCount(1);
+  });
+});

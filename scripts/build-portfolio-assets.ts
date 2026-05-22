@@ -247,7 +247,7 @@ async function processPhotoSection(
       jpg: publicUrl(path.join(outDir, `${slug}-${largestW}.jpg`)),
       width,
       height,
-      alt: `${altPrefix} ${i + 1}`,
+      alt: `${altPrefix}, view ${i + 1}`,
       srcsetAvif,
       srcsetWebp,
       srcsetJpg,
@@ -524,7 +524,7 @@ async function main(): Promise<void> {
   const modestoBeforeOut = path.join(OUT_ROOT, "modesto", "before");
   const modestoBefore = await processPhotoSection(
     modestoBeforeDir, modestoBeforeOut, beforeFiles, PHOTO_WIDTHS,
-    "Chocolate Fish Modesto — site before construction"
+    "Pre-construction site photo for Chocolate Fish Cafe Modesto California 3D visualization project"
   );
 
   console.log("\n-- construction --");
@@ -532,7 +532,7 @@ async function main(): Promise<void> {
   const modestoConstructOut = path.join(OUT_ROOT, "modesto", "construction");
   const modestoConstruction = await processPhotoSection(
     modestoConstructDir, modestoConstructOut, constructFiles, PHOTO_WIDTHS,
-    "Chocolate Fish Modesto — construction in progress"
+    "Construction progress photo matching the Chocolate Fish Cafe Modesto California 3D interior render"
   );
 
   console.log("\n-- renders --");
@@ -540,7 +540,7 @@ async function main(): Promise<void> {
   const modestoRendersOut = path.join(OUT_ROOT, "modesto", "renders");
   const modestoRenders = await processPhotoSection(
     modestoRendersDir, modestoRendersOut, renderFiles, RENDER_WIDTHS,
-    "Chocolate Fish Modesto — render"
+    "Photorealistic 3D interior render of Chocolate Fish Cafe Modesto California"
   );
 
   console.log("\n-- videos --");
@@ -589,7 +589,7 @@ async function main(): Promise<void> {
   const livermoreConstructOut = path.join(OUT_ROOT, "livermore", "construction");
   const livermoreConstruction = await processPhotoSection(
     livermoreCDir, livermoreConstructOut, livermoreConstructFiles, PHOTO_WIDTHS,
-    "Chocolate Fish Livermore — construction in progress"
+    "Construction progress photo matching the Chocolate Fish Cafe Livermore California 3D architectural render"
   );
 
   console.log("\n-- renders --");
@@ -597,7 +597,7 @@ async function main(): Promise<void> {
   const livermoreRendersOut = path.join(OUT_ROOT, "livermore", "renders");
   const livermoreRenders = await processPhotoSection(
     livermoreRDir, livermoreRendersOut, livermoreRenderFiles, RENDER_WIDTHS,
-    "Chocolate Fish Livermore — render"
+    "Photorealistic 3D architectural render of Chocolate Fish Cafe Livermore California"
   );
 
   const livermoreAssets: ProjectAssets = {
@@ -619,7 +619,7 @@ async function main(): Promise<void> {
   const sacramentoConstructOut = path.join(OUT_ROOT, "sacramento", "construction");
   const sacramentoConstruction = await processPhotoSection(
     sacramentoCDir, sacramentoConstructOut, sacramentoConstructFiles, PHOTO_WIDTHS,
-    "Chocolate Fish Sacramento — construction in progress"
+    "Construction progress photo matching the Chocolate Fish Cafe Sacramento California 3D architectural render"
   );
 
   console.log("\n-- renders --");
@@ -627,7 +627,7 @@ async function main(): Promise<void> {
   const sacramentoRendersOut = path.join(OUT_ROOT, "sacramento", "renders");
   const sacramentoRenders = await processPhotoSection(
     sacramentoRDir, sacramentoRendersOut, sacramentoRenderFiles, RENDER_WIDTHS,
-    "Chocolate Fish Sacramento — render"
+    "Photorealistic 3D architectural render of Chocolate Fish Cafe Sacramento California"
   );
 
   const sacramentoAssets: ProjectAssets = {

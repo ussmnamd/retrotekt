@@ -1,6 +1,16 @@
 import Link from "next/link";
 import Image from "next/image";
 
+const MARQUEE_ITEMS = Array.from({ length: 4 });
+
+const FOOTER_LINKS = [
+  { label: "Still Renders", href: "/services#renders", num: "DWG-01" },
+  { label: "Walkthroughs", href: "/services#walkthroughs", num: "DWG-02" },
+  { label: "Floor Plans", href: "/services#floor-plans", num: "DWG-03" },
+  { label: "Portfolio", href: "/portfolio", num: "DWG-04" },
+  { label: "Consulting", href: "/consulting", num: "DWG-05" },
+];
+
 export default function Footer() {
 
   return (
@@ -25,6 +35,7 @@ export default function Footer() {
         }}
         aria-label="Ready to move faster? Start a project"
       >
+        <span className="sr-only">Ready to move faster? Start a project.</span>
         {/* Hover Accent */}
         <div className="absolute inset-0 bg-[#C49A6C] opacity-0 group-hover:opacity-25 blur-[30px] transition-opacity duration-700 pointer-events-none" />
 
@@ -40,25 +51,30 @@ export default function Footer() {
         />
 
         <div
-          className="flex relative z-10 group-hover:[animation-play-state:paused]"
-          style={{ animation: "footer-marquee 10s linear infinite" }}
+          className="footer-marquee-track flex relative z-10 group-hover:[animation-play-state:paused]"
+          aria-hidden="true"
+          style={{ animation: "footer-marquee 16s linear infinite" }}
         >
-          {Array.from({ length: 8 }).map((_, i) => (
-            <span
-              key={i}
-              className="whitespace-nowrap flex-shrink-0 flex items-center font-heading"
-              style={{
-                fontWeight: 300,
-                fontSize: "clamp(1.8rem, 4vw, 3.4rem)",
-                letterSpacing: "-0.01em",
-                wordSpacing: "-0.05em",
-                color: "#1A1008",
-                paddingRight: "clamp(1rem, 2.5vw, 2.5rem)",
-              }}
-            >
-              Ready to move faster?
-              <span style={{ color: "#8A7055", margin: "0 clamp(0.6rem,1.2vw,1.2rem)", fontSize: "0.5em", opacity: 0.6 }}>✦</span>
-            </span>
+          {[0, 1].map((segment) => (
+            <div key={segment} className="flex shrink-0">
+              {MARQUEE_ITEMS.map((_, i) => (
+                <span
+                  key={`${segment}-${i}`}
+                  className="whitespace-nowrap flex-shrink-0 flex items-center font-heading"
+                  style={{
+                    fontWeight: 300,
+                    fontSize: "clamp(1.8rem, 4vw, 3.4rem)",
+                    letterSpacing: "-0.01em",
+                    wordSpacing: "-0.05em",
+                    color: "#1A1008",
+                    paddingRight: "clamp(1rem, 2.5vw, 2.5rem)",
+                  }}
+                >
+                  Ready to move faster?
+                  <span style={{ color: "#8A7055", margin: "0 clamp(0.6rem,1.2vw,1.2rem)", fontSize: "0.5em", opacity: 0.6 }}>✦</span>
+                </span>
+              ))}
+            </div>
           ))}
         </div>
         <style>{`
@@ -66,9 +82,20 @@ export default function Footer() {
             from { transform: translateX(0); }
             to   { transform: translateX(-50%); }
           }
+          .footer-marquee-track {
+            width: max-content;
+            will-change: transform;
+            backface-visibility: hidden;
+            transform: translate3d(0, 0, 0);
+          }
           @keyframes footer-sweep {
             from { transform: translateX(-200%); }
             to   { transform: translateX(300%); }
+          }
+          @media (prefers-reduced-motion: reduce) {
+            .footer-marquee-track {
+              animation-play-state: paused !important;
+            }
           }
         `}</style>
       </Link>
@@ -201,11 +228,7 @@ export default function Footer() {
                 </p>
               </div>
               <ul className="flex flex-col gap-0">
-                {[
-                  { label: "Services", href: "/services", num: "DWG-01" },
-                  { label: "Portfolio", href: "/portfolio", num: "DWG-02" },
-                  { label: "Consulting", href: "/consulting", num: "DWG-03" },
-                ].map(({ label, href, num }) => (
+                {FOOTER_LINKS.map(({ label, href, num }) => (
                   <li key={href}>
                     <Link href={href} className="group flex items-center justify-between py-2.5 hover:pl-2 transition-all duration-300">
                       <div className="flex items-center gap-3">

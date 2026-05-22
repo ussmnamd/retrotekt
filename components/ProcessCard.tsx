@@ -122,8 +122,8 @@ const ProcessCardBase: React.FC<ProcessCardProps> = ({ phase, title, desc, index
         opacity: active ? 1 : 0,
         transform: active ? 'translateY(0px)' : 'translateY(36px)',
         transition: [
-          'opacity 0.75s cubic-bezier(0.16,1,0.3,1)',
-          'transform 0.75s cubic-bezier(0.16,1,0.3,1)',
+          'opacity 0.4s cubic-bezier(0.16,1,0.3,1)',
+          'transform 0.4s cubic-bezier(0.16,1,0.3,1)',
           'border-color 0.4s ease',
           'box-shadow 0.4s ease',
         ].join(', '),

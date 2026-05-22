@@ -245,9 +245,9 @@ export default function Navbar() {
 
             {/* Menu button + dropdown — all other states */}
             <div
-              className="relative"
-              onMouseEnter={handleMenuEnter}
-              onMouseLeave={handleMenuLeave}
+              className={`relative ${isScrolled ? "pointer-events-auto" : "pointer-events-none"}`}
+              onMouseEnter={isScrolled ? handleMenuEnter : undefined}
+              onMouseLeave={isScrolled ? handleMenuLeave : undefined}
             >
             <button
               onClick={() => setIsMenuOpen((v) => !v)}

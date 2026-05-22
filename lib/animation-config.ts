@@ -29,7 +29,7 @@ export const ANIMATION_TIMINGS = {
   showcaseMouseReset: 1.0,
 
   // Process section: each card activates this many seconds after the previous
-  processStagger: 0.7,
+  processStagger: 0.12,
 
   // Portfolio grid reveal
   portfolioGrid: 0.7,

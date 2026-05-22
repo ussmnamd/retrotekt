@@ -6,7 +6,6 @@ import { useEffect, useRef, useState } from "react";
 import { useInView } from "@/lib/use-in-view";
 import { ServiceCard } from "@/components/ServiceCard";
 import { ProcessCard } from "@/components/ProcessCard";
-import DebugPanel from "@/components/DebugPanel";
 import { portfolioAssets } from "@/app/portfolio/assets";
 import CTASection from "@/components/CTASection";
 import { setupHeroAnimation } from "@/hooks/useHeroAnimation";
@@ -184,12 +183,11 @@ export default function HomeClient() {
   return (
     <>
       <PageLoader />
-      <DebugPanel />
 <main className="relative w-full bg-background" ref={pageRef}>
 
         {/* ── HERO ───────────────────────────────────────────────────────── */}
         <div className="bg-primary">
-        <section data-section="hero" className="relative w-full h-screen min-h-[700px] overflow-hidden bg-background rounded-b-[2.5rem]">
+        <section data-section="hero" className="relative w-full h-[78svh] min-h-[560px] md:h-screen md:min-h-[700px] overflow-hidden bg-background rounded-b-[2.5rem]">
 
           {/* 1. BACK LAYER (Z-0) — opaque base prevents compositor snapshot bleed-through */}
           <div className="absolute inset-0 z-0 w-full pointer-events-none bg-background" />

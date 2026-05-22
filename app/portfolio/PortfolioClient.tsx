@@ -152,35 +152,42 @@ export default function PortfolioClient() {
                 const { isDesktop } = mmCtx.conditions as { isDesktop: boolean };
                 if (!isDesktop) return;
 
-                const tl = gsap.timeline({ defaults: { ease: 'power3.out', duration: 0.9 } });
+                const defaults = { ease: 'power3.out', duration: 0.9 };
 
-                tl.from('[data-anim="featured-eyebrow"]', {
-                  y: 20, opacity: 0,
+                gsap.from('[data-anim="featured-eyebrow"]', {
+                  ...defaults, y: 20, opacity: 0,
                   scrollTrigger: { trigger: '[data-anim="featured-eyebrow"]', start: 'top 80%' },
                 });
-                tl.from('[data-anim="featured-meta"]', {
-                  y: 30, opacity: 0,
+                gsap.from('[data-anim="featured-meta"]', {
+                  ...defaults, y: 30, opacity: 0,
                   scrollTrigger: { trigger: '[data-anim="featured-meta"]', start: 'top 80%' },
-                }, '<0.1');
-                tl.from('[data-anim="featured-image"]', {
-                  scale: 1.05, opacity: 0, duration: 1.2,
+                });
+                gsap.from('[data-anim="featured-image"]', {
+                  ...defaults, scale: 1.05, opacity: 0, duration: 1.2,
                   scrollTrigger: { trigger: '[data-anim="featured-image"]', start: 'top 75%' },
-                }, '<');
-                tl.from('[data-anim="location-card"]', {
-                  y: 40, opacity: 0, stagger: 0.15,
+                });
+                gsap.from('[data-anim="location-card"]', {
+                  ...defaults, y: 40, opacity: 0, stagger: 0.15,
                   scrollTrigger: { trigger: '[data-anim="locations-grid"]', start: 'top 75%' },
                 });
-                tl.from('[data-anim="render-tile"]', {
-                  y: 24, opacity: 0, stagger: 0.04, duration: 0.6,
-                  scrollTrigger: { trigger: '#renders', start: 'top 80%' },
+                gsap.from('[data-anim="render-tile"]', {
+                  ...defaults, y: 24, opacity: 0, stagger: 0.04, duration: 0.6,
+                  scrollTrigger: { trigger: '#renders', start: 'top 80%', once: true },
                 });
-                tl.from('[data-anim="cta"]', {
-                  y: 30, opacity: 0,
-                  scrollTrigger: { trigger: '[data-anim="cta"]', start: 'top 85%' },
+                gsap.from('[data-anim="cta"]', {
+                  ...defaults, y: 30, opacity: 0,
+                  scrollTrigger: { trigger: '[data-anim="cta"]', start: 'top 85%', once: true },
                 });
               }
             );
           }, root);
+
+          // Recalculate all trigger positions after layout is fully settled.
+          // Without this, triggers computed before images paint can be wrong,
+          // leaving tiles stuck at opacity:0 on first load.
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => ScrollTrigger.refresh());
+          });
         });
       },
       { rootMargin: '200px 0px' }
