@@ -91,9 +91,10 @@ function isWebGLAvailable(): boolean {
   }
 }
 
-// Matches phone-sized or coarse-pointer devices (phones + iPads)
+// Viewport width is the primary signal so mobile browser emulation and
+// real touch devices both select the smaller GLB.
 function getDeviceProfile(): "phone" | "tablet" | "desktop" {
-  if (window.matchMedia("(max-width: 768px) and (pointer: coarse)").matches) return "phone";
+  if (window.matchMedia("(max-width: 768px)").matches) return "phone";
   if (window.matchMedia("(max-width: 1180px) and (pointer: coarse)").matches) return "tablet";
   return "desktop";
 }
@@ -373,7 +374,7 @@ export default function Hero3D() {
       }
     }, LOAD_TIMEOUT_MS);
 
-    const modelVersion = "heromodel-20260517-8";
+    const modelVersion = "heromodel-20260806-2";
     const modelPath =
       deviceProfile === "phone"  ? `/models/hero-mobile.glb?v=${modelVersion}`  :
       deviceProfile === "tablet" ? `/models/hero-tablet.glb?v=${modelVersion}`  :

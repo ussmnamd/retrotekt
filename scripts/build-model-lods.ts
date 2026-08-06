@@ -26,11 +26,15 @@ type MeshoptLevel = 'medium' | 'high';
 const LODS = [
   // Target sizes: mobile 1.5-2 MB, tablet 3-4 MB, desktop 4-5 MB.
   // meshLevel 'high' = aggressive quantization filter (smaller, slightly lossy).
-  // Conservative simplification — aggressive ratios produce visible holes.
-  // `error` is the geometric tolerance (lower = stricter = fewer holes).
-  { name: 'hero-mobile',  ratio: 0.15, error: 0.012, resize: [96, 96]   as [number, number], quality: 56, meshLevel: 'high' as MeshoptLevel, posBits: 11, uvBits: 9,  normBits: 8  },
-  { name: 'hero-tablet',  ratio: 0.50, error: 0.005, resize: [256, 256] as [number, number], quality: 68, meshLevel: 'high' as MeshoptLevel, posBits: 13, uvBits: 11, normBits: 9  },
-  { name: 'hero-desktop', ratio: 0.75, error: 0.002, resize: [512, 512] as [number, number], quality: 76, meshLevel: 'high' as MeshoptLevel, posBits: 14, uvBits: 12, normBits: 10 },
+  // `ratio` is a target, not a guarantee — simplify() stops early once it would
+  // exceed `error` (geometric tolerance) or touch a lockBorder-protected vertex,
+  // whichever binds first. See mobile-perf skill's "Tuning build-model-lods.ts"
+  // section before assuming a size problem is fixable by changing `ratio` alone.
+  // lockBorder:false is safe here because primitives are disjoint objects, not
+  // a continuous surface split by UV seams — there's no shared edge to protect.
+  { name: 'hero-mobile',  ratio: 0.01, error: 0.1,   resize: [48, 48]   as [number, number], quality: 32, meshLevel: 'high' as MeshoptLevel, posBits: 9,  uvBits: 8,  normBits: 8,  lockBorder: false },
+  { name: 'hero-tablet',  ratio: 0.08, error: 0.03,  resize: [224, 224] as [number, number], quality: 62, meshLevel: 'high' as MeshoptLevel, posBits: 13, uvBits: 11, normBits: 9,  lockBorder: false },
+  { name: 'hero-desktop', ratio: 0.15, error: 0.015, resize: [448, 448] as [number, number], quality: 70, meshLevel: 'high' as MeshoptLevel, posBits: 14, uvBits: 12, normBits: 10, lockBorder: false },
 ] as const;
 
 // ── Degenerate-texture pruning ────────────────────────────────────────────────
@@ -201,7 +205,13 @@ async function main() {
       await doc.transform(
         prune(),
         weld(),
-        simplify({ simplifier: MeshoptSimplifier, ratio: lod.ratio, error: lod.error, lockBorder: true }),
+        simplify({ simplifier: MeshoptSimplifier, ratio: lod.ratio, error: lod.error, lockBorder: lod.lockBorder }),
+        // Second pass: re-simplifying after the topology change from the first
+        // pass still finds a bit more to collapse (weld() here only merges
+        // bitwise-identical vertices — no tolerance option exists in this
+        // gltf-transform version).
+        weld(),
+        simplify({ simplifier: MeshoptSimplifier, ratio: lod.ratio, error: lod.error, lockBorder: lod.lockBorder }),
         quantize({
           quantizePosition: lod.posBits,
           quantizeTexcoord: lod.uvBits,
