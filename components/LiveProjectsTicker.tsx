@@ -11,11 +11,11 @@ const ITEMS = [
   <>Modeling boutique retail <strong style={{ fontWeight: 600, color: "#F7F0E3" }}>storefront</strong></>,
 ];
 
-const track = [...ITEMS, ...ITEMS];
-
 const BG = "#2C1F14";
 
 export function LiveProjectsTicker() {
+  const tickerLabel = "Ongoing projects: rendering luxury kitchen remodel, modeling 4-bed residential exterior, visualizing open-concept living space, rendering master bath renovation, modeling mixed-use commercial facade, visualizing rooftop terrace addition, rendering suburban home extension, modeling boutique retail storefront.";
+
   return (
     <div
       className="ticker-root"
@@ -30,6 +30,7 @@ export function LiveProjectsTicker() {
       }}
       aria-label="Live projects ticker"
     >
+      <span className="sr-only">{tickerLabel}</span>
       {/* Fixed left label */}
       <div
         style={{
@@ -116,26 +117,31 @@ export function LiveProjectsTicker() {
 
         <div
           className="ticker-track"
+          aria-hidden="true"
           style={{
             display: "flex",
             alignItems: "center",
             width: "max-content",
           }}
         >
-          {track.map((item, i) => (
-            <span
-              key={i}
-              style={{
-                fontSize: 12,
-                letterSpacing: "0.1em",
-                textTransform: "uppercase",
-                color: "rgba(247, 240, 227, 0.55)",
-                whiteSpace: "nowrap",
-                paddingRight: 80,
-              }}
-            >
-              {item}
-            </span>
+          {[0, 1].map((segment) => (
+            <div key={segment} className="ticker-segment">
+              {ITEMS.map((item, i) => (
+                <span
+                  key={`${segment}-${i}`}
+                  style={{
+                    fontSize: 12,
+                    letterSpacing: "0.1em",
+                    textTransform: "uppercase",
+                    color: "rgba(247, 240, 227, 0.55)",
+                    whiteSpace: "nowrap",
+                    paddingRight: 80,
+                  }}
+                >
+                  {item}
+                </span>
+              ))}
+            </div>
           ))}
         </div>
       </div>
