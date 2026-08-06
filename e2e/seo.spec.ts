@@ -51,6 +51,17 @@ test.describe('SEO — sitemap', () => {
     const content = await page.content();
     expect(content).toContain('www.retrotekt.com');
   });
+
+  test('sitemap.xml uses stable lastmod values', async ({ page }) => {
+    await page.goto('/sitemap.xml');
+    const first = await page.content();
+
+    await page.waitForTimeout(10);
+    await page.goto('/sitemap.xml');
+    const second = await page.content();
+
+    expect(second).toBe(first);
+  });
 });
 
 test.describe('SEO — robots.txt', () => {
@@ -60,5 +71,44 @@ test.describe('SEO — robots.txt', () => {
     const content = await page.content();
     expect(content).toContain('Allow');
     expect(content).toContain('sitemap');
+  });
+});
+
+test.describe('SEO — portfolio images', () => {
+  test('project images use descriptive alt text', async ({ page }) => {
+    await page.goto('/portfolio/chocolate-fish-modesto');
+
+    await expect(
+      page.getByAltText(
+        'Photorealistic 3D interior render of Chocolate Fish Cafe Modesto California, view 1'
+      )
+    ).toBeAttached();
+
+    const genericAltCount = await page
+      .locator('img[alt^="Chocolate Fish"][alt*="render "]')
+      .count();
+    expect(genericAltCount).toBe(0);
+  });
+});
+
+test.describe('SEO — footer crawl links', () => {
+  test('footer exposes clean service and portfolio hrefs', async ({ page }) => {
+    await page.goto('/');
+
+    await expect(page.locator('footer a[href="/services#renders"]')).toHaveCount(1);
+    await expect(page.locator('footer a[href="/services#walkthroughs"]')).toHaveCount(1);
+    await expect(page.locator('footer a[href="/services#floor-plans"]')).toHaveCount(1);
+    await expect(page.locator('footer a[href="/portfolio"]')).toHaveCount(1);
+    await expect(page.locator('footer a[href="/consulting"]')).toHaveCount(1);
+  });
+
+  test('footer marquee link does not expose inline CSS as crawl text', async ({ page }) => {
+    await page.goto('/');
+
+    const footerText = await page.locator('footer').innerText();
+    expect(footerText).not.toContain('@keyframes');
+    await expect(page.locator('footer a[href="/consulting"]').first()).toContainText(
+      'Ready to see it before you build?'
+    );
   });
 });

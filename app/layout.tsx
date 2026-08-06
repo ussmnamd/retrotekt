@@ -55,6 +55,11 @@ const organizationSchema = {
   description:
     "Photorealistic 3D architectural rendering studio serving US contractors, remodelers, real estate developers, and interior designers.",
   email: "shahan@retrotekt.com",
+  sameAs: [
+    "https://www.facebook.com/share/1EWTXUFmVo/?mibextid=wwXIfr",
+    "https://www.instagram.com/retrotekt",
+    "https://www.linkedin.com/in/shahan-salman-223597174",
+  ],
   areaServed: {
     "@type": "Country",
     name: "United States",
