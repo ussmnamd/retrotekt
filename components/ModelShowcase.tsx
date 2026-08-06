@@ -2,9 +2,29 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import { showcase } from "@/lib/showcase-data";
 
+const MOBILE_SHOWCASE_TRANSITION =
+  "opacity 760ms cubic-bezier(0.16,1,0.3,1), transform 760ms cubic-bezier(0.16,1,0.3,1), filter 760ms cubic-bezier(0.16,1,0.3,1)";
+
 export default function ModelShowcase() {
+  const [isMobileShowcase, setIsMobileShowcase] = useState(false);
+  const [activeSlide, setActiveSlide] = useState(0);
+
+  useEffect(() => {
+    const query = window.matchMedia("(max-width: 768px), (pointer: coarse)");
+    const update = () => setIsMobileShowcase(query.matches);
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
+
+  const goToSlide = (nextIndex: number) => {
+    if (!isMobileShowcase) return;
+    setActiveSlide(Math.max(0, Math.min(showcase.length - 1, nextIndex)));
+  };
+
   return (
     <section id="model-showcase" className="relative w-full bg-background">
 
@@ -88,7 +108,18 @@ export default function ModelShowcase() {
                   priority={i === 0}
                   className="object-contain showcase-img"
                   sizes="70vw"
-                  style={{ opacity: i === 0 ? 1 : 0 }}
+                  style={{
+                    opacity: isMobileShowcase ? (i === activeSlide ? 1 : 0) : (i === 0 ? 1 : 0),
+                    transform: isMobileShowcase
+                      ? `translate3d(${(i - activeSlide) * 22}px, 0, 0) scale(${i === activeSlide ? 1 : 0.985})`
+                      : undefined,
+                    filter: isMobileShowcase && i !== activeSlide ? "blur(2px)" : "blur(0)",
+                    zIndex: i === activeSlide ? 2 : 1,
+                    willChange: isMobileShowcase ? "opacity, transform, filter" : undefined,
+                    transition: isMobileShowcase
+                      ? MOBILE_SHOWCASE_TRANSITION
+                      : undefined,
+                  }}
                 />
               </div>
 
@@ -154,7 +185,14 @@ export default function ModelShowcase() {
               <div
                 key={`cap-${i}`}
                 className="showcase-cap absolute inset-0 w-full h-full px-5 py-3 md:px-7 md:py-3.5 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 md:gap-10 z-10"
-                style={{ opacity: i === 0 ? 1 : 0, pointerEvents: i === 0 ? 'auto' : 'none' }}
+                style={{
+                  opacity: isMobileShowcase ? (i === activeSlide ? 1 : 0) : (i === 0 ? 1 : 0),
+                  pointerEvents: (isMobileShowcase ? i === activeSlide : i === 0) ? 'auto' : 'none',
+                  transform: isMobileShowcase ? `translate3d(${i === activeSlide ? 0 : 16}px, 0, 0)` : undefined,
+                  transition: isMobileShowcase
+                    ? "opacity 620ms cubic-bezier(0.16,1,0.3,1), transform 620ms cubic-bezier(0.16,1,0.3,1)"
+                    : undefined,
+                }}
               >
                 {/* Left — project identity */}
                 <div className="flex-shrink-0">
@@ -209,6 +247,7 @@ export default function ModelShowcase() {
           <button
             id="showcase-prev"
             aria-label="Previous project"
+            onClick={() => goToSlide(activeSlide - 1)}
             className="pointer-events-auto group flex items-center justify-center w-12 h-12 transition-all duration-300 active:scale-90"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="opacity-60 md:opacity-30 group-hover:opacity-100 transition-opacity duration-300">
@@ -218,6 +257,7 @@ export default function ModelShowcase() {
           <button
             id="showcase-next"
             aria-label="Next project"
+            onClick={() => goToSlide(activeSlide + 1)}
             className="pointer-events-auto group flex items-center justify-center w-12 h-12 transition-all duration-300 active:scale-90"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="opacity-60 md:opacity-30 group-hover:opacity-100 transition-opacity duration-300">
@@ -232,6 +272,7 @@ export default function ModelShowcase() {
             <button
               key={i}
               aria-label={`Go to project ${i + 1}`}
+              onClick={() => goToSlide(i)}
               className="showcase-tick-btn flex items-center justify-center relative py-3 cursor-pointer group"
             >
               <div
@@ -240,9 +281,12 @@ export default function ModelShowcase() {
                   width: "36px",
                   height: "1px",
                   background: "#2C1F14",
-                  opacity: i === 0 ? 0.65 : 0.18,
-                  transform: i === 0 ? "scaleX(1)" : "scaleX(0.278)",
+                  opacity: (isMobileShowcase ? i === activeSlide : i === 0) ? 0.65 : 0.18,
+                  transform: (isMobileShowcase ? i === activeSlide : i === 0) ? "scaleX(1)" : "scaleX(0.278)",
                   transformOrigin: "left center",
+                  transition: isMobileShowcase
+                    ? "opacity 320ms ease, transform 320ms cubic-bezier(0.16,1,0.3,1)"
+                    : undefined,
                 }}
                 className="transition-opacity duration-500 ease-out group-hover:opacity-40"
               />

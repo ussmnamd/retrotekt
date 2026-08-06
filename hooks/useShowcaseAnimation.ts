@@ -8,6 +8,17 @@ import { ANIMATION_TIMINGS, ANIMATION_EASING } from "@/lib/animation-config";
 type Gsap = typeof import("gsap").default;
 type ScrollTrigger = typeof import("gsap/ScrollTrigger").ScrollTrigger;
 
+const SHOWCASE_TRANSITION_TUNING = {
+  travelX: 76,
+  travelY: 22,
+  rotation: 8,
+  restingScale: 0.78,
+  incomingLead: 0.26,
+  captionLead: 0.34,
+  mistPeak: 0.38,
+  ghostPeak: 0.28,
+} as const;
+
 export function setupShowcaseAnimation(
   gsap: Gsap,
   ScrollTrigger: ScrollTrigger
@@ -15,11 +26,14 @@ export function setupShowcaseAnimation(
   const pin = document.querySelector<HTMLElement>(".showcase-pin");
   if (!pin) return;
 
+  const isMobileShowcase = window.matchMedia("(max-width: 768px), (pointer: coarse)").matches;
   const imgs   = gsap.utils.toArray<HTMLElement>(".showcase-img");
   const ghosts = gsap.utils.toArray<HTMLElement>(".showcase-img-ghost");
   const mist   = document.getElementById("showcase-mist");
   const caps   = gsap.utils.toArray<HTMLElement>(".showcase-cap");
   const ticks  = [0, 1, 2].map(i => document.getElementById(`showcase-tick-${i}`));
+
+  if (isMobileShowcase) return;
 
   // ── Initial state at progress 0 ─────────────────────────────────────────────
   // Slide 0 fully visible; slides 1 & 2 in their pre-entry "off-screen" state
@@ -28,9 +42,9 @@ export function setupShowcaseAnimation(
   gsap.set(imgs[0], { xPercent: 0, yPercent: 0, rotation: 0, scale: 1, opacity: 1 });
   gsap.set(caps[0], { x: 0, opacity: 1 });
 
-  if (imgs[1]) gsap.set(imgs[1], { xPercent: -120, yPercent: -40, rotation: 14, scale: 0.62, opacity: 0 });
+  if (imgs[1]) gsap.set(imgs[1], { xPercent: -SHOWCASE_TRANSITION_TUNING.travelX, yPercent: -SHOWCASE_TRANSITION_TUNING.travelY, rotation: SHOWCASE_TRANSITION_TUNING.rotation, scale: SHOWCASE_TRANSITION_TUNING.restingScale, opacity: 0 });
   if (caps[1]) gsap.set(caps[1], { x: -30, opacity: 0, pointerEvents: "none" });
-  if (imgs[2]) gsap.set(imgs[2], { xPercent: -120, yPercent: -40, rotation: 14, scale: 0.62, opacity: 0 });
+  if (imgs[2]) gsap.set(imgs[2], { xPercent: -SHOWCASE_TRANSITION_TUNING.travelX, yPercent: -SHOWCASE_TRANSITION_TUNING.travelY, rotation: SHOWCASE_TRANSITION_TUNING.rotation, scale: SHOWCASE_TRANSITION_TUNING.restingScale, opacity: 0 });
   if (caps[2]) gsap.set(caps[2], { x: -30, opacity: 0, pointerEvents: "none" });
 
   // Ghosts hidden by default — only used as trailing motion blur during transitions
@@ -78,46 +92,57 @@ export function setupShowcaseAnimation(
 
   // ── Helper: build one transition (out current → in next) on master tl ────────
   const addTransition = (outIdx: number, inIdx: number, startAt: number) => {
+    const {
+      travelX,
+      travelY,
+      rotation,
+      restingScale,
+      incomingLead,
+      captionLead,
+      mistPeak,
+      ghostPeak,
+    } = SHOWCASE_TRANSITION_TUNING;
+
     // Spin out current
     masterTl.to(imgs[outIdx], {
-      xPercent: 120, yPercent: 40, rotation: -14, scale: 0.62, opacity: 0,
-      ease: "power2.in", duration: ANIMATION_TIMINGS.showcaseSpinOut,
+      xPercent: travelX, yPercent: travelY, rotation: -rotation, scale: restingScale, opacity: 0,
+      ease: "power2.inOut", duration: ANIMATION_TIMINGS.showcaseSpinOut,
     }, startAt);
     masterTl.to(caps[outIdx], {
-      x: 30, opacity: 0, ease: "power2.in", duration: ANIMATION_TIMINGS.showcaseCapsOut,
+      x: 22, opacity: 0, ease: "power2.inOut", duration: ANIMATION_TIMINGS.showcaseCapsOut,
     }, startAt);
 
     // Ghost trail — appears mid-out, fades during in
     if (ghosts[outIdx]) {
       masterTl.to(ghosts[outIdx], {
-        visibility: "visible", opacity: 0.55, duration: 0.05,
-      }, startAt + 0.05);
+        visibility: "visible", opacity: ghostPeak, duration: 0.08,
+      }, startAt + 0.02);
       masterTl.to(ghosts[outIdx], {
-        xPercent: 120, yPercent: 40, rotation: -14, scale: 0.62,
-        ease: "power2.in", duration: ANIMATION_TIMINGS.showcaseSpinOut,
-      }, startAt + 0.05);
+        xPercent: travelX, yPercent: travelY, rotation: -rotation, scale: restingScale,
+        ease: "power2.inOut", duration: ANIMATION_TIMINGS.showcaseSpinOut,
+      }, startAt + 0.02);
       masterTl.to(ghosts[outIdx], {
-        opacity: 0, duration: 0.3, ease: "power2.in",
+        opacity: 0, duration: 0.36, ease: "power2.out",
         onComplete: () => gsap.set(ghosts[outIdx], {
           visibility: "hidden", xPercent: 0, yPercent: 0, rotation: 0, scale: 1,
         }),
-      }, startAt + 0.45);
+      }, startAt + 0.38);
     }
 
     // Mist peaks mid-transition
     if (mist) {
-      masterTl.to(mist, { opacity: 0.6, duration: ANIMATION_TIMINGS.showcaseMistIn, ease: "power2.out" }, startAt);
-      masterTl.to(mist, { opacity: 0, duration: ANIMATION_TIMINGS.showcaseMistOut, ease: "power2.in" }, startAt + 0.5);
+      masterTl.to(mist, { opacity: mistPeak, duration: ANIMATION_TIMINGS.showcaseMistIn, ease: "power2.out" }, startAt);
+      masterTl.to(mist, { opacity: 0, duration: ANIMATION_TIMINGS.showcaseMistOut, ease: "power2.inOut" }, startAt + 0.48);
     }
 
     // Spin in next (slightly overlapping the out)
     masterTl.to(imgs[inIdx], {
       xPercent: 0, yPercent: 0, rotation: 0, scale: 1, opacity: 1,
       ease: "power3.out", duration: ANIMATION_TIMINGS.showcaseSpinIn,
-    }, startAt + 0.4);
+    }, startAt + incomingLead);
     masterTl.to(caps[inIdx], {
       x: 0, opacity: 1, ease: "power2.out", duration: ANIMATION_TIMINGS.showcaseCapsIn,
-    }, startAt + 0.5);
+    }, startAt + captionLead);
 
     // Ticks: deactivate outIdx, activate inIdx, midway
     if (ticks[outIdx]) masterTl.to(ticks[outIdx], {

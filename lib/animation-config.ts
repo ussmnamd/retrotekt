@@ -17,11 +17,11 @@ export const ANIMATION_TIMINGS = {
   servicesLinkDelay: 0.5,
 
   // Model showcase transitions
-  showcaseSpinOut: 0.55,
-  showcaseSpinIn: 0.6,
+  showcaseSpinOut: 0.72,
+  showcaseSpinIn: 0.78,
   showcaseCapsOut: 0.4,
-  showcaseCapsIn: 0.45,
-  showcaseScrub: 0.6,
+  showcaseCapsIn: 0.56,
+  showcaseScrub: 0.85,
   showcaseTick: 0.35,
   showcaseMistIn: 0.3,
   showcaseMistOut: 0.4,
