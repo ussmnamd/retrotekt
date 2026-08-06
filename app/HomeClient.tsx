@@ -40,7 +40,7 @@ export default function HomeClient() {
 
   const [hero3dReady, setHero3dReady] = useState(false);
 
-  /* ── 3D hero: auto-load on desktop, interaction-gated on mobile ── */
+  /* ── 3D hero: auto-load on desktop, viewport-gated on mobile ── */
   useEffect(() => {
     if (hero3dReady) return;
 
@@ -63,8 +63,32 @@ export default function HomeClient() {
 
     if (coarsePointer || smallViewport) {
       const hero = document.getElementById("hero-section");
+      let observer: IntersectionObserver | undefined;
+      let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
       hero?.addEventListener("pointerdown", enableHero3d, { once: true, passive: true });
-      return () => hero?.removeEventListener("pointerdown", enableHero3d);
+
+      if (hero && "IntersectionObserver" in window) {
+        observer = new IntersectionObserver(
+          ([entry]) => {
+            if (!entry.isIntersecting) return;
+            enableHero3d();
+            observer?.disconnect();
+          },
+          { rootMargin: "120px", threshold: 0.01 }
+        );
+        observer.observe(hero);
+      } else {
+        timeoutId = setTimeout(enableHero3d, 1200);
+      }
+
+      timeoutId = timeoutId ?? setTimeout(enableHero3d, 2500);
+
+      return () => {
+        hero?.removeEventListener("pointerdown", enableHero3d);
+        observer?.disconnect();
+        if (timeoutId !== undefined) clearTimeout(timeoutId);
+      };
     }
 
     let idleId: number | undefined;
