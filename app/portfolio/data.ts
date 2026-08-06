@@ -3,7 +3,8 @@ import type { AssetKey } from './assets';
 export type ProjectSlug =
   | 'chocolate-fish-modesto'
   | 'chocolate-fish-livermore'
-  | 'chocolate-fish-sacramento';
+  | 'chocolate-fish-sacramento'
+  | 'chocolate-fish-davis';
 
 export interface Project {
   slug: ProjectSlug;
@@ -70,6 +71,21 @@ export const projects: Project[] = [
     scope: ['Pre-construction renders', 'Construction documentation'],
     description:
       "Third location, same trusted process. Five photoreal renders locked the Sacramento design before construction began. Ten construction photographs document every stage — confirming the renders weren't aspirational, they were a specification.",
+    filterCategory: 'Renders',
+    isFlagship: false,
+  },
+  {
+    slug: 'chocolate-fish-davis',
+    assetKey: 'davis',
+    name: 'Chocolate Fish — Davis',
+    client: 'Chocolate Fish Coffee Roasters',
+    city: 'Davis, CA',
+    year: '2025',
+    type: 'Renders',
+    tags: ['Hospitality', 'Cafe'],
+    scope: ['Pre-construction renders'],
+    description:
+      "Fourth location, same trusted process. Four photoreal renders locked the Davis design before construction began — specifying the space down to the fixtures before a single wall went up.",
     filterCategory: 'Renders',
     isFlagship: false,
   },

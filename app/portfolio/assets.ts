@@ -32,7 +32,7 @@ export type ProjectAssets = {
   heroLoop?: ProjectVideo;
 };
 
-export type AssetKey = 'modesto' | 'livermore' | 'sacramento';
+export type AssetKey = 'modesto' | 'livermore' | 'sacramento' | 'davis';
 
 export const portfolioAssets: Record<AssetKey, ProjectAssets> = {
   modesto: {
@@ -509,6 +509,63 @@ export const portfolioAssets: Record<AssetKey, ProjectAssets> = {
       srcsetAvif: "/portfolio/sacramento/renders/05-2400.avif 2400w, /portfolio/sacramento/renders/05-1600.avif 1600w, /portfolio/sacramento/renders/05-800.avif 800w",
       srcsetWebp: "/portfolio/sacramento/renders/05-2400.webp 2400w, /portfolio/sacramento/renders/05-1600.webp 1600w, /portfolio/sacramento/renders/05-800.webp 800w",
       srcsetJpg: "/portfolio/sacramento/renders/05-2400.jpg 2400w, /portfolio/sacramento/renders/05-1600.jpg 1600w, /portfolio/sacramento/renders/05-800.jpg 800w",
+    }
+    ],
+    videos: [
+
+    ],
+  },
+  davis: {
+    before: [
+
+    ],
+    construction: [
+
+    ],
+    renders: [
+    {
+      avif: "/portfolio/davis/renders/01-2400.avif",
+      webp: "/portfolio/davis/renders/01-2400.webp",
+      jpg: "/portfolio/davis/renders/01-2400.jpg",
+      width: 1672,
+      height: 941,
+      alt: "Photorealistic 3D interior render of Chocolate Fish Cafe Davis California, view 1",
+      srcsetAvif: "/portfolio/davis/renders/01-2400.avif 2400w, /portfolio/davis/renders/01-1600.avif 1600w, /portfolio/davis/renders/01-800.avif 800w",
+      srcsetWebp: "/portfolio/davis/renders/01-2400.webp 2400w, /portfolio/davis/renders/01-1600.webp 1600w, /portfolio/davis/renders/01-800.webp 800w",
+      srcsetJpg: "/portfolio/davis/renders/01-2400.jpg 2400w, /portfolio/davis/renders/01-1600.jpg 1600w, /portfolio/davis/renders/01-800.jpg 800w",
+    },
+    {
+      avif: "/portfolio/davis/renders/02-2400.avif",
+      webp: "/portfolio/davis/renders/02-2400.webp",
+      jpg: "/portfolio/davis/renders/02-2400.jpg",
+      width: 1672,
+      height: 941,
+      alt: "Photorealistic 3D interior render of Chocolate Fish Cafe Davis California, view 2",
+      srcsetAvif: "/portfolio/davis/renders/02-2400.avif 2400w, /portfolio/davis/renders/02-1600.avif 1600w, /portfolio/davis/renders/02-800.avif 800w",
+      srcsetWebp: "/portfolio/davis/renders/02-2400.webp 2400w, /portfolio/davis/renders/02-1600.webp 1600w, /portfolio/davis/renders/02-800.webp 800w",
+      srcsetJpg: "/portfolio/davis/renders/02-2400.jpg 2400w, /portfolio/davis/renders/02-1600.jpg 1600w, /portfolio/davis/renders/02-800.jpg 800w",
+    },
+    {
+      avif: "/portfolio/davis/renders/03-2400.avif",
+      webp: "/portfolio/davis/renders/03-2400.webp",
+      jpg: "/portfolio/davis/renders/03-2400.jpg",
+      width: 1672,
+      height: 941,
+      alt: "Photorealistic 3D interior render of Chocolate Fish Cafe Davis California, view 3",
+      srcsetAvif: "/portfolio/davis/renders/03-2400.avif 2400w, /portfolio/davis/renders/03-1600.avif 1600w, /portfolio/davis/renders/03-800.avif 800w",
+      srcsetWebp: "/portfolio/davis/renders/03-2400.webp 2400w, /portfolio/davis/renders/03-1600.webp 1600w, /portfolio/davis/renders/03-800.webp 800w",
+      srcsetJpg: "/portfolio/davis/renders/03-2400.jpg 2400w, /portfolio/davis/renders/03-1600.jpg 1600w, /portfolio/davis/renders/03-800.jpg 800w",
+    },
+    {
+      avif: "/portfolio/davis/renders/04-2400.avif",
+      webp: "/portfolio/davis/renders/04-2400.webp",
+      jpg: "/portfolio/davis/renders/04-2400.jpg",
+      width: 2400,
+      height: 1350,
+      alt: "Photorealistic 3D interior render of Chocolate Fish Cafe Davis California, view 4",
+      srcsetAvif: "/portfolio/davis/renders/04-2400.avif 2400w, /portfolio/davis/renders/04-1600.avif 1600w, /portfolio/davis/renders/04-800.avif 800w",
+      srcsetWebp: "/portfolio/davis/renders/04-2400.webp 2400w, /portfolio/davis/renders/04-1600.webp 1600w, /portfolio/davis/renders/04-800.webp 800w",
+      srcsetJpg: "/portfolio/davis/renders/04-2400.jpg 2400w, /portfolio/davis/renders/04-1600.jpg 1600w, /portfolio/davis/renders/04-800.jpg 800w",
     }
     ],
     videos: [

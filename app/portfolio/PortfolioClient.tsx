@@ -75,7 +75,7 @@ function itemsForFilter(filter: FilterLabel): GalleryItem[] {
 // ── Gallery heading per filter ────────────────────────────────────────────────
 const GALLERY_HEADINGS: Record<FilterLabel, { eyebrow: string; headline: string }> = {
   'All':                { eyebrow: 'THE GALLERY',                  headline: 'Renders, films & construction.' },
-  'Renders':            { eyebrow: 'RENDERS · ALL LOCATIONS',       headline: '11 renders. 3 cafés. One visual language.' },
+  'Renders':            { eyebrow: 'RENDERS · ALL LOCATIONS',       headline: '19 renders. 4 cafés. One visual language.' },
   'Walkthroughs':       { eyebrow: 'WALKTHROUGH FILMS',             headline: '3 walkthrough films. One flagship build.' },
   'Construction Story': { eyebrow: 'CONSTRUCTION DOCUMENTATION',    headline: 'Render → reality. Photographs of the build.' },
 };
@@ -89,7 +89,7 @@ const LOCATION_CARD_MIN_HEIGHT = '40vh';
 
 // ── Derived data ───────────────────────────────────────────────────────────────
 const modesto = projects[0];
-const supporting = projects.slice(1); // Livermore, Sacramento
+const supporting = projects.slice(1); // Livermore, Sacramento, Davis
 
 // ── SearchParamsReader — isolated so parent can SSR without suspending ─────────
 function SearchParamsReader({ onFilter }: { onFilter: (f: FilterLabel) => void }) {
@@ -262,11 +262,11 @@ export default function PortfolioClient() {
             className="font-heading text-background leading-[0.88] tracking-[-0.04em] mb-10"
             style={{ fontSize: 'clamp(2.2rem, 5.5vw, 4.5rem)' }}
           >
-            Three locations<span className="text-secondary italic font-serif">.</span>
+            Four locations<span className="text-secondary italic font-serif">.</span>
             <br />
             <span className="text-background/40">Built from a</span> <span className="italic font-serif">render.</span>
           </h1>
-          
+
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-8">
             <StartLink
               href="/portfolio/chocolate-fish-modesto#films"
@@ -274,7 +274,7 @@ export default function PortfolioClient() {
               tone="inverse"
             />
             <p className="font-body text-background/40 text-[11px] tracking-[0.15em] uppercase max-w-[200px] leading-relaxed">
-              Three California cafés, pre-visualized end-to-end.
+              Four California cafés, pre-visualized end-to-end.
             </p>
           </div>
         </div>
@@ -450,7 +450,7 @@ export default function PortfolioClient() {
         data-anim="locations-grid"
         className="max-w-[1400px] mx-auto px-6 md:px-12 lg:px-16 py-4 md:py-6"
       >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {supporting.map((project) => {
             const assets = portfolioAssets[project.assetKey];
             const leadRender = assets.renders[0];

@@ -8,11 +8,12 @@ test.describe('Portfolio page', () => {
     expect(html).toContain('Chocolate Fish');
   });
 
-  test('all three project slugs resolve to 200', async ({ page }) => {
+  test('all four project slugs resolve to 200', async ({ page }) => {
     const slugs = [
       '/portfolio/chocolate-fish-modesto',
       '/portfolio/chocolate-fish-livermore',
       '/portfolio/chocolate-fish-sacramento',
+      '/portfolio/chocolate-fish-davis',
     ];
     for (const slug of slugs) {
       const response = await page.goto(slug);
