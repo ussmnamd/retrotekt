@@ -2,26 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { contactSchema } from '@/lib/schemas/contact';
 import { inquiryEmailHtml } from '@/lib/emails/inquiry';
+import { rateLimit } from '@/lib/rate-limit';
+import { checkSpam } from '@/lib/spam';
 
-// In-memory rate limit: 3 submissions per IP per 10 minutes
-const rateMap = new Map<string, { count: number; resetAt: number }>();
-
-function allowed(ip: string): boolean {
-  const now = Date.now();
-  const entry = rateMap.get(ip);
-  if (!entry || entry.resetAt < now) {
-    rateMap.set(ip, { count: 1, resetAt: now + 10 * 60 * 1000 });
-    return true;
-  }
-  if (entry.count >= 3) return false;
-  entry.count++;
-  return true;
-}
+const RATE_LIMIT = { limit: 3, windowMs: 10 * 60 * 1000 }; // 3 per IP per 10 minutes
 
 export async function POST(req: NextRequest) {
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? 'unknown';
 
-  if (!allowed(ip)) {
+  if (!(await rateLimit(`contact:${ip}`, RATE_LIMIT))) {
     return NextResponse.json(
       { error: 'Too many requests. Please try again in a few minutes.' },
       { status: 429 }
@@ -43,7 +32,15 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const data = result.data;
+  const { website, startedAt, ...data } = result.data;
+
+  const verdict = checkSpam({ website, startedAt });
+  if (verdict !== 'ok') {
+    // Pretend it worked so bots get no signal to adapt to.
+    console.warn(`[api/contact] Dropped likely spam (${verdict}) from ${ip}`);
+    return NextResponse.json({ ok: true });
+  }
+
   const to = process.env.CONTACT_EMAIL_TO ?? 'shahan@retrotekt.com';
   const resend = new Resend(process.env.RESEND_API_KEY);
 

@@ -269,6 +269,9 @@ export default function ConsultingClient() {
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [honeypot, setHoneypot] = useState("");
+  // When the form was first shown; the API drops submissions made too quickly.
+  const startedAtRef = useRef<number>(Date.now());
 
   const update = (field: keyof MessageForm, value: string) =>
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -297,6 +300,8 @@ export default function ConsultingClient() {
           projectType: form.projectType || undefined,
           budget:      form.budget || undefined,
           message:     form.message.trim(),
+          website:     honeypot,
+          startedAt:   startedAtRef.current,
         }),
       });
 
@@ -481,6 +486,8 @@ export default function ConsultingClient() {
                             setForm(EMPTY_FORM);
                             setErrors(EMPTY_ERRORS);
                             setSubmitError(null);
+                            setHoneypot("");
+                            startedAtRef.current = Date.now();
                           }}
                           className="group inline-flex items-center gap-4 px-6 py-[14px] rounded-[3px] border border-[#A8843C]/20 bg-primary/[0.04] hover:bg-primary/[0.08] hover:border-[#A8843C]/35 transition-colors duration-300"
                         >
@@ -490,6 +497,20 @@ export default function ConsultingClient() {
                       </div>
                     ) : (
                     <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-10">
+
+                        {/* Honeypot: hidden from people and screen readers, bots tend to fill it */}
+                        <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
+                            <label htmlFor="website">Website</label>
+                            <input
+                                id="website"
+                                name="website"
+                                type="text"
+                                tabIndex={-1}
+                                autoComplete="off"
+                                value={honeypot}
+                                onChange={(e) => setHoneypot(e.target.value)}
+                            />
+                        </div>
 
                         {/* Intro Row */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">

@@ -7,6 +7,9 @@ export const contactSchema = z.object({
   projectType: z.string().max(100).optional(),
   budget:      z.string().max(50).optional(),
   message:     z.string().min(10, 'Please include a bit more detail.').max(5000),
+  // Anti-spam signals, see lib/spam.ts
+  website:     z.string().max(200).optional(),
+  startedAt:   z.number().int().nonnegative().optional(),
 });
 
 export type ContactInput = z.infer<typeof contactSchema>;
