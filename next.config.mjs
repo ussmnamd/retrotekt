@@ -107,6 +107,7 @@ const nextConfig = {
     return [
       { source: '/pricing', destination: '/consulting', permanent: true },
       { source: '/about', destination: '/consulting', permanent: true },
+      { source: '/contact', destination: '/consulting', permanent: true },
     ];
   },
 
