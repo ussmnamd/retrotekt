@@ -32,9 +32,9 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { website, startedAt, ...data } = result.data;
+  const { website, elapsedMs, ...data } = result.data;
 
-  const verdict = checkSpam({ website, startedAt });
+  const verdict = checkSpam({ website, elapsedMs });
   if (verdict !== 'ok') {
     // Pretend it worked so bots get no signal to adapt to.
     console.warn(`[api/contact] Dropped likely spam (${verdict}) from ${ip}`);

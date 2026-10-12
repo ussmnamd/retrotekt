@@ -45,6 +45,7 @@ Open `http://localhost:3000`.
 |---|---|
 | `RESEND_API_KEY` | Resend API key used by `/api/contact` |
 | `CONTACT_EMAIL_TO` | Address that receives inquiries (defaults to `shahan@retrotekt.com`) |
+| `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` | Optional. Upstash Redis REST credentials for the shared contact form rate limit. `KV_REST_API_URL` / `KV_REST_API_TOKEN` (set by the Vercel Marketplace integration) also work. Without them the limit is in memory. |
 
 ## Scripts
 
@@ -78,7 +79,9 @@ The viewer is lazy-loaded and excluded from SSR. On mobile it lowers pixel ratio
 
 ## Contact form
 
-The form on `/consulting` posts JSON to `/api/contact`. The route validates it against `lib/schemas/contact.ts` (name, email, message required; company, project type and budget optional), rate-limits to 3 submissions per IP per 10 minutes, and sends an HTML email (`lib/emails/inquiry.tsx`) through Resend from `no-reply@retrotekt.com`, with the sender's address as reply-to. The rate limit is in memory, so it is per serverless instance rather than global.
+The form on `/consulting` posts JSON to `/api/contact`. The route validates it against `lib/schemas/contact.ts` (name, email, message required; company, project type and budget optional), rate-limits to 3 submissions per IP per 10 minutes (`lib/rate-limit.ts`), drops likely bots (`lib/spam.ts`), and sends an HTML email (`lib/emails/inquiry.tsx`) through Resend from `no-reply@retrotekt.com`, with the sender's address as reply-to. The rate limit is shared through Upstash Redis when its env vars are set, so it holds across serverless instances and cold starts. Without them, or if Redis is unreachable, it falls back to a per-instance in-memory limit.
+
+Spam checks: the form has a visually hidden `website` honeypot field and sends how long it was open. A filled honeypot or a fill time under 3 seconds gets a normal success response, but no email is sent and the drop is logged.
 
 ## Deployment
 
@@ -86,4 +89,4 @@ The site deploys on Vercel. GitHub Actions (`.github/workflows/ci.yml`) runs typ
 
 - `vercel.json` redirects the apex `retrotekt.com` to `www.retrotekt.com` and serves `/models/*` as `model/gltf-binary`.
 - `next.config.mjs` sets the Content Security Policy and other security headers (including HSTS), long-lived immutable caching for models, portfolio, showcase and `_next/static` assets, and AVIF/WebP image optimization.
-- Set `RESEND_API_KEY` and `CONTACT_EMAIL_TO` in the Vercel project's environment variables.
+- Set `RESEND_API_KEY` and `CONTACT_EMAIL_TO` in the Vercel project's environment variables. For a shared rate limit, add an Upstash Redis database (Vercel Marketplace, which sets `KV_REST_API_URL` / `KV_REST_API_TOKEN`) or set the `UPSTASH_REDIS_REST_*` variables.

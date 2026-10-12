@@ -301,7 +301,7 @@ export default function ConsultingClient() {
           budget:      form.budget || undefined,
           message:     form.message.trim(),
           website:     honeypot,
-          startedAt:   startedAtRef.current,
+          elapsedMs:   Date.now() - startedAtRef.current,
         }),
       });
 
