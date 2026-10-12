@@ -82,7 +82,7 @@ The form on `/consulting` posts JSON to `/api/contact`. The route validates it a
 
 ## Deployment
 
-The site deploys on Vercel; there are no GitHub Actions workflows.
+The site deploys on Vercel. GitHub Actions (`.github/workflows/ci.yml`) runs typecheck, lint and unit tests, then a production build and the Playwright suite, on every push to `master` and on pull requests.
 
 - `vercel.json` redirects the apex `retrotekt.com` to `www.retrotekt.com` and serves `/models/*` as `model/gltf-binary`.
 - `next.config.mjs` sets the Content Security Policy and other security headers (including HSTS), long-lived immutable caching for models, portfolio, showcase and `_next/static` assets, and AVIF/WebP image optimization.

@@ -59,6 +59,6 @@ test.describe('Contact form', () => {
     );
 
     await page.locator('button[type="submit"]').click();
-    await expect(page.locator('h2')).toContainText(/Message Sent/i, { timeout: 5000 });
+    await expect(page.getByRole('heading', { name: /Message Sent/i })).toBeVisible({ timeout: 5000 });
   });
 });
