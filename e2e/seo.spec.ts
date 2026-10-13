@@ -81,7 +81,7 @@ test.describe('SEO — portfolio images', () => {
     await expect(
       page.getByAltText(
         'Photorealistic 3D interior render of Chocolate Fish Cafe Modesto California, view 1'
-      )
+      ).first()
     ).toBeAttached();
 
     const genericAltCount = await page
@@ -99,7 +99,8 @@ test.describe('SEO — footer crawl links', () => {
     await expect(page.locator('footer a[href="/services#walkthroughs"]')).toHaveCount(1);
     await expect(page.locator('footer a[href="/services#floor-plans"]')).toHaveCount(1);
     await expect(page.locator('footer a[href="/portfolio"]')).toHaveCount(1);
-    await expect(page.locator('footer a[href="/consulting"]')).toHaveCount(1);
+    // Marquee CTA + Consulting nav item.
+    await expect(page.locator('footer a[href="/consulting"]')).toHaveCount(2);
   });
 
   test('footer marquee link does not expose inline CSS as crawl text', async ({ page }) => {
